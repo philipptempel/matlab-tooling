@@ -18,6 +18,7 @@
 %   objectcheck                 - checks for an object of a calling class in the list of arguments
 %   pack_files_and_dependencies - packs dependent files into one folder
 %   progressbar                 - creates a nicer progress bar window for progress information
+%   pvparams                    - Split variable arguments into numeric and name/value pairs
 %   restart                     - executes a few functions to reset MATLAB workspace
 %   rgb                         - converts a conventional RGB representation into MATLAB RGB format
 %   rmpaths                     - Remove directory from search path recursively

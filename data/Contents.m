@@ -3,6 +3,7 @@
 % Files
 %   allcomb               - - All combinations
 %   cycliccell            - repeats a cell as a cycle
+%   first                 - gets the first element of the given argument
 %   last                  - gets the last element of the given argument
 %   limit                 - the given value between minimum and maximum
 %   mat2tex               - converts a matrix to LaTeX compatible tabular syntax

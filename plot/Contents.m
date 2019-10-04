@@ -10,6 +10,7 @@
 %   colororder_pre2014b            - returns the color order of plot lines pre R2014b
 %   distinguishableColors          - pick colors that are maximally perceptually distinct
 %   enlargelimits                  - Automatically enlarge limits of the curent axis
+%   figcheck                       - Process figure objects from input list
 %   figplot                        - opens a figure and plots inside this figure.
 %   gpf                            - Get the given handles parent figure
 %   isallaxes                      - Checks whether the given handle is purely axes or not
@@ -36,6 +37,7 @@
 %   semilogxy                      - plots a 3D plot with logarithmic X- and Y-axis
 %   setfigureratio                 - sets the ratio of the current or given figure
 %   shadow3                        - plots a 3D shadow3 plot of all data into the given axes onto the given
+%   untitled11                     - Experimental project
 %   usdistcolors                   - creates distinguishable colors complying with University of
 %   uslayout                       - applies the corresponding figure to University of Stuttgarts
 %   uslinestyles                   - creates a list of N unique lineseries plot styles
