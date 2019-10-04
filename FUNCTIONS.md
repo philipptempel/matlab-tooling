@@ -3,6 +3,7 @@
 ## data/
   * `allcomb`: - All combinations
   * `cycliccell`: repeats a cell as a cycle
+  * `first`: gets the first element of the given argument
   * `last`: gets the last element of the given argument
   * `limit`: the given value between minimum and maximum
   * `mat2tex`: converts a matrix to LaTeX compatible tabular syntax
@@ -32,8 +33,6 @@
 
 
 ## func/
-  * `_odeget`: ODEGET Get ODE OPTIONS parameters.
-  * `_odeset`: ODESET Create/alter ODE OPTIONS structure.
   * `funcname`: returns the current function's name
   * `funcnew`: creates a new function file based on a template
   * `funcren`: renames the function to a new name
@@ -71,6 +70,7 @@
   * `isupper`: True for uppercase letters.
   * `isxdigit`: True for hexadecimal digits.
   * `ord`: returns the ordinal for the given number
+  * `padcat`: - concatenate vectors with different lengths by padding with NaN
   * `tspan`: creates a properly and evenly spaced vector
   * `wraprad`: Map angles measured in radians to the interval [-pi,pi).
   * `xkron`: Kronecker tensor product.
@@ -154,6 +154,7 @@
   * `colororder_pre2014b`: returns the color order of plot lines pre R2014b
   * `distinguishableColors`: pick colors that are maximally perceptually distinct
   * `enlargelimits`: Automatically enlarge limits of the curent axis
+  * `figcheck`: Process figure objects from input list
   * `figplot`: opens a figure and plots inside this figure.
   * `gpf`: Get the given handles parent figure
   * `isallaxes`: Checks whether the given handle is purely axes or not
@@ -251,6 +252,7 @@
   * `objectcheck`: checks for an object of a calling class in the list of arguments
   * `pack_files_and_dependencies`: packs dependent files into one folder
   * `progressbar`: creates a nicer progress bar window for progress information
+  * `pvparams`: Split variable arguments into numeric and name/value pairs
   * `restart`: executes a few functions to reset MATLAB workspace
   * `rgb`: converts a conventional RGB representation into MATLAB RGB format
   * `rmpaths`: Remove directory from search path recursively
