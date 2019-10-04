@@ -20,6 +20,42 @@ What this will do is
 
 That's it. You are now officially all set to use any of the functions defind in the [list of functions](FUNCTIONS.md). Happy efficiency.
 
+## Most Used Functions
+
+Here's a list of the top 10 of the most used functions according to heavy MATLAB user @philipp.tempel
+
+### Data Science
+
+Most used functions/methods inside methods when dealing with data.
+
+1. `ascol`/`asrow`
+2. `tspan`
+3. `fullpath`
+4. `funcnew`
+5. `closest`
+6. `datestr8601`
+7. `progressbar`
+8. `bbox`/`bbox3`
+9. `evec`/`evec3`
+10. `loglim`
+11. `w2f`/`f2w`
+12. `r2h`/`h2r`
+13. `restart`
+
+### Data Visualization
+
+Most used methods for data visualization and data import/export
+
+1. `anim2d`
+2. `uslinestyles`
+3. `usdistcolors`
+4. `uslayout`
+5. `distinguishableColors`
+6. `plot_cyclelinestyles`
+7. `plot_markers`
+8. `ruler`
+9. `csv2tcscope`
+
 ## Guides
 
 * [Typesetting of MATLAB data in LaTeX documents](guides/matlab-array-typesetting.md)
