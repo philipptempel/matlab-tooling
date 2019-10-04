@@ -54,6 +54,15 @@ classdef graph < animatlab.artist
     end
     
     
+    function o = quiver(x, y, u, v, varargin)
+      %% QUIVER
+      
+      
+      o = animatlab.graph(@quiver, 'XData', x, 'YData', y, 'UData', u, 'VData', v, varargin{:});
+      
+    end
+    
+    
     function o = stairs(x, y, varargin)
       %% STAIRS
       
@@ -68,6 +77,15 @@ classdef graph < animatlab.artist
       
       
       o = animatlab.graph(@plot3, 'XData', x, 'YData', y, 'ZData', z, varargin{:});
+      
+    end
+    
+    
+    function o = quiver3(x, y, z, u, v, w, varargin)
+      %% QUIVER3
+      
+      
+      o = animatlab.graph(@quiver3, 'XData', x, 'YData', y, 'ZData', z, 'UData', u, 'VData', v, 'WData', w, varargin{:});
       
     end
     
