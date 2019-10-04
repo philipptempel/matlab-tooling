@@ -29,7 +29,7 @@ function l = loglim(d)
 
 %% Validate arguments
 
-validateattributes(d, {'numeric'}, {'nonempty', 'finite', 'positive'}, mfilename, 'd');
+validateattributes(d, {'numeric'}, {'nonempty', 'positive'}, mfilename, 'd');
 
 
 
