@@ -14,20 +14,25 @@ function varargout = plot_colbox(colors, varargin)
 %
 %   Optional Inputs -- specified as parameter value pairs
 %
-%   Edge                Edge length of each colored box. Defaults to 10 (units).
+%   Edge                Edge length of each colored box. Defaults to 50 (units).
 %
-%   Padding             Padding around each box. Defaults to 2 (units).
+%   Padding             Padding around each box. Defaults to 5 (units).
 %
-%   Rows                Number of rows to plot boxes in to. By default, the
-%                       boxes are plotted columnwise such that the number of
-%                       rows is evenly distributed.
+%   Background          1x3 array of background RGB values that should be
+%                       applied. Defaults to `[1, 1, 1]` (white).
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-01-23
+% Date: 2019-11-25
 % Changelog:
+%   2019-11-25
+%       * Update implementation such that it plots colored boxes with row-major,
+%       which is more intuitive
+%       * Remove option Rows
+%       * Increase default values of `Edge` and `Padding`
+%       * Add option to provide background color as RGB values
 %   2018-01-23
 %       * Update procedure to support custom rows count
 %   2017-02-24
@@ -44,16 +49,16 @@ valFcn_Colors = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncol
 addRequired(ip, 'Colors', valFcn_Colors);
 
 % Parameter: Edge; numeric; scalar, non-empty, non-sparse, finite, non-negative
-valFcn_Edge = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'nonsparse', 'finite', 'nonnegative'}, mfilename, 'edge');
-addParameter(ip, 'Edge', 10, valFcn_Edge);
+valFcn_Edge = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'nonsparse', 'finite', 'nonnegative'}, mfilename, 'Edge');
+addParameter(ip, 'Edge', 50, valFcn_Edge);
 
 % Parameter: Padding; numeric; scalar, non-empty, non-sparse, finite, non-negative
-valFcn_Padding = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'nonsparse', 'finite', 'nonnegative'}, mfilename, 'padding');
-addParameter(ip, 'Padding', 2, valFcn_Padding);
+valFcn_Padding = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'nonsparse', 'finite', 'nonnegative'}, mfilename, 'Padding');
+addParameter(ip, 'Padding', 5, valFcn_Padding);
 
-% Parameter: Rows; numeric; scalar, non-empty, non-sparse, finite, non-negative
-valFcn_Rows = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'nonsparse', 'finite', 'nonnegative'}, mfilename, 'rows');
-addParameter(ip, 'Rows', 0, valFcn_Rows);
+% Parameter: Background; numeric; vector, non-empty, non-sparse, ge 0, le 1, non-negative
+valFcn_Background = @(x) validateattributes(x, {'numeric'}, {'vector', 'nonempty', 'nonsparse', 'finite', 'nonnegative', 'numel', 3, '>=', 0, '<=', 1}, mfilename, 'Background');
+addParameter(ip, 'Background', [1, 1, 1], valFcn_Background);
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
@@ -78,20 +83,17 @@ aColors = ip.Results.Colors;
 dRectangle_EdgeLength = ip.Results.Edge;
 % Padding around rectangles
 dRectangle_Padding = ip.Results.Padding;
-% Number of columns to plot
-nRows = ip.Results.Rows;
+% Background color
+vBackground = ip.Results.Background(:);
 
 
 
 %% Do your code magic here
 % Number of colors to plot
 nColors = size(aColors, 1);
-% Default to square distribution of colored boxes to plot
-if nRows == 0
-    % How many rows and cols of rectangles?
-    nRows = ceil(sqrt(nColors));
-end
-nCols = ceil(nColors/nRows);
+% Calculate number of columns and number of rows
+nRows = floor(sqrt(nColors));
+nCols = ceil(nColors / nRows);
 
 % Get a valid axes handle
 haTarget = newplot(haTarget);
@@ -102,11 +104,8 @@ lOldHold = ishold(haTarget);
 % Hold axes
 hold(haTarget, 'on');
 
-% Stores the plotted patches
-hPatches = gobjects(nRows, nCols);
-
 % Init image
-aImg = 255*ones((nRows + 1)*dRectangle_Padding + nRows*dRectangle_EdgeLength , (nCols + 1)*dRectangle_Padding + nCols*dRectangle_EdgeLength, 3, 'uint8');
+aImg = uint8((255 * permute(vBackground, [3, 2, 1]))) .* ones((nRows + 1)*dRectangle_Padding + nRows*dRectangle_EdgeLength , (nCols + 1)*dRectangle_Padding + nCols*dRectangle_EdgeLength, 3, 'uint8');
 
 % Loop over each color
 for iColor = 1:nColors
@@ -119,16 +118,10 @@ for iColor = 1:nColors
     aImg(vRectangle_X(1):vRectangle_X(end),vRectangle_Y(1):vRectangle_Y(end),1) = aColors(iColor,1).*255;
     aImg(vRectangle_X(1):vRectangle_X(end),vRectangle_Y(1):vRectangle_Y(end),2) = aColors(iColor,2).*255;
     aImg(vRectangle_X(1):vRectangle_X(end),vRectangle_Y(1):vRectangle_Y(end),3) = aColors(iColor,3).*255;
-    
-%     hPatches(iCur_Row, iCur_Col) = patch(vRectangle_X([1, 2, 2, 1, 1]), vRectangle_Y([1, 1, 2, 2, 1]), aColors(iColor,:), 'EdgeColor', aColors(iColor,:));
 end
 
 % Show the image we created
-imshow(aImg, 'Parent', haTarget, 'Border', 'tight');
-
-% Set the limites
-% xlim([0, nCols*(dRectangle_EdgeLength + 2*dRectangle_Padding)]);
-% ylim([0, nRows*(dRectangle_EdgeLength + 2*dRectangle_Padding)]);
+imshow(permute(aImg, [2, 1, 3]), 'Parent', haTarget, 'Border', 'tight');
 
 % Finally, make sure the figure is drawn
 drawnow
