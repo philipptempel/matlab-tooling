@@ -35,6 +35,10 @@ vCDBaseColors = [...
    231,  81,  18 ; ...
 ]./255;
 
+if nargin < 1 || 1 ~= exist('N', 'var') || isempty(N)
+    N = size(vCDBaseColors, 1);
+end
+
 % Count the number of base colors
 nBaseColors = size(vCDBaseColors, 1);
 % How many colors to create are left?
