@@ -11,6 +11,7 @@
 %   dispstat                    - Prints overwritable message to the command line. If you dont want to keep
 %   focus_cmdwin                - gives focus to the command window
 %   focus_editor                - gives programmatic focus to the editor
+%   git                         - A thin MATLAB wrapper for Git.
 %   humansize                   - Default decimals
 %   iif                         - Allows conditionals in inline and anonymous functions
 %   isinpath                    - Checks whether the given path is part of MATLAB's environment path

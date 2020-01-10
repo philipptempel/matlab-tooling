@@ -129,7 +129,6 @@
 
 
 ## ode/
-  * `amm`: implements a linear multistep method to solve ODEs with Adamas-Moulton method
   * `bdf`: implements a linear multistep method to solve ODEs with BDF approximation
   * `leapfrog`: implements Leapfrog integration of ODEs
   * `ode1`: Solve differential equations with a non-adaptive method of order 1.
@@ -145,8 +144,14 @@
 
 
 ## plot/
+  * `align_axislabel`: This function first rotates x, y and z labels to the direction of their 
+  * `align_axislabel_log`: This function first rotates x, y and z labels to the direction of their
   * `anim2d`: animates 2-dimensional data over time.
   * `anim3d`: animates 3-dimensional data over time.
+  * `axislabel_rotation`: This function rotates x, y and z labels to the direction of their 
+  * `axislabel_rotation_angle`: This function computes the proper angles of x, y and z labels in order to
+  * `axislabel_translation`: This function moves axis labels to a proper distance from the axes. It is
+  * `axislabel_translation_slider`: Create UI figure window and components
   * `center_cos`: centers the coordinate system at [0, 0] i.e., moves the axes
   * `circle`: draws a circle of specified radius
   * `circle3`: draws a circle in 3D
@@ -187,7 +192,7 @@
   * `zoomax`: in or out into an axes depending on the scaling factor
 
 
-## plot/exportfig/
+## plot\exportfig/
   * `append_pdfs`: Appends/concatenates multiple PDF files
   * `copyfig`: Create a copy of a figure, without changing the figure
   * `crop_borders`: Crop the borders of an image or stack of images
@@ -245,6 +250,7 @@
   * `dispstat`: Prints overwritable message to the command line. If you dont want to keep
   * `focus_cmdwin`: gives focus to the command window
   * `focus_editor`: gives programmatic focus to the editor
+  * `git`: A thin MATLAB wrapper for Git.
   * `humansize`: Default decimals
   * `iif`: Allows conditionals in inline and anonymous functions
   * `isinpath`: Checks whether the given path is part of MATLAB's environment path

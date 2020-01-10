@@ -1,7 +1,6 @@
 % ODE
 %
 % Files
-%   amm         - implements a linear multistep method to solve ODEs with Adamas-Moulton method
 %   bdf         - implements a linear multistep method to solve ODEs with BDF approximation
 %   leapfrog    - implements Leapfrog integration of ODEs
 %   ode1        - Solve differential equations with a non-adaptive method of order 1.
