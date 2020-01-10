@@ -161,7 +161,7 @@ try
         end
         
         % Write the header
-        fprintf(hFid, '## %s%s', strip(ceNamespaces{iNS}, 'left', filesep), filesep);
+        fprintf(hFid, '## %s%s', strip(ceNamespaces{iNS}, 'left', filesep), '/');
         fprintf(hFid, '%s', newline());
         
         % Get all files of this namespace

@@ -37,7 +37,6 @@
 %   semilogxy                      - plots a 3D plot with logarithmic X- and Y-axis
 %   setfigureratio                 - sets the ratio of the current or given figure
 %   shadow3                        - plots a 3D shadow3 plot of all data into the given axes onto the given
-%   untitled11                     - Experimental project
 %   usdistcolors                   - creates distinguishable colors complying with University of
 %   uslayout                       - applies the corresponding figure to University of Stuttgarts
 %   uslinestyles                   - creates a list of N unique lineseries plot styles
