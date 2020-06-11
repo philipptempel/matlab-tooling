@@ -1,5 +1,5 @@
-function p = projpath()
-% PROJPATH returns the path definiton for this project
+function p = mlt_projpath()
+% MLT_PROJPATH returns the path definiton for this project
 %
 %   Outputs:
 %
@@ -9,8 +9,12 @@ function p = projpath()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-02-28
+% Date: 2020-06-11
 % Changelog:
+%   2020-06-11
+%       * Move into `private` directory so it is only accesible from functions
+%       within this directory
+%       * Rename to `mlt_projpath`
 %   2019-02-28
 %       * Remove directory 'dae' which is not yet to be available
 %   2018-04-29
@@ -20,7 +24,7 @@ function p = projpath()
 
 %% Do your code magic here
 
-chPath = fileparts(mfilename('fullpath'));
+chPath = fullfile(fileparts(mfilename('fullpath')), '..');
 
 p = { ...
     fullfile(chPath) ...
