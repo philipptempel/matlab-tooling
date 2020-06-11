@@ -7,3 +7,6 @@
 [submodule "matlab2tikz"]
 	path = matlab2tikz
 	url = https://github.com/matlab2tikz/matlab2tikz.git
+[submodule "solarized-matlab"]
+	path = solarized-matlab
+	url = https://github.com/benhager/solarized-matlab.git
