@@ -4,3 +4,6 @@
 [submodule "jsonlab"]
 	path = jsonlab
 	url = https://github.com/fangq/jsonlab.git
+[submodule "matlab2tikz"]
+	path = matlab2tikz
+	url = https://github.com/matlab2tikz/matlab2tikz.git
