@@ -1,0 +1,260 @@
+{
+	"Simulink": {
+		"AutoSaveOptions": {
+			"SaveBackupOnVersionUpgrade": true,
+			"SaveOnModelUpdate": true
+		},
+		"EditorPathXStyle": "hop",
+		"NotifyIfLoadOldModel": "on",
+		"ErrorIfLoadNewModel": "on",
+		"ModelFileFormat": "slx",
+		"ErrorIfLoadShadowedModel": "on",
+		"EditorSmartEditing": "on",
+		"MDLFileChangedOnDiskHandling": "warning",
+		"ClipboardBackgroundColorMode": "MatchCanvas",
+		"LastSavedRelease": "R2019b",
+		"MDLFileChangedOnDiskChecks": {
+			"CheckWhenEditing": true,
+			"CheckWhenUpdating": true,
+			"CheckWhenSaving": true
+		},
+		"ExportBackgroundColorMode": "MatchCanvas",
+		"OpenLegendWhenChangingSampleTimeDisplay": "on",
+		"CallbackTracing": "off",
+		"CustomObjectClasses": {
+			"LookupTable": [
+				"Simulink.LookupTable",
+				"Simulink.Breakpoint",
+				"0"
+			],
+			"Signal": [
+				"Simulink.Signal",
+				"0"
+			],
+			"Parameter": [
+				"Simulink.Parameter",
+				"0"
+			]
+		},
+		"ToolbarVisibilities": {
+			"Print": "off",
+			"LibraryExplorer": "on",
+			"CutCopyPaste": "off",
+			"NewSave": "off",
+			"UpdateDiagram": "off",
+			"Build": "on",
+			"NewOpenSave": "on",
+			"Find": "off",
+			"Navigate": "on",
+			"ModelAdvisor": "on",
+			"UndoRedo": "off",
+			"RefreshBlocks": "off",
+			"DebugModel": "off",
+			"Input": "off",
+			"Simulation": "on"
+		},
+		"PrintBackgroundColorMode": "White",
+		"SaveSLXThumbnail": "on",
+		"EditorSmartEditingHotParam": "on",
+		"EditorContentPreviewDefaultOn": "on",
+		"EditorScrollWheelZooms": "on",
+		"CodeGenFolderStructure": "TargetEnvironmentSubfolder",
+		"EditorModernTheme": "off"
+	},
+	"mldrivetripwireaccess": {
+		"setting": 1
+	},
+	"matlab": {
+		"keyboard": {
+			"suggestions": {
+				"ShowAutomatically": 1
+			}
+		},
+		"colors": {
+			"KeywordColor": [38,138,209],
+			"SystemCommandColor": [180,136,0],
+			"SyntaxErrorColor": [219,50,47],
+			"ValidationSectionColor": [160,82,45],
+			"StringColor": [210,54,129],
+			"CommentColor": [42,160,151],
+			"UnterminatedStringColor": [202,75,22]
+		},
+		"general": {
+			"matfile": {
+				"SaveFormat": "v7.3"
+			}
+		},
+		"appdesigner": {
+			"designview": {
+				"SnapToGrid": true,
+				"GridInterval": 10,
+				"ShowResizingHints": false,
+				"ShowAlignmentHints": true,
+				"ShowGrid": false
+			},
+			"history": {
+				"MaxFileListSize": 8
+			},
+			"compbrowser": {
+				"IncludeComponentLabels": false
+			},
+			"AutoSaveOnClickAway": false
+		},
+		"editor": {
+			"export": {
+				"FigureResolution": 600,
+				"FigureFormat": "png",
+				"latex": {
+					"FigureFormat": "eps"
+				},
+				"pagesetup": {
+					"Margins": [72,72,72,72],
+					"Orientation": "Portrait",
+					"latex": {
+						"Margins": [134,125,134,120]
+					},
+					"PaperSize": "Letter",
+					"docx": {
+					},
+					"pdf": {
+						"Margins": [28,28,28,28]
+					}
+				},
+				"pdf": {
+				}
+			},
+			"ReloadFilesOnChange": true,
+			"OnlyStepInToUserFunctions": true,
+			"tab": {
+				"TabSize": 4,
+				"InsertSpaces": true,
+				"IndentSize": 4,
+				"EmacsStyle": false
+			},
+			"ReopenFilesOnRestart": true,
+			"autocoding": {
+				"SquareBrackets": true,
+				"Definitions": true,
+				"Comments": true,
+				"Parentheses": true,
+				"CurlyBraces": true,
+				"Strings": true,
+				"EnableAutoCoding": true,
+				"SplitParentheses": true,
+				"DoubleQuotes": true,
+				"ControlFlows": true,
+				"SingleQuotes": true,
+				"CharacterVectors": true
+			},
+			"autoformat": {
+				"AutomaticNumberedList": true,
+				"HashtagsForHeading": true,
+				"UnderscoreForItalicAndBold": true,
+				"SectionBreakAndHeading": true,
+				"AngleBracketsForHyperlink": true,
+				"AutomaticBulletedList": true,
+				"HashtagForTitle": true,
+				"URLToHyperlink": true,
+				"LabelURLToHyperlink": true,
+				"AsteriskForItalicAndBold": true,
+				"EnableAutoFormatting": true,
+				"SectionBreak": true,
+				"DollarSignForLatex": true,
+				"BacktickAndBarForMonospace": true,
+				"TrademarkCopyrightSymbol": true
+			},
+			"RecentFileListSize": 8,
+			"backup": {
+				"EnableFileBackup": true,
+				"DeleteOnClose": true,
+				"FileExtensionToReplace": "asv",
+				"FileExtensionToAppend": "~",
+				"SaveUntitled": true,
+				"Frequency": 5,
+				"SaveIntoSourceFolder": true
+			},
+			"OpenFileAtBreakpoint": true,
+			"language": {
+				"matlab": {
+					"EnableVariableAndFunctionRenaming": true,
+					"FunctionIndentingFormat": "MixedFunctionIndent",
+					"SmartIndentWhileTyping": "SmartIndent",
+					"comments": {
+						"WrapAutomatically": true,
+						"MaxWidth": 80,
+						"FromCommentStart": false
+					},
+					"EnableSyntaxHighlighting": true
+				}
+			},
+			"AddLineTerminationOnSave": true,
+			"UseMATLABEditor": true,
+			"AllowFigureAnimation": true,
+			"codefolding": {
+				"InitiallyFoldClassEnumerationBlocks": false,
+				"FoldSwitchCaseBlocks": false,
+				"InitiallyFoldFunctionCode": false,
+				"InitiallyFoldClassPropertiesBlocks": false,
+				"InitiallyFoldClassCode": false,
+				"FoldClassEnumerationBlocks": true,
+				"InitiallyFoldClassMethodBlocks": false,
+				"FoldIfElseBlocks": false,
+				"InitiallyFoldBlockComments": false,
+				"FoldClassEventBlocks": true,
+				"FoldClassCode": true,
+				"InitiallyFoldIfElseBlocks": false,
+				"FoldBlockComments": true,
+				"FoldTryCatchBlocks": true,
+				"InitiallyFoldSpmdBlocks": false,
+				"FoldWhileBlocks": true,
+				"InitiallyFoldSwitchCaseBlocks": false,
+				"FoldFunctionCode": true,
+				"EnableCodeFolding": true,
+				"FoldSpmdBlocks": true,
+				"FoldClassPropertiesBlocks": true,
+				"InitiallyFoldTryCatchBlocks": false,
+				"InitiallyFoldClassEventBlocks": false,
+				"FoldClassMethodBlocks": true,
+				"InitiallyFoldWhileBlocks": false,
+				"InitiallyFoldForAndParforBlocks": false,
+				"FoldForAndParforBlocks": true
+			},
+			"displaysettings": {
+				"ShowLineNumbers": true,
+				"ShowOpenAsLiveScriptBanner": true,
+				"HighlightCurrentLineColor": [237,231,212],
+				"HighlightCurrentLine": true,
+				"ShowWelcomeToLiveEditorBanner": true,
+				"DataTipsInEditMode": false,
+				"linelimit": {
+					"LineWidth": 1,
+					"LineColor": [204,204,204],
+					"ShowLine": true,
+					"LineColumn": 80
+				},
+				"LiveEditorDataTips": true
+			},
+			"SaveFilesOnClickAway": true
+		},
+		"toolboxpathcache": {
+			"EnableToolboxPathCache": true
+		},
+		"fonts": {
+			"codefont": {
+				"Size": 10,
+				"Name": "Monospaced",
+				"Style": 0
+			},
+			"editor": {
+				"codefont": {
+					"Size": 14
+				}
+			}
+		}
+	},
+	"connector": {
+		"InterfacesBlacklist": [
+			"awdl"
+		]
+	}
+}
