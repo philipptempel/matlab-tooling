@@ -1,3 +1,6 @@
 [submodule "exportfig"]
 	path = exportfig
 	url = https://github.com/altmany/export_fig.git
+[submodule "jsonlab"]
+	path = jsonlab
+	url = https://github.com/fangq/jsonlab.git
