@@ -20,13 +20,13 @@ function Files = allfiles(d, varargin)
 %
 %   Extension       Extension to match. Allows for easy filtering of all
 %       'csv' files in a given directory. Extension must be without the trailing
-%       period and also without any placeholders. Defaults to '*'.
+%       period and also without any placeholders. Defaults to '.*'.
 %
 %   Prefix          Prefix to match files against. When given, only files
-%       starting with 'Prefix' are searched and returned. Defaults to ''.
+%       starting with 'Prefix' are searched and returned. Defaults to '.*'.
 %
 %   Suffix          Suffix to match files against. When given, only files ending
-%       with 'Suffix' are searched and returned. Defaults to ''.
+%       with 'Suffix' are searched and returned. Defaults to '.*'.
 %
 %   IncludeHidden   Switch to include hidden files i.e., files starting with a
 %       '.' (period). Possible options are:
@@ -46,8 +46,13 @@ function Files = allfiles(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-11-30
+% Date: 2020-01-14
 % Changelog:
+%   2020-01-14
+%       * Change default values of `Prefix`, `Suffix`, and `Extension` to '.*'
+%       for regexp-conforming default values
+%       * Rewrite logic for creating the list of arguments for recursion into
+%       subdirectories
 %   2018-11-30
 %       * Fix incorrect creation of cell array of recursion arguments
 %   2018-08-31
@@ -89,15 +94,15 @@ ip.addRequired('Dir', valFcn_Dir);
 
 % Parameter: Extension. Char. Non-empty.
 valFcn_Extension = @(x) validateattributes(x, {'char'}, {}, mfilename, 'Extension');
-ip.addOptional('Extension', '', valFcn_Extension);
+ip.addOptional('Extension', '.*', valFcn_Extension);
 
 % Paramter: Prefix. Char. Non-empty.
 valFcn_Prefix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Prefix');
-ip.addParameter('Prefix', '', valFcn_Prefix);
+ip.addParameter('Prefix', '.*', valFcn_Prefix);
 
 % Parameter: Suffix. Char. Non-empty.
 valFcn_Suffix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Suffix');
-ip.addParameter('Suffix', '', valFcn_Suffix);
+ip.addParameter('Suffix', '.*', valFcn_Suffix);
 
 % Parameter: IncludeHidden. Char. Matches {on, yes, off, no}
 valFcn_IncludeHidden = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'IncludeHidden'));
@@ -139,9 +144,6 @@ end
 chDir = fullpath(ip.Results.Dir);
 % File extension to retrieve: char
 chExtension = ip.Results.Extension;
-if isempty(chExtension)
-    chExtension = '.*';
-end
 % File prefix: char
 chPrefix = ip.Results.Prefix;
 % File suffix: char
@@ -159,21 +161,18 @@ stFiles = dir(chDir);
 
 % Build list of arguments for recursing
 if strcmp('on', chRecurse)
-    ceArgsRecurse = { ...
-        'IncludeHidden', chIncludeHidden ...
-        , 'Recurse', 'on' ...
-    };
-    if ~isempty(chPrefix)
-        ceArgsRecurse = horzcat(ceArgsRecurse, 'Prefix', chPrefix);
-    end
-    if ~isempty(chSuffix)
-        ceArgsRecurse = horzcat(ceArgsRecurse, 'Suffix', chSuffix);
-    end
-    if ~isempty(chExtension)
-        ceArgsRecurse = horzcat(chExtension, ceArgsRecurse);
-    else
-        ceArgsRecurse = horzcat('', ceArgsRecurse);
-    end
+    % Copy methods arguments results
+    ip_results = ip.Results;
+    % Remove arguments that are marked `required` or `optional`
+    ip_results = rmfield(ip_results, 'Dir');
+    ip_results = rmfield(ip_results, 'Extension');
+    % All names of the arguments
+    arguments = fieldnames(ip_results);
+    % Build cell array for recursion
+    ceArgsRecurse = cell(1, 1 + 2 * numel(arguments));
+    ceArgsRecurse{1} = ip.Results.Extension;
+    ceArgsRecurse(2:2:end) = arguments;
+    ceArgsRecurse(3:2:end) = struct2cell(ip_results);
 end
 
 % Proceed only from here on if there were any files found
