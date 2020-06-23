@@ -1,14 +1,14 @@
-function darker = rgb_darker(rgb, factor, varargin)
-% RGB_DARKER 
+function rd = rgb2darker(r, factor, varargin)
+% RGB2DARKER 
 %
-%   RGB_DARKER(RGB, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
+%   RGB2DARKER(R, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
 %
-%   RGB_DARKER(RGB, FACTOR, 'Name', 'Value', ...) allows setting optional inputs
+%   RGB2DARKER(R, FACTOR, 'Name', 'Value', ...) allows setting optional inputs
 %   using name/value pairs.
 %
 %   Inputs:
 %
-%   RGB                 1x3 triplet of RGB values in the range of 0..1.
+%   R                   1x3 triplet of RGB values in the range of 0..1.
 %
 %   FACTOR              Factor to darken the RGB triplet to. Must be between
 %                       0 and 1. With 1, the triplet will not be darkened, with
@@ -16,14 +16,17 @@ function darker = rgb_darker(rgb, factor, varargin)
 %
 %   Outputs:
 %
-%   DARKER              1x3 array of darkened RGB values in the range of 0..1
+%   RD                  1x3 array of darkened RGB values in the range of 0..1
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-05-14
+% Date: 2020-06-23
 % Changelog:
+%   2020-06-23
+%       * Rename argument RGB to R to not collide with method `rgb`
+%       * Fix code that would actually not even work or return the correct value
 %   2018-05-14
 %       * Remove `fix` to keep original precision
 %   2017-08-01
@@ -40,8 +43,8 @@ ip = inputParser;
 
 % Required: RGB; numeric; 2d, ncols 3, non-empty, non-sparse, non-negative, <=
 % 1,
-valFcn_Rgb = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncols', 3, 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'rgb');
-addRequired(ip, 'rgb', valFcn_Rgb);
+valFcn_Rgb = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncols', 3, 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'r');
+addRequired(ip, 'r', valFcn_Rgb);
 
 % Required: factor; numeric; scalar, non-empty, non-sparse, non-negative, <= 1,
 valFcn_Factor = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'scalar', 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'factor');
@@ -57,7 +60,7 @@ ip.FunctionName = mfilename;
 
 % Parse the provided inputs
 try
-    args = [{rgb}, {factor}, varargin];
+    args = [{r}, {factor}, varargin];
     
     parse(ip, args{:});
 catch me
@@ -79,11 +82,11 @@ chAsInteger = parseswitcharg(ip.Results.AsInteger);
 %% Do your code magic here
 
 % Turn the RGB value darker
-darker = aRgb.*(1 - dFactor);
+rd = aRgb.*(1 - dFactor);
 
 % Turn floats into integers as requested by the user
 if strcmp(chAsInteger, 'on')
-    lighter = round(lighter.*255);
+    rd = round(rd.*255);
 end
 
 

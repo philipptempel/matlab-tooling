@@ -79,25 +79,25 @@ function colors = distinguishableColors(n_colors,bg,func)
   n_grid = 30;  % number of grid divisions along each axis in RGB space
   x = linspace(0,1,n_grid);
   [R,G,B] = ndgrid(x,x,x);
-  rgb = [R(:) G(:) B(:)];
-  if (n_colors > size(rgb,1)/3)
+  rgb_ = [R(:) G(:) B(:)];
+  if (n_colors > size(rgb_,1)/3)
     error('You can''t readily distinguish that many colors');
   end
   
   % Convert to Lab color space, which more closely represents human
   % perception
   if (nargin > 2)
-    lab = func(rgb);
+    lab = func(rgb_);
     bglab = func(bg);
   else
     C = makecform('srgb2lab');
-    lab = applycform(rgb,C);
+    lab = applycform(rgb_,C);
     bglab = applycform(bg,C);
   end
 
   % If the user specified multiple background colors, compute distances
   % from the candidate colors to the background colors
-  mindist2 = inf(size(rgb,1),1);
+  mindist2 = inf(size(rgb_,1),1);
   for i = 1:size(bglab,1)-1
     dX = bsxfun(@minus,lab,bglab(i,:)); % displacement all colors from bg
     dist2 = sum(dX.^2,2);  % square distance
@@ -113,7 +113,7 @@ function colors = distinguishableColors(n_colors,bg,func)
     dist2 = sum(dX.^2,2);  % square distance
     mindist2 = min(dist2,mindist2);  % dist2 to closest previously-chosen color
     [~,index] = max(mindist2);  % find the entry farthest from all previously-chosen colors
-    colors(i,:) = rgb(index,:);  % save for output
+    colors(i,:) = rgb_(index,:);  % save for output
     lastlab = lab(index,:);  % prepare for next iteration
   end
 end

@@ -1,21 +1,23 @@
-function rgb = cmyk2rgb(cmyk)
+function r = cmyk2rgb(c)
 %% CMYK2RGB convert CMYK colors to RGB colors
 %
 %   Inputs:
 %
-%   CMYK                Nx4 array of corresponding CMYK values
+%   C                   Nx4 array of corresponding CMYK values
 %
 %   Outputs:
 %
-%   RGB                 Nx3 array of RGB values.
+%   R                   Nx3 array of RGB values.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
 % See: http://mooring.ucsd.edu/software/matlab/doc/toolbox/graphics/color/CMYK2RGB.html
-% Date: 2018-11-23
+% Date: 2020-06-23
 % Changelog:
+%   2020-06-23
+%       * Rename argument RGB to R to not collide with method `rgb`
 %   2018-11-23
 %       * Initial release
 
@@ -23,39 +25,39 @@ function rgb = cmyk2rgb(cmyk)
 
 %% Validate arguments
 
-% CMYK2RGB(CMYK)
+% CMYK2RGB(C)
 narginchk(1, 1);
 
-% CMYK2RGB(CMYK)
-% RGB = CMYK2RGB(CMYK);
+% CMYK2RGB(C)
+% R = CMYK2RGB(C);
 nargoutchk(0, 1);
 
 % Validate
-validateattributes(cmyk, {'numeric'}, {'nonempty', 'ncols', 4, 'finite', 'nonnegative', '<=', 100}, mfilename, 'cmyk');
+validateattributes(c, {'numeric'}, {'nonempty', 'ncols', 4, 'finite', 'nonnegative', '<=', 100}, mfilename, 'c');
 
 
 
 %% Conversion
 
 % Check if input was uint8
-lonorm = any(cmyk > 1);
+lonorm = any(c > 1);
 
 % Get class of original input data
-ccmyk = class(cmyk);
+cc = class(c);
 
 % Convert to doubles
-cmyk = double(cmyk);
+c = double(c);
 
 % Normalize CMYK to [0, 1]
 if lonorm
-   cmyk = cmyk/100;
+   c = c/100;
 end
 
 % Conversion
-rgb = ( 1 - cmyk(:,[1,2,3]) ) .* ( 1 - cmyk(:,4) );
+r = ( 1 - c(:,[1,2,3]) ) .* ( 1 - c(:,4) );
 
 % Typecast back into the original data type
-rgb = cast(rgb, ccmyk);
+r = cast(r, cc);
 
 
 end
