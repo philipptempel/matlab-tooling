@@ -24,12 +24,14 @@ function startup()
 
 
 
-%% Set time zone
-setenv('TZ','Europe/Zurich');
+%% Bootstrap
+chBase = fullfile(fileparts(mfilename('fullpath')));
 
 
 
-%% Update MATLAB paths
+%% Early level configuration
+% Set time zone
+setenv('TZ','Europe/Zurich');   
 % Get path's to add to MATLAB's search path
 p = mlt_projpath();
 % and add the paths
@@ -39,12 +41,12 @@ addpath(p{:});
 
 %% Configure MATLAB diaries
 % Make sure we have a directory for our diaries
-if 7 ~= exist(fullfile(chFilepath, 'diaries'), 'dir')
-    mkdir(fullfile(chFilepath, 'diaries'));
+if 7 ~= exist(fullfile(chBase, 'diaries'), 'dir')
+    mkdir(fullfile(chBase, 'diaries'));
 end
 
 % Set the diary filename
-diary(fullfile(chFilepath, 'diaries', sprintf('%s.txt', datestr(now, 'yyyy-mm-dd'))));
+diary(fullfile(chBase, 'diaries', sprintf('%s.txt', datestr(now, 'yyyy-mm-dd'))));
 
 
 
@@ -138,7 +140,7 @@ dbstop('if', 'error')
 
 %% Lastly, load the most recent workspace
 % Get all mat files in the subdirectory
-stFiles = dir(fullfile(chFilepath, 'workspace', 'ws_*.mat'));
+stFiles = dir(fullfile(chBase, 'workspace', 'ws_*.mat'));
 
 % If we have found some files
 if numel(stFiles) > 0

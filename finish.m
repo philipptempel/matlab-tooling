@@ -15,6 +15,18 @@ function finish()
 %% Do your code magic here
 
 
+% Where to save the current workspace to
+chWorkspacePath = fullfile(fileparts(mfilename('fullpath')), 'workspace');
+
+% Make sure we have a directory for our workspace files
+if 7 ~= exist(chWorkspacePath, 'dir')
+    mkdir(chWorkspacePath);
+end
+
+% Save the current workspace to a file in this file's directory
+evalin('base', sprintf('save(''%s'');', fullfile(chWorkspacePath, sprintf('ws_%s.mat', datestr(now, 'yyyymmddThhMMss')))));
+
+
 end
 
 %------------- END OF CODE --------------
