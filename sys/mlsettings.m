@@ -9,8 +9,10 @@ function mlsettings(action, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-11-25
+% Date: 2020-06-23
 % Changelog:
+%   2020-06-23
+%       * Add `narginchk` and `nargoutchk`
 %   2019-11-25
 %       * Initial release
 
@@ -18,6 +20,12 @@ function mlsettings(action, varargin)
 
 %% Define the input parser
 ip = inputParser;
+
+% MLSETTINGS(ACTION)
+narginchk(1, 1);
+
+% MLSETTINGS(ACTION)
+nargoutchk(0, 0);
 
 % Require: Filename
 valFcn_Action = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'action');
@@ -33,7 +41,7 @@ try
     
     parse(ip, args{:});
 catch me
-    throw(MException(me.identifier, me.message));
+    throwAsCaller(MException(me.identifier, me.message));
 end
 
 
