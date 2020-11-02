@@ -46,8 +46,10 @@ function funcnew(Name, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-11-18
+% Date: 2020-11-02
 % Changelog:
+%   2020-11-02
+%       * Change domain name in default value for `Author` to `ls2n.fr`
 %   2018-11-18
 %       * Fix typo in help lines
 %   2018-05-14
@@ -118,7 +120,7 @@ addOptional(ip, 'ArgOut', {}, valFcn_ArgOut);
 
 % Author: Char. Non-empty
 valFcn_Author = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Author');
-addParameter(ip, 'Author', 'Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>', valFcn_Author);
+addParameter(ip, 'Author', 'Philipp Tempel <philipp.tempel@ls2n.fr>', valFcn_Author);
 
 % Description: Char. Non-empty
 valFcn_Description = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Description');
