@@ -21,8 +21,11 @@ function [obj, args, nargs] = objectcheck(oc, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-10-17
+% Date: 2020-11-05
 % Changelog:
+%   2020-11-05
+%       * Fix bug where the class object would not be returned if it wasn't the
+%       first argument in `varargin`
 %   2018-10-17
 %       * Update to support passing an object as first argument instead of a
 %       class name
@@ -80,7 +83,7 @@ if nargs > 0
   if ~isempty(inds)
     pind = inds(end);
     
-    if nargs > pind && isa(args{pind}, oc)
+    if nargs >= pind && isa(args{pind}, oc)
       obj = args{pind};
       args(inds) = [];
       nargs = length(args);
