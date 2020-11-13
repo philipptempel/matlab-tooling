@@ -1,17 +1,17 @@
 function funcnew(Name, varargin)
 %% FUNCNEW creates a new function file based on a template
 %
-%   FUNCNEW(NAME) creates function NAME into a new file at the specified
-%   target. It will not have any input or return arguments pre-defined.
+% FUNCNEW(NAME) creates function NAME into a new file at the specified target.
+% It will not have any input or return arguments pre-defined.
 %
-%   FUNCNEW(NAME, ARGIN) also adds the list of input arguments defined in
-%   ARGIN to the function declaration.
+% FUNCNEW(NAME, ARGIN) also adds the list of input arguments defined in ARGIN to
+% the function declaration.
 %
-%   FUNCNEW(NAME, ARGIN, ARGOUT) creates function NAME into a new file at
-%   the specified target. The cell array ARGIN and ARGOUT define the argument
-%   input and argument output names.
+% FUNCNEW(NAME, ARGIN, ARGOUT) creates function NAME into a new file at the
+% specified target. The cell array ARGIN and ARGOUT define the argument input
+% and argument output names.
 %
-%   Inputs:
+% Inputs:
 %
 %   NAME:               Name of the function. Can also be a fully qualified file
 %                       name from which the function name will then be
@@ -28,7 +28,7 @@ function funcnew(Name, varargin)
 %                       variable name occuring after 'varargout' will be
 %                       striped.
 %
-%   Optional Inputs -- specified as parameter value pairs
+% Optional Inputs -- specified as parameter value pairs
 %
 %   Author          Author string to be set. Most preferable you'd use something
 %                   like
@@ -46,8 +46,10 @@ function funcnew(Name, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-11-02
+% Date: 2020-11-12
 % Changelog:
+%   2020-11-12
+%       * Fix indentation of 'Inputs:' and 'Outputs:' in generated code
 %   2020-11-02
 %       * Change domain name in default value for `Author` to `ls2n.fr`
 %   2018-11-18
@@ -384,12 +386,12 @@ end
         
         % Append list of input arguments?
         if ~isempty(ceArgIn_List)
-            chDesc = sprintf('%s\n%%\n%%   Inputs:\n%%\n%s', chDesc, strjoin(ceArgIn_List, '\n%\n'));
+            chDesc = sprintf('%s\n%%\n%% Inputs:\n%%\n%s', chDesc, strjoin(ceArgIn_List, '\n%\n'));
         end
         
         % Append list of output arguments?
         if ~isempty(ceArgOut_List)
-            chDesc = sprintf('%s\n%%\n%%   Outputs:\n%%\n%s', chDesc, strjoin(ceArgOut_List, '\n%\n'));
+            chDesc = sprintf('%s\n%%\n%% Outputs:\n%%\n%s', chDesc, strjoin(ceArgOut_List, '\n%\n'));
         end
     end
 
