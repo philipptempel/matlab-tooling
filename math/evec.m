@@ -1,5 +1,5 @@
-function vec = evec(Coordinate)%#codegen
+function vec = evec(coord)%#codegen
 
-vec = evecn(Coordinate, 2);
+vec = evecn(2, coord);
 
 end
