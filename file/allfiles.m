@@ -46,8 +46,11 @@ function Files = allfiles(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-01-14
+% Date: 2020-11-17
 % Changelog:
+%   2020-11-17
+%       * Change bug that would stop function from recursing into package
+%       directories
 %   2020-01-14
 %       * Change default values of `Prefix`, `Suffix`, and `Extension` to '.*'
 %       for regexp-conforming default values
@@ -178,12 +181,12 @@ end
 % Proceed only from here on if there were any files found
 if ~isempty(stFiles)
     % Remove the system entries '.' and '..'
-    stFiles(ismember({stFiles(:).name}, {'.', '..'})) = [];
+    stFiles(ismember({stFiles.name}, {'.', '..'})) = [];
     
     % Do we need to filter the system files like '.' and '..'?
     if strcmpi('off', chIncludeHidden)
         % Remove all directories from the found items
-        stFiles(1 == cell2mat(regexp({stFiles(:).name}, '^\..*'))) = [];
+        stFiles(startsWith({stFiles.name}, '.')) = [];
     end
     
     % Logically index directories
@@ -205,7 +208,7 @@ if ~isempty(stFiles)
     stFiles([stFiles.isdir]) = [];
     
     % And now filter the files that do not match the requested pattern
-    stFiles(cellfun(@isempty, regexp({stFiles(:).name}, ['^' , chPrefix , '.*' , chSuffix , '\.' , chExtension , '$'], 'match', 'once'))) = [];
+    stFiles(cellfun(@isempty, regexp({stFiles.name}, ['^' , chPrefix , '.*' , chSuffix , '\.' , chExtension , '$'], 'match', 'once'))) = [];
 end
 
 
