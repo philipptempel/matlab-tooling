@@ -1,4 +1,4 @@
-function fcname = funcname(plain)
+function fcname = funcname(plain)%!codegen
 % FUNCNAME returns the current function's name
 %
 %   FUNCNAME() returns the name of the currently executing function i.e.,
