@@ -43,6 +43,9 @@ clear('variables');
 % to ```clear variables```
 clear('global')
 
+% Clear all memoized function caches
+clearAllMemoizedCaches();
+
 % Lastly, we will stop all timers that may still be running in the backgroudn
 try
     stopalltimers
