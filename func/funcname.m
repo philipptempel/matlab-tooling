@@ -1,4 +1,4 @@
-function fcname = funcname(plain)%!codegen
+function fcname = funcname(plain)%#codegen
 % FUNCNAME returns the current function's name
 %
 %   FUNCNAME() returns the name of the currently executing function i.e.,
@@ -25,8 +25,10 @@ function fcname = funcname(plain)%!codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-12-01
+% Date: 2020-12-02
 % Changelog:
+%   2020-12-02
+%       * Update to make it codegen-compatible
 %   2017-12-01
 %       * Initial release
 
@@ -34,21 +36,23 @@ function fcname = funcname(plain)%!codegen
 
 %% Check arguments
 
-try
-  narginchk(0, 1);
-  nargoutchk(0, 1);
-  
-  if nargin < 1 || isempty(plain) || 1 ~= exist('plain', 'var')
+narginchk(0, 1);
+nargoutchk(0, 1);
+
+if nargin < 1 || isempty(plain)
+  plain = 'off';
+elseif nargin > 0 && islogical(plain)
+  if plain
+    plain = 'on';
+  else
     plain = 'off';
   end
-  
-  validateattributes(plain, {'char', 'logical'}, {'nonempty'}, mfilename, 'noclass');
-  
-  % Convert the given switch argument into standard 'on'/'off' form
-  chPlain = parseswitcharg(plain);
-catch me
-  throwAsCaller(me);
 end
+
+validateattributes(plain, {'char', 'logical'}, {'nonempty'}, mfilename(), 'plain');
+
+% Convert the given switch argument into standard 'on'/'off' form
+chPlain = parseswitcharg(plain);
 
 
 
