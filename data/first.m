@@ -1,4 +1,4 @@
-function f = first(mixed)
+function f = first(mixed, off)
 % FIRST gets the first element of the given argument
 %
 %   Inputs:
@@ -10,6 +10,8 @@ function f = first(mixed)
 %                         double: last(mixed) => mixed(end)
 %                         cell:   last(cell) => cell{end}
 %
+%   OFF                 Offset from start to retrieve. Defaults to 0.
+%
 %   Outputs:
 %
 %   F                   The first item in the given arguument
@@ -18,19 +20,38 @@ function f = first(mixed)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-03-18
+% Date: 2020-11-20
 % Changelog:
+%   2020-11-20
+%     * Add support for an offset to retrieve (last - offset)-th item.
 %   2019-03-18
 %     * Initial release
+
+
+
+%% Parse arguments
+
+% FIRST(MIXED)
+% FIRST(MIXED, OFF)
+narginchk(1, 2);
+
+% FIRST(...)
+% L = FIRST(...)
+nargoutchk(0,  1);
+
+% Determine offset
+if nargin < 2 || isempty(off)
+  off = 0;
+end
 
 
 
 %% Do your code magic here
 switch class(mixed)
   case 'double'
-    f = mixed(1);
+    f = mixed(1 + off);
   case 'cell'
-    f = mixed{1};
+    f = mixed{1 + off};
   otherwise
     f = builtin('first', mixed);
 end

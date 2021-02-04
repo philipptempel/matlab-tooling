@@ -1,4 +1,4 @@
-function l = last(mixed)
+function l = last(mixed, off)
 % LAST gets the last element of the given argument
 %
 %   Inputs:
@@ -10,6 +10,8 @@ function l = last(mixed)
 %                         double: last(mixed) => mixed(end)
 %                         cell:   last(cell) => cell{end}
 %
+%   OFF                 Offset from end to retrieve. Defaults to 0.
+%
 %   Outputs:
 %
 %   L                   The last item in the given arguument
@@ -18,8 +20,10 @@ function l = last(mixed)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-03-18
+% Date: 2020-11-20
 % Changelog:
+%   2020-11-20
+%     * Add support for an offset to retrieve (last - offset)-th item.
 %   2019-03-18
 %     * Update to use `BUILTIN` when an unsupported data type is passed as input
 %     argument.
@@ -28,12 +32,30 @@ function l = last(mixed)
 
 
 
-%% Do your code magic here
+%% Parse arguments
+
+% LAST(MIXED)
+% LAST(MIXED, OFF)
+narginchk(1, 2);
+
+% LAST(...)
+% L = LAST(...)
+nargoutchk(0,  1);
+
+% Determine offset
+if nargin < 2 || isempty(off)
+  off = 0;
+end
+
+
+
+%% Retrieve last element based on its class
+
 switch class(mixed)
   case 'double'
-    l = mixed(end);
+    l = mixed(end - off);
   case 'cell'
-    l = mixed{end};
+    l = mixed{end - off};
   otherwise
     l = builtin('last', mixed);
 end
