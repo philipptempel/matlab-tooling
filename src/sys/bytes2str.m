@@ -1,23 +1,26 @@
 function s = bytes2str(b, varargin)
-% BYTES2STR turns the number of bytes into a human readable string
+%% BYTES2STR turns the number of bytes into a human readable string
 %
-%   Inputs:
+% Inputs:
 %
-%   B                   MxN numeric array of bytes to translate.
+%   B               MxN numeric array of bytes to translate.
 %
-%   Outputs:
+% Outputs:
 %
-%   S                   MxN char array representing bytes B in the lowest human
-%                       readable scale.
+%   S               MxN char array representing bytes B in the lowest human
+%                   readable scale.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-02-06
+% Date: 2021-02-11
 % Changelog:
+%   2021-02-11
+%     * Update return value to return a single char array if a single value of
+%     bytes was passed
 %   2018-02-06
-%       * Initial release
+%     * Initial release
 
 
 
@@ -38,30 +41,37 @@ ip.FunctionName = mfilename;
 
 % Parse the provided inputs
 try
-    % BYTES2STR(B)
-    % BYTES2STR(B, 'Name', 'Value', ...)
-    narginchk(1, Inf);
-    % BYTES2STR(B)
-    % S = BYTES2STR(B)
-    nargoutchk(0, 1);
-    
-    args = [{b}, varargin];
-    
-    parse(ip, args{:});
+  % BYTES2STR(B)
+  % BYTES2STR(B, 'Name', 'Value', ...)
+  narginchk(1, Inf);
+  % BYTES2STR(B)
+  % S = BYTES2STR(B)
+  nargoutchk(0, 1);
+  
+  args = [{b}, varargin];
+  
+  parse(ip, args{:});
+  
 catch me
-    throwAsCaller(me);
+  throwAsCaller(me);
+  
 end
 
 
 
 %% Parse IP results
 % The vector of bytes to convert
-vBytes = ip.Results.Bytes;
+byts = ip.Results.Bytes;
 % The format to use for each byte
-chFormat = ip.Results.Format;
+fmt = ip.Results.Format;
 
 % Run over each element of B and convert it
-s = arrayfun(@(bb) in_parsebytes(bb, chFormat), vBytes, 'UniformOutput', false);
+s = arrayfun(@(bb) in_parsebytes(bb, fmt), byts, 'UniformOutput', false);
+
+% Single argument?
+if numel(byts) == 1
+  s = s{1};
+end
 
 
 
@@ -69,28 +79,35 @@ end
 
 
 function s = in_parsebytes(b, fmt)
+%% IN_PARSEBYTES 
+%
+% IN_PARSEBYTES() Parse a single byte string into the appropriate format.
+%
+% Inputs:
+%
+%    B              Scalar byte value.
+%
+% Outputs:
+%
+%    FMT            Format to `sprintf` bytes into.
+%
+% See also:
 
 % Get the scaling factor
-dScale = floor(log(b)./log(1024));
+scale = floor(log(b)./log(1024));
 
-% Switch on that scale
-switch dScale
-    case 0
-        s = [sprintf('%.0f', b) ' b'];
-    case 1
-        s = [sprintf(fmt, b./(1024)) ' kb'];
-    case 2
-        s = [sprintf(fmt, b./(1024^2)) ' Mb'];
-    case 3
-        s = [sprintf(fmt, b./(1024^3)) ' Gb'];
-    case 4
-        s = [sprintf(fmt, b./(1024^4)) ' Tb'];
-    case -inf
-        % Size occasionally returned as zero (eg some Java objects).
-        s = 'Not Available';
-    otherwise
-       s = 'Over a petabyte!!!';
+decimals = 1024 .^ [  0,    1,    2,    3,    4,    5,    6,    7,    8];
+metric =           {'b', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'};
+
+if scale == -Inf
+  s = 'n/a';
+  
+else
+  scale = min(scale + 1, numel(decimals));
+  s = sprintf('%s %s', sprintf(fmt, b ./ decimals(scale)), metric{scale});
+  
 end
+
 
 end
 
