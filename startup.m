@@ -131,7 +131,7 @@ warning('on', 'backtrace');
 dbclear('all');
 
 % Tell debugger to stop if errors emerge
-dbstop('if', 'error')
+% dbstop('if', 'error')
 
 % Tell debugger to stop if we try/catch an error
 % dbstop if caught error
