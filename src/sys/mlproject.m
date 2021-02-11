@@ -1,10 +1,18 @@
-function d = mlproject(pfn)
+function d = mlproject(pfn, from)
 %% MLPROJECT Locate the MATLAB project directory in the parent directories.
+%
+% MLPROJECT()
+%
+% MLPROJECT(PFN)
+%
+% MLPROJECT(PFN, FROM)
 %
 % Inputs:
 %
 %   PFNAME              Name of the MATLAB project file to look for. Defaults to
 %                       '.mlproject'.
+%
+%   FROM                Directory to start searching from.
 %
 % Outputs:
 %
@@ -15,8 +23,11 @@ function d = mlproject(pfn)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-02-05
+% Date: 2021-02-09
 % Changelog:
+%   2021-02-09
+%       * Add parameter `FROM` to start searching from a user-defined base
+%       directory.
 %   2021-02-05
 %       * Initial release
 
@@ -26,7 +37,8 @@ function d = mlproject(pfn)
 
 % MLPROJECT()
 % MLPROJECT(PFNAME)
-narginchk(0, 1);
+% MLPROJECT(PFNAME, FROM)
+narginchk(0, 2);
 
 % MLPROJECT(...)
 % D = MLPROJECT(...)
@@ -41,29 +53,37 @@ end
 
 %% Find directory
 
-% First, we will check if the function was called from a script/function or from
-% within the base command window
-stStack = dbstack(1);
+% MLPROPJECT()
+% MLPROPJECT(PFNAME)
+if nargin < 2 || isempty(from)
+  % First, we will check if the function was called from a script/function or from
+  % within the base command window
+  stStack = dbstack(1);
 
-% If stack is not empty and has field 'name' ...
-if ~isempty(stStack) && isfield(stStack, 'name')
-    % That's our function mame
-    callingFunc = stStack(1).name;
+  % If stack is not empty and has field 'name' ...
+  if ~isempty(stStack) && isfield(stStack, 'name')
+      % That's our function mame
+      callingFunc = stStack(1).name;
 
-% No stack, so called from within base
+  % No stack, so called from within base
+  else
+      callingFunc = 'base';
+
+  end
+
+  % Called in base workspace
+  if strcmp(callingFunc, 'base')
+    d = pwd();
+
+  % Called from within a function/script, so we will locate that file using its
+  % filename (stored in `callingFunc`) and the file locator `which`.
+  else
+    d = fileparts(which(callingFunc));
+
+  end
+% User provided a start directory to search from
 else
-    callingFunc = 'base';
-
-end
-
-% Called in base workspace
-if strcmp(callingFunc, 'base')
-  d = pwd();
-  
-% Called from within a function/script, so we will locate that file using its
-% filename (stored in `callingFunc`) and the file locator `which`.
-else
-  d = fileparts(which(callingFunc));
+  d = from;
   
 end
 
