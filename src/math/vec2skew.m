@@ -35,35 +35,53 @@ function skew = vec2skew(vec)%#codegen
 
 
 %% Input parsing
-% Gotta have doubles
-assert(isa(vec, 'double') || isa(vec, 'sym'), 'Input must be double or symbolic.');
-% Gotta have at least three elements inside VEC
-assert(size(vec, 2) == 3, 'Input must have three columns.');
+
+% VEC2SKEW(V)
+narginchk(1, 1);
+% VEC2SKEW(V)
+% S = VEC2SKEW(V)
+nargoutchk(0, 1);
 
 
 
 %% Process inputs
-% Get all vectors for wich to get the skew-symmetric matrix
-aVectors = transpose(vec);
+
+% Turn row vector into column vector
+if isrow(vec)
+  vec = permute(vec, [2, 1]);
+end
+
+% Dimensionality of vector
+ndim = size(vec, 1);
+
 % Number of vectors == columns of aVectors
-nVectors = size(aVectors, 2);
+nv = size(vec, 2);
+
 % Reshape the vector in the depth dimension
-aVectors2 = reshape(aVectors, [3, 1, nVectors]);
+vec3 = reshape(vec, [ndim, 1, nv]);
 
-% Quicker access to important parts
-s = zeros(1, 1, nVectors);
-x = aVectors2(1,1,:);
-y = aVectors2(2,1,:);
-z = aVectors2(3,1,:);
+% Vector in R3
+if ndim == 3
+  % Quicker access to important parts
+  s = zeros(1, 1, nv);
+  x = vec3(1,1,:);
+  y = vec3(2,1,:);
+  z = vec3(3,1,:);
 
+  % Explicitly define concatenation dimension for codegen
+  tempS = cat(1, s, -z, y, z, s, -x, -y, x, s);
+  skew = permute(reshape(tempS, [3, 3, nv]), [2, 1, 3]);
 
-
-%% Magic (copied from quat2rotm)
-
-% Explicitly define concatenation dimension for codegen
-tempS = cat(1, s, -z, y, z, s, -x, -y, x, s);
-skew = reshape(tempS, [3, 3, nVectors]);
-skew = permute(skew, [2, 1, 3]);
+% Vector in R2
+else
+  x = vec3(1,1,:);
+  y = vec3(2,1,:);
+  
+  % Explicitly define concatenation dimension for codegen
+  tempS = cat(1, -y, x);
+  skew = permute(reshape(tempS, [3, 3, nv]), [2, 1, 3]);
+  
+end
 
 
 end
