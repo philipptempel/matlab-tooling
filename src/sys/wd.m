@@ -1,34 +1,34 @@
 function varargout = wd(varargin)
 %% WD MATLAB implementation of `warpdirectory`
+%
+% WD('add') adds current working directory to your warp points.
+% WD('add', POINT) adds directory POINT to your warp points.
+%
+% WD('rm') removes warp point of the current working directory.
+% WD('rm', POINT) removes warp point POINT.
+%
+% WD('list') prints all stored warp points
+%
+% WD('ls', POINT) show files from a given warp point.
+%
+% WD('path', POINT) show path to a given warp point.
+%
+% WD('clean') remove warp points warping to nonexistent directories
+%
+% WD(POINT) warp to the warp point specified
+% WD(POINT, PATH, ...) warp to the warp point specified and its relative
+% subdirectoy/subdirectoires under PATH
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-23
+% Date: 2021-03-17
 % Changelog:
+%   2021-03-17
+%       * Update H1 documentation
 %   2020-11-23
 %       * Initial release
-
-
-
-%% Do your code magic here
-
-%{
-
-Commands:
-    <point>         Warps to the directory specified by the warp point
-    <point> <path>  Warps to the directory specified by the warp point with path appended
-    add <point>     Adds the current working directory to your warp points
-    add             Adds the current working directory to your warp points with current directory's name
-    rm <point>      Removes the given warp point
-    rm              Removes the given warp point with current directory's name
-    list            Print all stored warp points
-    ls  <point>     Show files from given warp point (ls)
-    path <point>    Show the path to given warp point (pwd)
-    clean           Remove points warping to nonexistent directories (will prompt unless --force is used)
-
-%}
 
 
 %% Parse arguments
@@ -38,9 +38,11 @@ nargoutchk(0, 1);
 
 if nargin == 0
   action = 'list';
+  
 else
   action = varargin{1};
   varargin(1) = [];
+  
 end
 
 switch action
@@ -225,20 +227,20 @@ wd_save_rc(rc);
 end
 
 
-function wd_show(point)
-%% WD_SHOW
-%
-% WD_SHOW()
-%
-% WD_SHOW(POINT)
-
-
-% WD_SHOW()
-% WD_SHOW(POINT)
-narginchk(0, 1);
-nargoutchk(0, 0);
-
-end
+% function wd_show(point)
+% %% WD_SHOW
+% %
+% % WD_SHOW()
+% %
+% % WD_SHOW(POINT)
+% 
+% 
+% % WD_SHOW()
+% % WD_SHOW(POINT)
+% narginchk(0, 1);
+% nargoutchk(0, 0);
+% 
+% end
 
 
 function wd_list()
