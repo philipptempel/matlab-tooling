@@ -50,11 +50,11 @@ ip = inputParser;
 
 % Required: Progress; cell; non-empty
 valFcn_Progress = @(x) validateattributes(x, {'numeric'}, {'nonempty', 'scalar', 'finite', 'nonnegative', '<=', 1, 'nonsparse', 'nonnan'}, mfilename, 'X');
-ip.addRequired('X', valFcn_Progress);
+addRequired(ip, 'X', valFcn_Progress);
 
 % Optional: message; char; non-empty
 valFcn_Message = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Message');
-ip.addOptional('Message', '', valFcn_Message);
+addOptional(ip, 'Message', '', valFcn_Message);
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
