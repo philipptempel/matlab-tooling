@@ -43,8 +43,9 @@ dc = d;
 
 % If the path given resolves to a file, we will need to make sure we are
 % actually dealing with only a directory
-if 2 == exist(dc, 'file')
-  dc = fileparts(dc);
+[fdir, fname, fext] = fileparts(dc);
+if ~isempty(fext)
+  dc = fdir;
 end
 
 % If the directory does not exist, create it
