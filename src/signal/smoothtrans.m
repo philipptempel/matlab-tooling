@@ -1,4 +1,4 @@
-function y = smoothtrans(x, in)
+function y = smoothtrans(x, in)%#codegen
 %% SMOOTHTRANS Evaluate a smooth transition function at value X
 %
 %   Y = SMOOTHTRANS(X) evaluates a smooth transition function from -1 to 1s
@@ -35,7 +35,7 @@ function y = smoothtrans(x, in)
 
 %% Validate arguments
 
-try
+% try
   narginchk(1, Inf);
   nargoutchk(0, 1);
   
@@ -45,17 +45,21 @@ try
   end
   
   % Make sure a vector interval is going to be a column vector
-  if isvector(in) && isrow(in)
-    in = in(:);
+  if isrow(in)
+    inc = in(:);
+  
+  else
+    inc = in;
+    
   end
   
-  validateattributes(x, {'numeric'}, {'vector', 'nonempty', 'nondecreasing', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'x');
+%   validateattributes(x, {'numeric'}, {'vector', 'nonempty', 'nondecreasing', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'x');
+%   
+%   validateattributes(in, {'numeric'}, {'2d', 'nonempty', 'nrows', 2, 'nondecreasing', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'in');
   
-  validateattributes(in, {'numeric'}, {'2d', 'nonempty', 'nrows', 2, 'nondecreasing', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'in');
-  
-catch me
-  throwAsCaller(me);
-end
+% catch me
+%   throwAsCaller(me);
+% end
 
   
 
@@ -65,7 +69,7 @@ end
 x = x(:); 
 
 % Adjust path coordinate to match original interval [0,1]
-x_ = (x - in(1,:)) ./ ( in(2,:) - in(1,:) );
+x_ = (x - inc(1,:)) ./ ( inc(2,:) - inc(1,:) );
 
 % Evaluate
 y = h(x_) ./ ( h(x_) + h(1 - x_) );
