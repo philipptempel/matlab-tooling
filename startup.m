@@ -1,5 +1,5 @@
 function startup()
-% STARTUP starts this project
+%% STARTUP starts this project
 
 
 
@@ -40,13 +40,9 @@ addpath(p{:});
 
 
 %% Configure MATLAB diaries
-% Make sure we have a directory for our diaries
-if 7 ~= exist(fullfile(chBase, 'diaries'), 'dir')
-    mkdir(fullfile(chBase, 'diaries'));
-end
 
 % Set the diary filename
-diary(fullfile(chBase, 'diaries', sprintf('%s.txt', datestr(now, 'yyyy-mm-dd'))));
+diary(ensuredir(diaryfile()));
 
 
 
