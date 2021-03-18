@@ -1,42 +1,47 @@
-function [Box, Traversal] = bbox3(X, Y, Z, varargin)
+function [bx, trav] = bbox3(X, Y, Z)%#codegen
 % BBOX3 Calculates the 3D bounding box for the given points
 %  
-%   BOX = BBOX3(X, Y, Z) calculates the bounding box for the given points in X,
-%   Y, Z position and returns a matrix of size 3x8 where each column is one of
-%   the bounding box' corners.
-%   Basically, what BBOX3 does is take all the mins and max' from the values of
-%   X, Y, and Z and assigns them properly into box.
+% BOX = BBOX3(X, Y, Z) calculates the bounding box for the given points in X,
+% Y, Z position and returns a matrix of size 3x8 where each column is one of
+% the bounding box' corners.
+% Basically, what BBOX3 does is take all the mins and max' from the values of
+% X, Y, and Z and assigns them properly into box.
 %
-%   BOX = BBOX3(MATRIX) extracts the X, Y, and Z data from the Nx3 matrix MATRIX
-%   and then gets the bounding box on these values.
+% BOX = BBOX3(MATRIX) extracts the X, Y, and Z data from the Nx3 matrix MATRIX
+% and then gets the bounding box on these values.
 %
-%   [BOX, TRAVERSAL] = BBOX3(X, Y, Z) also returns the array of traversals which
-%   relates to the corners of BOX to get a full patch.
+% [BOX, TRAVERSAL] = BBOX3(X, Y, Z) also returns the array of traversals which
+% relates to the corners of BOX to get a full patch.
 %
 %   
-%   Inputs:
+% Inputs:
 %   
-%   X: Vector or matrix of points on the YZ-plane
+%   X                 Nx1 vector or Nx3 matrix of points on the YZ-plane
 %   
-%   Y: Vector or matrix of points on the XZ-plane
+%   Y                 Nx1 Vector of points on the XZ-plane
 %
-%   Z: Vector or matrix of points on the XY-plane
+%   Z                 Nx1 vector of points on the XY-plane
 %
-%   Outputs:
+% Outputs:
 %
-%   BOX: Matrix of 3x8 entries that correspond the corners of the bounding box
-%   with their relation as given in the second output parameter TRAVERSAL
+%   BOX               8x3 matrix of entries that correspond the corners of the
+%                     bounding box with their relation as given in the second
+%                     output parameter TRAVERSAL
 %
-%   TRAVERSAL: Matrix of 6 rows of size 3 where each row corresponds to one
-%   traversal of the bounding box BOX for using the patch command
+%   TRAVERSAL         6x3 matrix where each row corresponds to one traversal of
+%                     the bounding box BOX for using the patch command.
 %
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-08-04
+% Date: 2021-03-12
 % Changelog:
+%   2021-03-12
+%       * Fix H1 documentation
+%       * Add CODEGEN directive and remove try/catch block
+%       * Add proper nargin and nargout 
 %   2017-08-04
 %       * Convert all ```assert``` into ```validateattributes``` for better
 %       error display
@@ -57,7 +62,9 @@ function [Box, Traversal] = bbox3(X, Y, Z, varargin)
 
 
 %% Pre-process input
-% If there's only one argument and it is a matrix of size Mx3
+
+
+% BBOX3(XYZ)
 if ismatrix(X) && size(X, 2) == 3
     % ... grab Z from X
     Z = X(:,3);
@@ -65,21 +72,23 @@ if ismatrix(X) && size(X, 2) == 3
     Y = X(:,2);
     % ... and grab X from X
     X = X(:,1);
+    
+% BBOX3(X, Y, Z)
+else
+    narginchk(3, 3);
 end
+
+nargoutchk(0, 2);
 
 
 
 %% Validate inputs
-try
-    % X must not be a scalar and must be a vector
-    validateattributes(X, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(Y)}, mfilename, 'X');
-    % Y must not be a scalar and must be a vector
-    validateattributes(Y, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(X)}, mfilename, 'Y');
-    % Y must not be a scalar and must be a vector
-    validateattributes(Z, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(X)}, mfilename, 'Z');
-catch me
-    throwAsCaller(me);
-end
+% X must not be a scalar and must be a vector
+validateattributes(X, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(Y)}, mfilename(), 'X');
+% Y must not be a scalar and must be a vector
+validateattributes(Y, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(X)}, mfilename(), 'Y');
+% Y must not be a scalar and must be a vector
+validateattributes(Z, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(X)}, mfilename(), 'Z');
 
 
 
@@ -114,12 +123,10 @@ aTraversal = [1, 2, 3, 4; ...
 
 %% Assign output quantities
 % Main output is the bounding box
-Box = aBoundingBox;
+bx = aBoundingBox;
 
 % First optional output is the array of traversals
-if nargout > 1
-    Traversal = aTraversal;
-end
+trav = aTraversal;
 
 
 end

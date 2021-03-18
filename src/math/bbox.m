@@ -1,37 +1,43 @@
-function [Box, Traversal] = bbox(X, Y, varargin)
+function [bx, trav] = bbox(X, Y)%#codegen
 % BBOX Calculates the 2D bounding box for the given points
 %  
-%   Box = BBOX(X, Y) calculates the bounding box for the given points in X and Y
-%   position and returns a matrix of size 3x8 where each column is one of the
-%   bounding box' corners.
-%   Basically, what BBOX does is take all the mins and max' from the values of X
-%   and Y and assigns them properly into box.
+% BOX = BBOX(X, Y) calculates the bounding box for the given points in X and Y
+% position and returns a matrix of size 3x8 where each column is one of the
+% bounding box' corners.
+% Basically, what BBOX does is take all the mins and max' from the values of X
+% and Y and assigns them properly into box.
 %
-%   [Box, Traversal] = BBOX(X, Y) also returns the array of traversals which
-%   relates to the corners of BOX to get a full patch
+% [BOX, TRAVERSAL] = BBOX(X, Y) also returns the array of traversals which
+% relates to the corners of BOX to get a full patch
 %
 %   
-%   Inputs:
+% Inputs:
 %   
-%   X: Vector or matrix of points on the X-axis
+%   X                 Nx1 vector or Nx2 matrix of points on the X-axis.
 %   
-%   Y: Vector or matrix of points on the Y-axis
+%   Y                 Nx1 vector of points on the Y-axis.
 %
-%   Outputs:
+% Outputs:
 %
-%   BOX: Matrix of 3x8 entries that correspond the corners of the bounding box
-%   with their relation as given in the second output parameter TRAVERSAL
+%   BOX               Matrix of 4x2 entries that correspond the corners of the
+%                     bounding box with their relation as given in the second
+%                     output parameter TRAVERSAL
 %
-%   TRAVERSAL: Matrix of 6 rows of size 3 where each row corresponds to one
-%   traversal of the bounding box BOX for using the patch command
+%   TRAVERSAL         Matrix of 6 rows of size 3 where each row corresponds to
+%                     one traversal of the bounding box BOX for using the patch
+%                     command
 %
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-08-04
+% Date: 2021-03-12
 % Changelog:
+%   2021-03-12
+%       * Fix H1 documentation
+%       * Add CODEGEN directive and remove try/catch block
+%       * Add proper nargin and nargout checks
 %   2017-08-04
 %       * Convert all ```assert``` into ```validateattributes``` for better
 %       error display
@@ -49,25 +55,30 @@ function [Box, Traversal] = bbox(X, Y, varargin)
 
 
 %% Pre-process input
-% If there's only one argument and it is a matrix ...
+
+% BBOX(XY)
 if ismatrix(X) && size(X, 2) == 2
+    narginchk(1, 1);
     % ... grab Y from X
     Y = X(:,2);
     % ... and grab X from X
     X = X(:,1);
+    
+% BBOX(X, Y)
+else
+  narginchk(2, 2);
+  
 end
+
+nargoutchk(0, 2);
 
 
 
 %% Validate inputs
-try
-    % X must not be a scalar and must be a vector
-    validateattributes(X, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(Y)}, mfilename, 'X');
-    % Y must not be a scalar and must be a vector
-    validateattributes(Y, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(X)}, mfilename, 'Y');
-catch me
-    throwAsCaller(me);
-end
+% X must not be a scalar and must be a vector
+validateattributes(X, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(Y)}, mfilename(), 'X');
+% Y must not be a scalar and must be a vector
+validateattributes(Y, {'numeric'}, {'vector', 'nonempty', 'finite', 'nonsparse', 'numel', numel(X)}, mfilename(), 'Y');
 
 
 
@@ -92,12 +103,10 @@ aTraversal = [1, 2, 3, 4];
 
 %% Assign output quantities
 % Main output is the bounding box
-Box = aBoundingBox;
+bx = aBoundingBox;
 
 % Second output is the traversal usable for ```patch``` command
-if nargout > 1
-    Traversal = aTraversal;
-end
+trav = aTraversal;
 
 
 end
