@@ -13,18 +13,22 @@ function varargout = wd(varargin)
 %
 % WD('path', POINT) show path to a given warp point.
 %
-% WD('clean') remove warp points warping to nonexistent directories
+% WD('clean') remove warp points warping to nonexistent directories.
 %
-% WD(POINT) warp to the warp point specified
+% WD('help') shows a short help of which commands are available.
+%
+% WD(POINT) warp to the warp point specified.
 % WD(POINT, PATH, ...) warp to the warp point specified and its relative
-% subdirectoy/subdirectoires under PATH
+% subdirectoy/subdirectoires under PATH.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-17
+% Date: 2021-03-29
 % Changelog:
+%   2021-03-29
+%       * Add `help` action
 %   2021-03-17
 %       * Update H1 documentation
 %   2020-11-23
@@ -64,6 +68,9 @@ switch action
   case 'clean'
     wd_clean(varargin{:});
   
+  case 'help'
+    wd_help();
+  
   otherwise
       wd_go(action, varargin{:});
   
@@ -73,8 +80,38 @@ end
 end
 
 
+function wd_help()
+%% WD_HELP
+%
+% WD_HELP()
+
+
+hlp = [ ...
+    {'add';    'Add a warp point'} ...
+  , {'rm';     'Remove a warp point'} ...
+  , {'list';   'List all warp points'} ...
+  , {'ls';     'List files of warp point'} ...
+  , {'path';   'Show path to warp point'} ...
+  , {'clean';  'Remove dead warp points'} ...
+  , {'<wd>';     'Go to warp point'} ...
+];
+
+spacer = 2 + max(cellfun(@numel, hlp(1,:)));
+
+fmt = ['  %', num2str(spacer) , 's   %s\n'];
+
+for h = hlp
+  fprintf(fmt, h{:});
+end
+
+
+end
+
+
 function rc = wd_read_rc()
 %% WD_READ_RC
+%
+% WD_READ_RC()
 
 
 persistent prc
