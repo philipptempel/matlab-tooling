@@ -22,8 +22,10 @@ function Cyclic = cycliccell(Cell, Count, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-09-07
+% Date: 2021-03-29
 % Changelog:
+%   2021-03-29
+%       * Add `function_handle` as allowed argument for `CELL`
 %   2016-09-07
 %       * Fix bug with cycled cells not being created correctly in case a
 %       multi-dim cell array was given
@@ -33,10 +35,10 @@ function Cyclic = cycliccell(Cell, Count, varargin)
 
 
 %% Define the input parser
-ip = inputParser;
+ip = inputParser();
 
 % Require: Axis. Must be 'x' or 'y'
-valFcn_Cell = @(x) validateattributes(x, {'cell', 'numeric'}, {}, mfilename, 'Cell');
+valFcn_Cell = @(x) validateattributes(x, {'cell', 'numeric', 'function_handle'}, {}, mfilename, 'Cell');
 addRequired(ip, 'Cell', valFcn_Cell);
 
 % Allow the plot to have user-defined spec
