@@ -1,4 +1,4 @@
-function ev = evecn(dim, cord)
+function ev = evecn(dim, cord)%#codegen
 %% EVECN Create a unit vector of some dimenions.
 %
 % Inputs:
