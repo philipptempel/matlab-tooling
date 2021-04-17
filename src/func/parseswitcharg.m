@@ -23,9 +23,11 @@ function [res] = parseswitcharg(arg, add_on, add_off)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-08-31
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2020-11-17
 % Changelog:
+%   2020-11-17
+%       * Change author's email domain to `ls2n.fr`
 %   2017-08-31
 %       * Remove necessity for argument ARG to be non-empty
 %   2016-09-18
