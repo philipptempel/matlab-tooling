@@ -1,14 +1,14 @@
-function rl = rgb2lighter(r, factor, varargin)
-% RGB2LIGHTER 
+function lighter = rgblighter(rgb, factor, varargin)
+% RGBLIGHTER 
 %
-%   RGB2LIGHTER(R, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
+%   RGBLIGHTER(RGB, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
 %
-%   RGB2LIGHTER(R, FACTOR, 'Name', 'Value', ...) allows setting optional
+%   RGBLIGHTER(RGB, FACTOR, 'Name', 'Value', ...) allows setting optional
 %   inputs using name/value pairs.
 %
 %   Inputs:
 %
-%   R                   1x3 triplet of RGB values in the range of 0..1.
+%   RGB                 1x3 triplet of RGB values in the range of 0..1.
 %
 %   FACTOR              Factor to lighten the RGB triplet to. Must be between
 %                       0 and 1. With 1, the triplet will not be lightened, with
@@ -21,11 +21,13 @@ function rl = rgb2lighter(r, factor, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-06-23
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2020-11-16
 % Changelog:
-%   2020-06-23
-%       * Rename argument RGB to R to not collide with method `rgb`
+%   2020-11-16
+%       * Copy from my old MATLAB package
+%       * Change email domain to `ls2n.fr`
+%       * Rename to `rgbdarker`
 %   2018-05-14
 %       * Remove `fix` to keep original precision
 %   2017-08-01
@@ -42,8 +44,8 @@ ip = inputParser;
 
 % Required: RGB; numeric; 2d, ncols 3, non-empty, non-sparse, non-negative, <=
 % 1,
-valFcn_Rgb = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncols', 3, 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'r');
-addRequired(ip, 'r', valFcn_Rgb);
+valFcn_Rgb = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncols', 3, 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'rgb');
+addRequired(ip, 'rgb', valFcn_Rgb);
 
 % Required: factor; numeric; scalar, non-empty, non-sparse, non-negative, <= 1,
 valFcn_Factor = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'scalar', 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'factor');
@@ -59,7 +61,7 @@ ip.FunctionName = mfilename;
 
 % Parse the provided inputs
 try
-    args = [{r}, {factor}, varargin];
+    args = [{rgb}, {factor}, varargin];
     
     parse(ip, args{:});
 catch me
@@ -81,11 +83,11 @@ chAsInteger = parseswitcharg(ip.Results.AsInteger);
 %% Do your code magic here
 
 % Calculate the lighter RGB values
-rl = (aRgb + (1 - aRgb)*dFactor);
+lighter = (aRgb + (1 - aRgb)*dFactor);
 
 % Turn floats into integers as requested by the user
 if strcmp(chAsInteger, 'on')
-    rl = round(rl.*255);
+    lighter = round(lighter.*255);
 end
 
 
