@@ -20,9 +20,14 @@ function [obj, args, nargs] = objectcheck(oc, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-11-05
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2021-02-05
 % Changelog:
+%   2021-02-05
+%       * Allow for `meta.class` objects to be passed as `oc`.
+%   2020-11-17
+%       * Copy from my own personal MATLAB package to `functions` package
+%       * Change author's email domain to `ls2n.fr`
 %   2020-11-05
 %       * Fix bug where the class object would not be returned if it wasn't the
 %       first argument in `varargin`
@@ -45,12 +50,16 @@ try
   % [OBJ, ARGS] = OBJECTCHECK(...)
   % [OBJ, ARGS, NARGS] = OBJECTCHECK(...)
   nargoutchk(0, 3);
-  
+
   % If an object is given, we will convert it to its class name
   if isobject(oc)
-    oc = class(oc);
+    if isa(oc, 'meta.class')
+      oc = oc.Name;
+    else
+      oc = class(oc);
+    end
   end
-  
+
   % Make sure the object given is a string
   validateattributes(oc, {'char'}, {'nonempty'}, mfilename, 'OC');
 catch me
@@ -75,14 +84,14 @@ end
 
 % Process remaining arguments
 if nargs > 0
-  
+
   % Find where this an object matching in class
   inds = find(cellfun(@(cc) isa(cc, oc), args));
-  
+
   % If there were any finds
   if ~isempty(inds)
     pind = inds(end);
-    
+
     if nargs >= pind && isa(args{pind}, oc)
       obj = args{pind};
       args(inds) = [];

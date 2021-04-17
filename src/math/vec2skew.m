@@ -1,30 +1,45 @@
 function skew = vec2skew(vec)%#codegen
-% VEC2SKEW Turn the input into its skew-symmetrix matrix form
+%% VEC2SKEW Turn the input into its skew-symmetrix matrix form
 % 
-%   SKEW = VEC2SKEW(VEC) turns vec into its skew-symmetric matrix form of type
-%   [0,      -vec(3),  vec(2); ...
-%    vec(3),  0,      -vec(1); ...
-%   -vec(2),  vec(1),  0];
-%   If VEC is a Mx3 matrix, then SKEW is a 3x3xM matrix of skew-symmetrix
-%   matrices for each row of VEC concatenated along the third dimension
-%   
-%   
-%   Inputs:
-%   
-%   VEC: Matrix of column size 3. If VEC is Mx3 matrix, output is a 3x3xM
-%   matrix.
+% S = VEC2SKEW(V) turns vec into its skew-symmetric matrix. Vector V can be
+% either a 2D or 3D vector.
 %
-%   Outputs:
-%   
-%   SKEW: Skew-symmetric matrix of VEC. If VEC is a Mx3 matric, SKEW is 3x3xM.
+% In case of 2D vectors i.e., size(V, 1) == 2, S is
+%   [-V(2), V(1)]
 %
+% In case of 3D vectors i.e., size(V, 1) == 3, S is
+%   [     0, -V(3), V(2) ]
+%   [  V(3),    0, -V(1) ]
+%   [ -V(2), V(1),    0 ]
+%   
+% Inputs:
+%   
+%   V                   2xN or 3xN array.
+%
+% Outputs:
+%
+%   SKEW                1x2xN or 3x3xN array of skew-symmetric matrices of
+%                       vector V.
+%
+% See also:
+%   CROSS
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-04-13
+% Date: 2021-03-01
 % Changelog:
+%   2021-03-01
+%       * Update to also support case of `V` in R2.
+%       * Enforce arguemnt to vec2skew to be a 2xN or 3xN column-major array.
+%       * Remove `validateattributes` as it is incompatibel with `codegen`
+%   2020-11-25
+%       * Use `validateattributes` to validate arguments
+%       * Require vec to be 3xN
+%   2020-11-17
+%       * Copy from my own personal MATLAB package to `functions` package
+%       * Change author's email domain to `ls2n.fr`
 %   2016-04-13
 %       * Allow vec2skew to work on matrices thanks to help from quat2rot.m
 %       * Update help doc
@@ -45,11 +60,6 @@ nargoutchk(0, 1);
 
 
 %% Process inputs
-
-% Turn row vector into column vector
-if isrow(vec)
-  vec = permute(vec, [2, 1]);
-end
 
 % Dimensionality of vector
 ndim = size(vec, 1);
@@ -79,7 +89,7 @@ else
   
   % Explicitly define concatenation dimension for codegen
   tempS = cat(1, -y, x);
-  skew = permute(reshape(tempS, [3, 3, nv]), [2, 1, 3]);
+  skew = reshape(tempS, [1, 2, nv]);
   
 end
 

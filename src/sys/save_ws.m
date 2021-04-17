@@ -104,7 +104,7 @@ chDateFormat = char(ip.Results.DateFormat);
 %% Do the magic
 % In the base workspace we will be evaluating all the commands
 try
-    evalin('base', ['save(''' , sprintf('%s%s%s.mat', chPrefix, datestr(datevec(now), chDateFormat), chSuffix) , ''');']);
+    evalin('caller', ['save(''' , sprintf('%s%s%s.mat', chPrefix, datestr(datevec(now), chDateFormat), chSuffix) , ''');']);
 catch me
     throw(addCause(MException('PHILIPPTEMPEL:MATLABTOOLING:SAVEWS:ErrorSaving', 'There was an error saving your workspace.'), me));
 end

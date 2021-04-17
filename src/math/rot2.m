@@ -1,9 +1,9 @@
-function R = rot2(a)
-% ROT2 creates the 2D rotation matrix of angles A
+function R = rot2(ang)%#codegen
+%% ROT2 creates the 2D rotation matrix of angles A
 %
 %   Inputs:
 %
-%   A                   Nx1 vector of angles in radian to turn into rotation
+%   ANG                 Nx1 vector of angles in radian to turn into rotation
 %                       matrices.
 %
 %   Outputs:
@@ -14,8 +14,10 @@ function R = rot2(a)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-03-06
+% Date: 2020-12-19
 % Changelog:
+%   2020-12-19
+%       * Copy from personal MATLAB package
 %   2017-03-06
 %       * Fix use of degree to radian
 %   2017-03-05
@@ -26,13 +28,35 @@ function R = rot2(a)
 
 
 
-%% Do your code magic here
+%% Parse arguments
+
+% ROT2()
+% ROT2(ANG)
+narginchk(0, 1);
+% ROT2(...)
+% R = ROT2(...)
+nargoutchk(0, 1);
+
+% Quickly bail out for no argument 
+if nargin < 1 || isempty(ang)
+  R = eye(2);
+  
+  return
+end
+
+
+
+%% Create rotation matrix
+
+% Turn angles into 3D array
+ap = reshape(ang, [1, 1, numel(ang)]);
+
 % Pre-calculate the sine and cosine of the arguments
-st = sin(a);
-ct = cos(a);
+st = sin(ap);
+ct = cos(ap);
 
 % Initialize matrix
-R = zeros(2, 2, numel(a), 'like', a);
+R = zeros(2, 2, numel(ang), 'like', ang);
 
 R(1,1,:) = ct;
 R(1,2,:) = -st;

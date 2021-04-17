@@ -1,8 +1,8 @@
-function v = skew2vec(S)
-%% SKEW2VEC Convert skew-symmetric matrix into skew-symmetric vector representation
+function vec = skew2vec(skew)%#codegen
+%% SKEW2VEC Convert skew-symmetric matrix into skew-symmetric vector
 %
-%   V = SKEW2VEC(S) converts skew-symmetric matrix S into its skeww-symmetric
-%   vector form such.
+% VEC = SKEW2VEC(SKEW) converts skew-symmetric matrix S into its skew-symmetric
+% vector form such.
 %
 %   Inputs:
 %
@@ -10,14 +10,19 @@ function v = skew2vec(S)
 %
 %   Outputs:
 %
-%   V                   Nx3 vector of skew-symmetric vectors.
+%   V                   3xN array of skew-symmetric vectors.
 
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-09
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2020-11-25
 % Changelog:
+%   2020-11-25
+%       * Change to return a 3xN array
+%   2020-11-17
+%       * Copy from my own personal MATLAB package to `functions` package
+%       * Change author's email domain to `ls2n.fr`
 %   2019-01-09
 %       * Initial release
 
@@ -28,17 +33,20 @@ function v = skew2vec(S)
 narginchk(1, 1);
 nargoutchk(0, 1);
 
-validateattributes(S, {'numeric', 'symbolic', 'sym'}, {'nonempty', '3d', 'nrows', 3, 'ncols', 3}, mfilename, 'S');
+validateattributes(skew, {'numeric'}, {'nonempty', '3d', 'nrows', 3, 'ncols', 3}, 'skew2vec', 's');
 
 
 
 %% Process
 
-% Shift into the right dimension
-S = permute(S, [3, 1, 2]);
+% Number of vectors to create
+nvec = size(skew, 3);
 
-% Simple concatenationm
-v = cat(2, S(:,3,2), S(:,1,3), S(:,2,1));
+% Shift into the right dimension
+skew = permute(skew, [3, 1, 2]);
+
+% Simple concatenation
+vec = permute(reshape(cat(1, skew(:,3,2), skew(:,1,3), skew(:,2,1)), [nvec, 3]), [2, 1]);
 
 
 end

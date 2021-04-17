@@ -12,9 +12,11 @@ function [UCed] = strucfirst(varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-09-05
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2020-11-17
 % Changelog:
+%   2020-11-17
+%       * Change author's email domain to `ls2n.fr`
 %   2016-09-05
 %       * Initial release
 
