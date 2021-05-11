@@ -1,9 +1,17 @@
 function mlsettings(action, varargin)
-% MLSETTINGS allows to save and restore MATLAB settings
+%% MLSETTINGS allows to save and restore MATLAB settings
 %
-%   Inputs:
+% MLSETTINGS(ACTION) performs ACTION on the MATLAB settings.
 %
-%   ACTION              Action mode can be either `backup` or `restore`
+% MLSETTINGS(ACTION, FILE) uses provided filename `FILE` to load/store
+% preferences from/to.
+%
+% Inputs:
+%
+%   ACTION              Action mode can be either `backup` or `restore`.
+%
+%   FILE                Filename to store preferences to or to load preferences
+%                       from.
 
 
 
@@ -11,6 +19,11 @@ function mlsettings(action, varargin)
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
 % Date: 2020-06-23
 % Changelog:
+%   2021-05-11
+%       * Fix restoring of preferences
+%       * Add argument `FILE` to allow user to provide a custom filename to
+%       store settings into
+%       * Update H1 documentation of inline functions
 %   2020-06-23
 %       * Add `narginchk` and `nargoutchk`
 %   2019-11-25
@@ -18,18 +31,24 @@ function mlsettings(action, varargin)
 
 
 
-%% Define the input parser
-ip = inputParser;
+%% Parse arguments
+
+% Define the input parser
+ip = inputParser();
 
 % MLSETTINGS(ACTION)
-narginchk(1, 1);
+narginchk(1, Inf);
 
 % MLSETTINGS(ACTION)
 nargoutchk(0, 0);
 
-% Require: Filename
-valFcn_Action = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'action');
-addRequired(ip, 'Action', valFcn_Action);
+% Require: Action
+valFcn_Action = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'action');
+addRequired(ip, 'action', valFcn_Action);
+
+% Optional: Filename
+valFcn_Filename = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'file');
+addOptional(ip, 'file', fullfile(mlproject(), 'preferences.json'), valFcn_Filename);
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
@@ -48,44 +67,31 @@ end
 
 %% Parse arguments
 % Get action to do
-chAction = ip.Results.Action;
+action = ip.Results.action;
+% Filename to load/store preferences from/to
+preffile = ip.Results.file;
 
 
 
 %% Do magic
 
-switch lower(chAction)
+switch lower(action)
     case {'store', 'save', 'export', 'backup'}
-        % get current settings
-        user_preferences = settings();
-        % and merge it down to the correct format so we can store it as a
-        % versionizable JSON string
-        user_preferences = read_group(user_preferences);
-        
-        % and save data as JSON file to hard drive in this folder
+        % get current settings, merge down as into a pure structure, then save
+        % data as JSON file to hard drive in this folder
         savejson( ...
-            '', ...
-            user_preferences, ...
-            fullfile(...
-                fileparts(....
-                    mfilename('fullpath') ...
-                ), ...
-                '..', ...
-                'preferences.json' ...
-            ) ...
+            '' ...                  % root name
+            , read_group(settings()) ...  % object
+            , preffile ...          % filename
         );
-        savejson(user_preferences)
         
         
     case {'load', 'read', 'restore'}
-        % load preferences for the user
-        user_preferences = loadjson(fullfile(fileparts(mfilename('fullpath')), '..', 'preferences.json'));
-        
-        % and set them
-        write_group(settings(), user_preferences)
+        % load preferences from file and write settings
+        write_group(settings(), loadjson(preffile);
    
     otherwise
-        throw(MException('PHILIPPTEMPEL:MLSETTINGS:InvalidAction', 'Unknown action ''%s'' given.', chAction))
+        throw(MException('PHILIPPTEMPEL:MLSETTINGS:InvalidAction', 'Unknown action ''%s'' given.', action))
         
 end
 
@@ -95,11 +101,15 @@ end
 
 function grouped = read_group(group)
 %% READ_GROUP
+%
+% GROUPED = READ_GROUP(GROUP)
+
+
 
 grouped = struct();
 
-for field = transpose(fieldnames(group))
-    field = field{1};
+for field_ = transpose(fieldnames(group))
+    field = field_{1};
     
     if isa(group.(field), 'matlab.settings.SettingsGroup')
         value = read_group(group.(field));
@@ -114,56 +124,88 @@ for field = transpose(fieldnames(group))
     end
 end
 
+
 end
 
 
-function pref = read_setting(setting)
+function v = read_setting(setting)
 %% READ_SETTING
+%
+% VALUE = READ_SETTING(SETTING)
+
+
 
 if hasPersonalValue(setting)
-    pref = setting.PersonalValue;
+    v = setting.PersonalValue;
 elseif hasTemporaryValue(setting)
-    pref = setting.TemporaryValue;
+    v = setting.TemporaryValue;
 elseif hasFactoryValue(setting)
-    pref = setting.FactoryValue;
+    v = setting.FactoryValue;
 else
-    pref = [];
+    v = [];
 end
 
+
 end
 
 
-function write_group(prefs, group)
+function write_group(sttngs, prefs)
 %% WRITE_GROUP
+%
+% WRITE_GROUP(SETTINGS, PREFERENCES)
 
-for field = transpose(fieldnames(group))
-    field = field{1};
+
+
+% No data to write...
+if isempty(prefs)
+    % Then bail out
+    return
+end
+
+for field_ = transpose(fieldnames(prefs))
+    field = field_{1};
     
-    % skip non-existing preferences
-    if ~isfield(prefs, field)
-        continue
+    % Check if the setting exists ...
+    try
+        sttngs.(field);
+    % ... if not, create it
+    catch
+        % Add new SettingsGroup if field contains a structure
+        if isa(prefs.(field), 'struct')
+            addGroup(sttngs, field);
+        % Add new Settings if field contains a single value
+        else
+            addSetting(sttngs, field);
+        end
     end
     
     % updating a settings group?
-    if isa(prefs.(field), 'matlab.settings.SettingsGroup')
-        write_group(prefs.(field), group.(field));
-    elseif isa(prefs.(field), 'matlab.settings.Setting')
-        write_setting(prefs.(field), group.(field));
+    if isa(sttngs.(field), 'matlab.settings.SettingsGroup')
+        write_group(sttngs.(field), prefs.(field));
+    % updating a setting
+    elseif isa(sttngs.(field), 'matlab.settings.Setting')
+        write_setting(sttngs.(field), prefs.(field));
     end
     
 end
 
+
 end
 
 
-function write_setting(field, value)
+function write_setting(setting, value)
 %% WRITE_SETTING
+%
+% WRITE_SETTING(SETTING, VALUE)
+
+
 
 try
-    field.PersonalValue = value;
+    setting.PersonalValue = value;
 catch me
     warning(me.identifier, '%s', me.message)
 end
+
 
 end
 
