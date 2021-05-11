@@ -27,6 +27,8 @@ function varargout = wd(varargin)
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
 % Date: 2021-03-29
 % Changelog:
+%   2021-05-11
+%       * Update to work on windows, too.
 %   2021-03-29
 %       * Add `help` action
 %   2021-03-17
@@ -121,18 +123,18 @@ if isempty(prc)
   prc = fullfile(userpath(), '.warprc');
 end
 
+rc = repmat(struct('name', '', 'path', ''), [1, 0]);
+
 try
   % Read file
   c = strsplit(fileread(prc), newline());
   c(cellfun(@isempty, c)) = [];
   c = cellfun(@(cs) strsplit(cs, ':'), c, 'UniformOutput', false);
   if ~isempty(c)
+    c = cellfun(@(cs) [cs(1), wd_decode_path(cs{2})], c, 'UniformOutput', false);
     rc = cell2struct(transpose(vertcat(c{:})), {'name', 'path'});
-  else
-    rc = repmat(struct('name', '', 'path', ''), [1, 0]);
   end
-catch me
-  warning(me.identifier, '%s', me.message);
+catch
 end
 
 
@@ -161,7 +163,7 @@ try
   coCloseFile = onCleanup(@() fclose(fid));
   if fid ~= 1
     for irc = 1:numel(rc)
-      fprintf(fid, '%s:%s\n', rc(irc).name, rc(irc).path);
+      fprintf(fid, '%s:%s\n', rc(irc).name, wd_encode_path(rc(irc).path));
     end
   end
 catch me
@@ -172,7 +174,7 @@ end
 end
 
 
-function wd_go(point, path)
+function wd_go(point, p)
 %% WD_GO
 %
 % WD_GO(POINT)
@@ -185,12 +187,12 @@ function wd_go(point, path)
 narginchk(1, 2);
 nargoutchk(0, 0);
 
-if nargin < 2 || isempty(path)
-  path = '';
+if nargin < 2 || isempty(p)
+  p = '';
 end
 
 % Get path and move
-cd(fullfile(wd_path(point), path));
+cd(fullfile(wd_path(point), wd_decode_path(p)));
 
 
 end
@@ -219,7 +221,7 @@ rc = wd_read_rc();
 
 % Only save if warp directory does not exist yet
 if ~any(strcmp({rc.name}, point))
-  rc = vertcat(rc, struct('name', point, 'path', pwd));
+  rc = vertcat(rc, struct('name', point, 'path', pwd()));
 end
 
 wd_save_rc(rc);
@@ -244,7 +246,7 @@ nargoutchk(0, 0);
 
 % Default point is current directory's name
 if nargin < 1 || isempty(point)
-  point = fileparts(fullfile(pwd));
+  point = fileparts(fullfile(pwd()));
 end
 
 % Get all directories
@@ -363,6 +365,47 @@ rc(idx) = [];
 
 % Save RC file
 wd_save_rc(rc);
+
+
+end
+
+
+function ep = wd_encode_path(p)
+%% WD_ENCODE_PATH
+%
+% EP = WD_ENCODE_PATH(P)
+
+
+% Convert all machine-local separators into UNIX-style file separators
+ep = strrep(p, filesep(), '/');
+
+% On PC (windows), the path contains a colon, which we will need to strip away
+if ispc()
+    % Location of the first ':'
+    idx_colon = find(ep == ':', 1, 'first');
+    ep(idx_colon) = [];
+    ep = sprintf('/%s', ep);
+end
+
+
+end
+
+
+function p = wd_decode_path(ep)
+%% WD_DECODE_PATH
+%
+% P = WD_DECODE_PATH(EP)
+
+
+% Convert all UNIX-style file separators into machine-local separators
+p = strrep(ep, '/', filesep());
+
+% On PC (windows), restore the drive letter
+if ispc()
+    p(1) = [];
+    idx_slash = find(p == '\', 1, 'first');
+    p = [p(1:idx_slash-1) , ':', p(idx_slash:end)];
+end
 
 
 end
