@@ -5,8 +5,10 @@ function finish()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-03-12
+% Date: 2021-05-11
 % Changelog:
+%   2021-05-11
+%       * Remove paths added to MATLAB's search path
 %   2017-03-12
 %       * Initial release
 
@@ -25,6 +27,11 @@ end
 
 % Save the current workspace to a file in this file's directory
 evalin('base', sprintf('save(''%s'');', fullfile(chWorkspacePath, sprintf('ws_%s.mat', datestr(now, 'yyyymmddThhMMss')))));
+
+% Get path's to add to MATLAB's search path
+p = mlt_projpath();
+% and add the paths
+rmpaths(p{:});
 
 
 end
