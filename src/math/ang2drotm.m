@@ -1,22 +1,33 @@
-function dR = ang2drotm(a, da)
-%% ANG2DROTM 
+function dR = ang2drotm(a, da)%#codegen
+%% ANG2DROTM Calculate change of rotation matrix
+%
+% DR = ANG2DROTM(A) calculates the derivative of the rotation matrix for angular
+% position(s) A.
+%
+% DR = ANG2DROTM(A, DA) calculates the rotational velocity of the rotation
+% matrix for angular velocities DA.
 %
 % Inputs:
 %
-%   A                   Description of argument A
+%   A                   1xN array of angular positions.
 %
-%   DA                  Description of argument DA
+%   DA                  1xN array of angular velocities.
 %
 % Outputs:
 %
-%   R                   Description of argument R
+%   R                   2x2xN array of derivatives of rotation matrices.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-02-04
+% Date: 2021-04-21
 % Changelog:
+%   2021-04-21
+%       * Fix bug in calculation of rotation matrix derivative
+%       * Update code to use `cat` and `reshape` (should be faster now)
+%       * Add default value for `DA` allowing to calculate only the derivative
+%       of the rotation matrix
 %   2021-02-04
 %       * Initial release
 
@@ -24,8 +35,10 @@ function dR = ang2drotm(a, da)
 
 %% Parse arguments
 
+% ANG2ROTM()
+% ANG2ROTM(A)
 % ANG2ROTM(A, DA)
-narginchk(2, 2);
+narginchk(0, 2);
 % ANG2ROTM(...)
 % R = ANG2ROTM(...)
 nargoutchk(0, 1);
@@ -38,27 +51,31 @@ if nargin < 1 || isempty(a)
 
 end
 
+% No angular rate given => just calculate the rotation matrices
+if nargin < 2 || isempty(da)
+  da = ones(size(a), 'like', a);
+end
+
 
 
 %% Create rotation matrix
 
+% Count angular values
+na = numel(a);
+
 % Turn angles into 3D array
-ap = reshape(a, [1, 1, numel(a)]);
-dap = reshape(a, [1, 1, numel(a)]);
+ap = reshape(a, [1, 1, na]);
+dap = repmat(reshape(da, [1, 1, na]), [2, 2, 1]);
 
 % Pre-calculate the sine and cosine of the arguments
 st = sin(ap);
 ct = cos(ap);
 
-% Initialize matrix
-dR = zeros(2, 2, numel(a), 'like', a);
+% Concate components with row major
+tempR = cat(2, -st, ct, -ct, -st);
 
-dR(1,1,:) = -st;
-dR(1,2,:) = -ct;
-dR(2,1,:) = -ct;
-dR(2,2,:) = -st;
-
-dR = dR .* dap;
+% And reshape into 2x2xN, then multiply each page with the angular velocity
+dR = reshape(tempR, 2, 2, na) .* dap;
 
 
 end

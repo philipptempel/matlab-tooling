@@ -1,20 +1,24 @@
 function R = ang2rotm(a)%#codegen
-%% ANG2ROTM2
+%% ANG2ROTM
+%
+% R = ANG2ROTM(A) calculates the rotation matrix for angular positions A.
 %
 % Inputs:
 %
-%   A                   Description of argument A
+%   A                   1xN array of angular positions.
 %
 % Outputs:
 %
-%   R                   Description of argument R
+%   R                   2x2xN array of rotation matrices.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-02-04
+% Date: 2021-04-21
 % Changelog:
+%   2021-04-21
+%       * Update code to use `cat` and `reshape` (should be faster now)
 %   2021-02-04
 %       * Initial release
 
@@ -41,20 +45,21 @@ end
 
 %% Create rotation matrix
 
+% Count of angles
+na = numel(a);
+
 % Turn angles into 3D array
-ap = reshape(a, [1, 1, numel(a)]);
+ap = reshape(a, [1, 1, na]);
 
 % Pre-calculate the sine and cosine of the arguments
 st = sin(ap);
 ct = cos(ap);
 
-% Initialize matrix
-R = zeros(2, 2, numel(a), 'like', a);
+% Concate components with row major
+tempR = cat(1, ct, st, -st, ct);
 
-R(1,1,:) = ct;
-R(1,2,:) = -st;
-R(2,1,:) = st;
-R(2,2,:) = ct;
+% And reshape into 2x2xN
+R = reshape(tempR, [2, 2, na]);
 
 
 end
