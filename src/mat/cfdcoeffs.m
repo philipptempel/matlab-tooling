@@ -49,7 +49,7 @@ narginchk(2, 2);
 nargoutchk(0, 2);
 
 % Ensure a is multiple of 2 starting at 2
-a = floor(a / 2);
+a = max(floor(a / 2), 1);
 
 n = a + floor((d - 1) / 2);
 
