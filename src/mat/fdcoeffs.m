@@ -1,4 +1,4 @@
-function c = fdcoeffs(d, x, xi)
+function c = fdcoeffs(d, x, xi)%#codegen
 %% FDCOEFFS Calculate finite differences coefficients of arbitrary direction
 %
 % C = FDCOEFFS(D, X) calculates the finite differences coefficients for a given

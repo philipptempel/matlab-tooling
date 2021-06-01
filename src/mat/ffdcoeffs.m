@@ -1,4 +1,4 @@
-function [c, idx] = ffdcoeffs(d, a)
+function [c, idx] = ffdcoeffs(d, a)%#codegen
 %% FFDCOEFFS Calculate the Forward Finite-Differences Coefficients
 %
 % C = FFDCOEFFS(D, A) calculates the coefficients of the forward

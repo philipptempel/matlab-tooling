@@ -1,4 +1,4 @@
-function [c, idx] = bfdcoeffs(d, a)
+function [c, idx] = bfdcoeffs(d, a)%#codegen
 %% BFDCOEFFS Calculate the Backward Finite-Differences Coefficients
 %
 % C = BFDCOEFFS(D, A) calculates the coefficients of the backward

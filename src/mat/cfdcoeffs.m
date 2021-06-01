@@ -1,4 +1,4 @@
-function [c, idx] = cfdcoeffs(d, a)
+function [c, idx] = cfdcoeffs(d, a)%#codegen
 %% CFDCOEFFS Calculate the Central Finite-Differences Coefficients
 %
 % C = CFDCOEFFS(D, A) calculates the coefficients of the central
