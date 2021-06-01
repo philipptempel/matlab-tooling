@@ -1,7 +1,7 @@
 function varargout = lame(D, varargin)
-% LAME plots the LAMÉ superellipses
+% LAME plots the LAMÃ‰ superellipses
 %
-%   LAME(D) plots the Lamé superellipses for the given N degrees D.
+%   LAME(D) plots the LamÃ© superellipses for the given N degrees D.
 %
 %   LAME(D, 'Name', 'Value', ...) passes the name/value pairs to the underlying
 %   plot command.
@@ -16,7 +16,7 @@ function varargout = lame(D, varargin)
 %
 %   Outputs
 %
-%   H                   Nx1 array of line series objects of the lamé ellipses.
+%   H                   Nx1 array of line series objects of the lamÃ© ellipses.
 
 
 
@@ -102,5 +102,5 @@ end
 
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as
-% can be found in the header Your contribution towards improving this function
-% will be acknowledged in the "Changes" section of the header
+% can be found in the header. Your contribution towards improving this function
+% will be acknowledged in the "Changes" section of the header.

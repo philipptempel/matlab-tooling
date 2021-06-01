@@ -40,7 +40,6 @@ Rdiff(abs(Rdiff) < 2*eps) = 0;
 end
 
 %------------- END OF CODE --------------
-% Please send suggestions for improvement of this file to the original
-% author as can be found in the header
-% Your contribution towards improving this function will be acknowledged in
-% the "Changes" section of the header
+% Please send suggestions for improvement of this file to the original author as
+% can be found in the header. Your contribution towards improving this function
+% will be acknowledged in the "Changes" section of the header.
