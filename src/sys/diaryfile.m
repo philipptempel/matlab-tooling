@@ -9,8 +9,10 @@ function df = diaryfile()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-18
+% Date: 2021-04-30
 % Changelog:
+%   2021-04-30
+%       * Simplify call to `mlproject`
 %   2021-03-18
 %       * Initial release
 
@@ -18,7 +20,7 @@ function df = diaryfile()
 
 %% Do your code magic here
 
-df = fullfile(mlproject([], fileparts(mfilename('fullpath'))), 'diaries', sprintf('%s.txt', datestr(now, 'yyyy-mm-dd')));
+df = fullfile(mlproject(), 'diaries', sprintf('%s.txt', datestr(now(), 'yyyy-mm-dd')));
 
 
 end
