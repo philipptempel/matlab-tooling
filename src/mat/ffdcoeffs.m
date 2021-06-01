@@ -46,7 +46,7 @@ narginchk(2, 2);
 % FFDCOEFFS(___);
 % C = FFDCOEFFS(___)
 % [C, IDX] = FFDCOEFFS(___)
-nargoutchk(0, 1);
+nargoutchk(0, 2);
 
 n = a + d - 1;
 
