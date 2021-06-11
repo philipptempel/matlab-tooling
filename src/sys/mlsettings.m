@@ -88,7 +88,7 @@ switch lower(action)
         
     case {'load', 'read', 'restore'}
         % load preferences from file and write settings
-        write_group(settings(), loadjson(preffile);
+        write_group(settings(), loadjson(preffile));
    
     otherwise
         throw(MException('PHILIPPTEMPEL:MLSETTINGS:InvalidAction', 'Unknown action ''%s'' given.', action))
