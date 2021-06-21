@@ -1,41 +1,54 @@
-function l = limit(v, mi, ma)
+function l = limit(v, mi, ma)%#codegen
 % LIMIT the given value between minimum and maximum
 %
-%   LIMIT(V, MI, MA) limits the values in V such that they are at least MI large
-%   but no larger than MA, either.
+% LIMIT(V, MI) limits all values in V to be at larger or equal to MI.
 %
-%   Inputs:
+% LIMIT(V, MI, MA) additionally limits all values in V to be at most MA large.
 %
-%   V                   MxN array or values to limit
+% Inputs:
+%
+%   V                   MxN array or values to limit.
 %
 %   MI                  Lower limit of each value.
 %
 %   MA                  Upper limit of each value.
 %
-%   Outputs:
+% Outputs:
 %
-%   L                   MxN array of limited values of V
+%   L                   MxN array of limited values of V.
+%
+% See also:
+%   MIN
+%   MAX
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-02-06
+% Date: 2021-06-21
 % Changelog:
+%   2021-06-21
+%       * Add codegen support, remove try/catch block
 %   2018-02-06
 %       * Initial release
 
 
 
 %% Valdiate arguments
-try
-    % LIMIT(V, MI, MA)
-    narginchk(3, 3);
-    % LIMIT(V, MI, MA)
-    % L = LIMIT(V, MI, MA)
-    nargoutchk(0, 1);
-catch me
-    throwAsCaller(me);
+
+% LIMIT(V, MI)
+% LIMIT(V, MI, MA)
+narginchk(2, 3);
+% LIMIT(___)
+% L = LIMIT(___);
+nargoutchk(0, 1);
+
+if nargin < 2 || isempty(mi)
+  mi = -Inf;
+end
+
+if nargin < 3 || isempty(ma)
+  ma = +Inf;
 end
 
 
