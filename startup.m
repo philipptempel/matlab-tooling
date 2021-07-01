@@ -33,7 +33,7 @@ chBase = fullfile(fileparts(mfilename('fullpath')));
 % Set time zone
 setenv('TZ','Europe/Zurich');   
 % Get path's to add to MATLAB's search path
-p = mlt_projpath();
+p = mtl_projpath();
 % and add the paths
 addpath(p{:});
 
