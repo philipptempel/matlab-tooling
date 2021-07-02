@@ -3,7 +3,7 @@ function s = time2str(d, varargin)
 %
 %   Inputs:
 %
-%   B                   MxN numeric array of durations to translate.
+%   D                   MxN numeric array of durations to translate.
 %
 %   Outputs:
 %
@@ -14,8 +14,10 @@ function s = time2str(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-02-11
+% Date: 2021-07-02
 % Changelog:
+%   2021-07-02
+%       * Change validation of argument `D` to allow also zero as value
 %   2021-02-11
 %       * Initial release
 
@@ -25,7 +27,7 @@ function s = time2str(d, varargin)
 ip = inputParser;
 
 % Duration: numeric; positive
-valFcn_Duration = @(x) validateattributes(x, {'numeric'}, {'positive', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'Duration');
+valFcn_Duration = @(x) validateattributes(x, {'numeric'}, {'nonnegative', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'Duration');
 addRequired(ip, 'Duration', valFcn_Duration);
 
 % Format: char; non-empty
