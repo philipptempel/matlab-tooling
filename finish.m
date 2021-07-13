@@ -29,7 +29,7 @@ end
 evalin('base', sprintf('save(''%s'');', fullfile(chWorkspacePath, sprintf('ws_%s.mat', datestr(now, 'yyyymmddThhMMss')))));
 
 % Get path's to add to MATLAB's search path
-p = mlt_projpath();
+p = mtl_projpath();
 % and add the paths
 rmpaths(p{:});
 

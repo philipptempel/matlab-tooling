@@ -1,5 +1,5 @@
-function p = mlt_projpath()
-% MLT_PROJPATH returns the path definiton for this project
+function p = mtl_projpath()
+% MTL_PROJPATH returns the path definiton for this project
 %
 %   Outputs:
 %
@@ -9,8 +9,10 @@ function p = mlt_projpath()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-02-11
+% Date: 2021-07-01
 % Changelog:
+%   2021-07-01
+%       * Rename file to `mtl_projpath`
 %   2021-02-11
 %       * Move all source code into `src` directory
 %   2020-10-30
