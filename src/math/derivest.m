@@ -1,43 +1,48 @@
 function [der,errest,finaldelta] = derivest(fun,x0,varargin)
+%% DERIVEST Estimate the N-th derivative of a fun at X0
+%
+% DERIV = DERIVEST(FUN, X0)
+%
+% DERIV = DERIVEST(FUN, X0, Name, Value, ...)
+%
+% [DERIV, ERR] = DERIVEST(___)
+%
+% [DERIV, ERR, FINALDELTA] = DERIVEST(___)
+%
+%
 % DERIVEST: estimate the n'th derivative of fun at x0, provide an error estimate
 % usage: [der,errest] = DERIVEST(fun,x0)  % first derivative
 % usage: [der,errest] = DERIVEST(fun,x0,prop1,val1,prop2,val2,...)
 %
-% Derivest will perform numerical differentiation of an
-% analytical function provided in fun. It will not
-% differentiate a function provided as data. Use gradient
-% for that purpose, or differentiate a spline model.
+% Derivest will perform numerical differentiation of an analytical function
+% provided in fun. It will not differentiate a function provided as data. Use
+% gradient for that purpose, or differentiate a spline model.
 %
-% The methods used by DERIVEST are finite difference
-% approximations of various orders, coupled with a generalized
-% (multiple term) Romberg extrapolation. This also yields
-% the error estimate provided. DERIVEST uses a semi-adaptive
-% scheme to provide the best estimate that it can by its
-% automatic choice of a differencing interval.
+% The methods used by DERIVEST are finite difference approximations of various
+% orders, coupled with a generalized (multiple term) Romberg extrapolation. This
+% also yields the error estimate provided. DERIVEST uses a semi-adaptive scheme
+% to provide the best estimate that it can by its automatic choice of a
+% differencing interval.
 %
-% Finally, While I have not written this function for the
-% absolute maximum speed, speed was a major consideration
-% in the algorithmic design. Maximum accuracy was my main goal.
+% Finally, While I have not written this function for the absolute maximum
+% speed, speed was a major consideration in the algorithmic design. Maximum
+% accuracy was my main goal.
 %
 %
 % Arguments (input)
-%  fun - function to differentiate. May be an inline function,
-%        anonymous, or an m-file. fun will be sampled at a set
-%        of distinct points for each element of x0. If there are
-%        additional parameters to be passed into fun, then use of
-%        an anonymous function is recommended.
+%  fun -  function to differentiate. May be an inline function, anonymous, or an
+%         m-file. fun will be sampled at a set of distinct points for each
+%         element of x0. If there are additional parameters to be passed into
+%         fun, then use of an anonymous function is recommended.
 %
-%        fun should be vectorized to allow evaluation at multiple
-%        locations at once. This will provide the best possible
-%        speed. IF fun is not so vectorized, then you MUST set
-%        'vectorized' property to 'no', so that derivest will
-%        then call your function sequentially instead.
+%         fun should be vectorized to allow evaluation at multiple locations at
+%         once. This will provide the best possible speed. IF fun is not so
+%         vectorized, then you MUST set 'vectorized' property to 'no', so that
+%         derivest will then call your function sequentially instead.
 %
-%        Fun is assumed to return a result of the same
-%        shape as its input x0.
+%         Fun is assumed to return a result of the same shape as its input x0.
 %
-%  x0  - scalar, vector, or array of points at which to
-%        differentiate fun.
+%  x0  -  scalar, vector, or array of points at which to differentiate fun.
 %
 % Additional inputs must be in the form of property/value pairs.
 %  Properties are character strings. They may be shortened
@@ -139,13 +144,11 @@ function [der,errest,finaldelta] = derivest(fun,x0,varargin)
 %        function under some circumstances.
 %
 %
-% See the document DERIVEST.pdf for more explanation of the
-% algorithms behind the parameters of DERIVEST. In most cases,
-% I have chosen good values for these parameters, so the user
-% should never need to specify anything other than possibly
-% the DerivativeOrder. I've also tried to make my code robust
-% enough that it will not need much. But complete flexibility
-% is in there for your use.
+% See the document DERIVEST.pdf for more explanation of the algorithms behind
+% the parameters of DERIVEST. In most cases, I have chosen good values for these
+% parameters, so the user should never need to specify anything other than
+% possibly the DerivativeOrder. I've also tried to make my code robust enough
+% that it will not need much. But complete flexibility is in there for your use.
 %
 %
 % Arguments: (output)
@@ -185,10 +188,10 @@ function [der,errest,finaldelta] = derivest(fun,x0,varargin)
 % See also: gradient
 %
 %
-% Author: John D'Errico
-% e-mail: woodchips@rochester.rr.com
-% Release: 1.0
-% Release date: 12/27/2006
+% Author: John D'Errico, Philipp Tempel
+% e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
+% Release: 1.1
+% Release date: 2021-07-16
 
 par.DerivativeOrder = 1;
 par.MethodOrder = 4;
@@ -468,6 +471,7 @@ for i = 1:n
 end
 
 end % mainline end
+
 
 % ============================================
 % subfunction - romberg extrapolation
@@ -764,9 +768,3 @@ for i=1:n
 end
 
 end % parse_pv_pairs
-
-
-
-
-
-

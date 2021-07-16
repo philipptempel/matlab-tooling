@@ -1,25 +1,33 @@
-function [jac,err] = jacobianest(fun,x0, maxh, ratioh)
-% gradest: estimate of the Jacobian matrix of a vector valued function of n variables
-% usage: [jac,err] = jacobianest(fun,x0)
+function [jac,err] = jacobest(fun,x0, maxh, ratioh)
+%% JACOBEST Estimate the Jacobian matrix of a vector-valued function of N variables
+%
+% JAC = JACOBEST(FUN, X0)
+%
+% JAC = JACOBEST(FUN, X0, MAXH)
+%
+% JAC = JACOBEST(FUN, X0, MAXH, RATIOH)
+%
+% [JAC, ERR] = JACOBEST(___)
+%
+% gradest: estimate of the Jacobian matrix of a vector valued function of n
+% variables usage: [jac,err] = jacobianest(fun,x0)
 %
 % 
 % arguments: (input)
-%  fun - (vector valued) analytical function to differentiate.
-%        fun must be a function of the vector or array x0.
+%  fun -  (vector valued) analytical function to differentiate. fun must be a
+%         function of the vector or array x0.
 % 
-%  x0  - vector location at which to differentiate fun
-%        If x0 is an nxm array, then fun is assumed to be
-%        a function of n*m variables.
+%  x0  -  vector location at which to differentiate fun. If x0 is an nxm array,
+%         then fun is assumed to be a function of n*m variables.
 %
 %
 % arguments: (output)
-%  jac - array of first partial derivatives of fun.
-%        Assuming that x0 is a vector of length p
-%        and fun returns a vector of length n, then
-%        jac will be an array of size (n,p)
+%  jac -  array of first partial derivatives of fun. Assuming that x0 is a
+%         vector of length p and fun returns a vector of length n, then jac will
+%         be an array of size (n,p)
 %
-%  err - vector of error estimates corresponding to
-%        each partial derivative in jac.
+%  err -  vector of error estimates corresponding to each partial derivative in
+%         jac.
 %
 %
 % Example: (nonlinear least squares)
@@ -64,7 +72,7 @@ function [jac,err] = jacobianest(fun,x0, maxh, ratioh)
 % Author: John D'Errico, Philipp Tempel
 % e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
 % Release: 1.1
-% Release date: 2021-04-30
+% Release date: 2021-07-16
 
 % get the length of x0 for the size of jac
 nx = numel(x0);
@@ -216,6 +224,3 @@ if n==1
 end
 
 end % vec2mat
-
-
-

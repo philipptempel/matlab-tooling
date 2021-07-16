@@ -1,25 +1,29 @@
-function [hess,err] = hessian(fun,x0)
+function [hess,err] = hessest(fun,x0)
+%% HESSEST Estimate Hessian matrix of a scalar function
+%
+% HESS = HESSEST(FUN, XO)
+%
+% [HESS, ERR] = HESSEST(FUN, XO)
+%
 % hessian: estimate elements of the Hessian matrix (array of 2nd partials)
 % usage: [hess,err] = hessian(fun,x0)
 %
-% Hessian is NOT a tool for frequent use on an expensive
-% to evaluate objective function, especially in a large
-% number of dimensions. Its computation will use roughly
-% O(6*n^2) function evaluations for n parameters.
+% Hessian is NOT a tool for frequent use on an expensive to evaluate objective
+% function, especially in a large number of dimensions. Its computation will use
+% roughly O(6*n^2) function evaluations for n parameters.
 % 
 % arguments: (input)
-%  fun - SCALAR analytical function to differentiate.
-%        fun must be a function of the vector or array x0.
-%        fun does not need to be vectorized.
+%  fun -  SCALAR analytical function to differentiate. fun must be a function of
+%         the vector or array x0. fun does not need to be vectorized.
 % 
-%  x0  - vector location at which to compute the Hessian.
+%  x0  -  vector location at which to compute the Hessian.
 %
 % arguments: (output)
-%  hess - nxn symmetric array of second partial derivatives
-%        of fun, evaluated at x0.
+%  hess - nxn symmetric array of second partial derivatives of fun, evaluated at
+%         x0.
 %
-%  err - nxn array of error estimates corresponding to
-%        each second partial derivative in hess.
+%  err -  nxn array of error estimates corresponding toeach second partial
+%         derivative in hess.
 %
 %
 % Example usage:
@@ -48,10 +52,10 @@ function [hess,err] = hessian(fun,x0)
 % See also: derivest, gradient, gradest, hessdiag
 %
 %
-% Author: John D'Errico
-% e-mail: woodchips@rochester.rr.com
-% Release: 1.0
-% Release date: 2/10/2007
+% Author: John D'Errico, Philipp Tempel
+% e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
+% Release: 1.1
+% Release date: 2021-07-16
 
 % parameters that we might allow to change
 params.StepRatio = 2.0000001;
@@ -185,5 +189,3 @@ cov1 = sum(rinv.^2,2); % 1 spare dof
 errest = s'*12.7062047361747*sqrt(cov1(1));
 
 end % rombextrap
-
-

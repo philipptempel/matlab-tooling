@@ -1,4 +1,12 @@
 function [HD,err,finaldelta] = hessdiag(fun,x0)
+%% HESSDIAG Diagonal elements of the Hessian matrix of a function
+%
+% HESSDIAG = HESSEST(FUN, XO)
+%
+% [HESSDIAG, ERR] = HESSEST(FUN, XO)
+%
+% [HESSDIAG, ERR, FINALDELTA] = HESSEST(FUN, XO)
+%
 % HESSDIAG: diagonal elements of the Hessian matrix (vector of second partials)
 % usage: [HD,err,finaldelta] = hessdiag(fun,x0)
 %
@@ -40,10 +48,10 @@ function [HD,err,finaldelta] = hessdiag(fun,x0)
 % See also: derivest, gradient, gradest
 %
 %
-% Author: John D'Errico
-% e-mail: woodchips@rochester.rr.com
-% Release: 1.0
-% Release date: 2/9/2007
+% Author: John D'Errico, Philipp Tempel
+% e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
+% Release: 1.1
+% Release date: 2021-07-16
 
 % get the size of x0 so we can reshape
 % later.
@@ -71,6 +79,3 @@ function vec = swapelement(vec,ind,val)
 vec(ind) = val;
 
 end % sub-function end
-
-
-
