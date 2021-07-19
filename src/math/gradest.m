@@ -1,4 +1,4 @@
-function [grad,err,finaldelta] = gradest(fun,x0)
+function [grad, err, finaldelta] = gradest(fun, x0, varargin)
 % gradest: estimate of the gradient vector of an analytical function of n variables
 % usage: [grad,err,finaldelta] = gradest(fun,x0)
 %
@@ -65,6 +65,8 @@ function [grad,err,finaldelta] = gradest(fun,x0)
 % Release: 1.0
 % Release date: 2/9/2007
 
+
+
 % get the size of x0 so we can reshape
 % later.
 sx = size(x0);
@@ -72,25 +74,34 @@ sx = size(x0);
 % total number of derivatives we will need to take
 nx = numel(x0);
 
-grad = zeros(1,nx);
+grad = zeros(1, nx);
 err = grad;
 finaldelta = grad;
+
 for ind = 1:nx
-  [grad(ind),err(ind),finaldelta(ind)] = derivest( ...
-    @(xi) fun(swapelement(x0,ind,xi)), ...
-    x0(ind),'deriv',1,'vectorized','no', ...
-    'methodorder',2);
+  [ grad(ind), err(ind), finaldelta(ind) ] = derivest( ...
+    @(xi) fun(swapelement(x0, ind, xi)) ...
+    , x0(ind) ...
+    , 'Deriv', 1 ...
+    , 'Vectorized', 'no' ...
+    , 'MethodOrder', 2 ...
+    , varargin{:} ...
+  );
 end
 
-end % mainline function end
+
+grad = reshape(grad, sx);
+
+
+end
+
 
 % =======================================
 %      sub-functions
 % =======================================
-function vec = swapelement(vec,ind,val)
+function vec = swapelement(vec, ind,val)
+
 % swaps val as element ind, into the vector vec
 vec(ind) = val;
 
-end % sub-function end
-
-
+end

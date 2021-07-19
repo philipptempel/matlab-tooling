@@ -1,4 +1,4 @@
-function [der,errest,finaldelta] = derivest(fun,x0,varargin)
+function [der, errest, finaldelta] = derivest(fun, x0, varargin)
 %% DERIVEST Estimate the N-th derivative of a fun at X0
 %
 % DERIV = DERIVEST(FUN, X0)
@@ -193,6 +193,7 @@ function [der,errest,finaldelta] = derivest(fun,x0,varargin)
 % Release: 1.1
 % Release date: 2021-07-16
 
+par = struct();
 par.DerivativeOrder = 1;
 par.MethodOrder = 4;
 par.Style = 'central';
@@ -206,16 +207,16 @@ par.StepRatio = 2.0000001;
 par.NominalStep = [];
 par.Vectorized = 'yes';
 
-na = length(varargin);
-if (rem(na,2)==1)
+na = numel(varargin);
+if rem(na, 2) == 1
   error 'Property/value pairs must come as PAIRS of arguments.'
-elseif na>0
-  par = parse_pv_pairs(par,varargin);
+elseif na > 0
+  par = parse_pv_pairs(par, varargin);
 end
 par = check_params(par);
 
 % Was fun a string, or an inline/anonymous function?
-if (nargin<1)
+if nargin < 1
   help derivest
   return
 elseif isempty(fun)
@@ -226,10 +227,10 @@ elseif ischar(fun)
 end
 
 % no default for x0
-if (nargin<2) || isempty(x0)
+if nargin < 2 || isempty(x0)
   error 'x0 was not supplied'
 end
-par.NominalStep = max(x0,0.02);
+par.NominalStep = max(x0, 0.02);
 
 % was a single point supplied?
 nx0 = size(x0);
@@ -238,16 +239,18 @@ n = prod(nx0);
 % Set the steps to use.
 if isempty(par.FixedStep)
   % Basic sequence of steps, relative to a stepsize of 1.
-  delta = par.MaxStep*par.StepRatio .^(0:-1:-25)';
-  ndel = length(delta);
+  delta = par.MaxStep * par.StepRatio .^ (0:-1:-25).';
+  ndel = numel(delta);
 else
   % Fixed, user supplied absolute sequence of steps.
-  ndel = 3 + ceil(par.DerivativeOrder/2) + ...
-     par.MethodOrder + par.RombergTerms;
+  ndel = 3 + ...
+    + ceil(par.DerivativeOrder / 2) + ...
+    + par.MethodOrder + ...
+    + par.RombergTerms;
   if par.Style(1) == 'c'
     ndel = ndel - 2;
   end
-  delta = par.FixedStep*par.StepRatio .^(-(0:(ndel-1)))';
+  delta = par.FixedStep * par.StepRatio .^ (-(0:(ndel-1))).';
 end
 
 % generate finite differencing rule in advance.
@@ -258,7 +261,7 @@ switch par.Style
   case 'central'
     % for central rules, we will reduce the load by an
     % even or odd transformation as appropriate.
-    if par.MethodOrder==2
+    if par.MethodOrder == 2
       switch par.DerivativeOrder
         case 1
           % the odd transformation did all the work
@@ -269,11 +272,11 @@ switch par.Style
         case 3
           % the odd transformation did most of the work, but
           % we need to kill off the linear term
-          fdarule = [0 1]/fdamat(par.StepRatio,1,2);
+          fdarule = [ 0 , 1 ] / fdamat(par.StepRatio, 1, 2);
         case 4
           % the even transformation did most of the work, but
           % we need to kill off the quadratic term
-          fdarule = [0 1]/fdamat(par.StepRatio,2,2);
+          fdarule = [ 0 , 1 ] / fdamat(par.StepRatio, 2, 2);
       end
     else
       % a 4th order method. We've already ruled out the 1st
@@ -282,43 +285,44 @@ switch par.Style
         case 1
           % the odd transformation did most of the work, but
           % we need to kill off the cubic term
-          fdarule = [1 0]/fdamat(par.StepRatio,1,2);
+          fdarule = [ 1 , 0 ] / fdamat(par.StepRatio, 1, 2);
         case 2
           % the even transformation did most of the work, but
           % we need to kill off the quartic term
-          fdarule = [1 0]/fdamat(par.StepRatio,2,2);
+          fdarule = [ 1 , 0 ] / fdamat(par.StepRatio, 2, 2);
         case 3
           % the odd transformation did much of the work, but
           % we need to kill off the linear & quintic terms
-          fdarule = [0 1 0]/fdamat(par.StepRatio,1,3);
+          fdarule = [ 0 , 1 , 0 ] / fdamat(par.StepRatio, 1, 3);
         case 4
           % the even transformation did much of the work, but
           % we need to kill off the quadratic and 6th order terms
-          fdarule = [0 1 0]/fdamat(par.StepRatio,2,3);
+          fdarule = [ 0 , 1 , 0 ] / fdamat(par.StepRatio, 2, 3);
       end
     end
+    
   case {'forward' 'backward'}
     % These two cases are identical, except at the very end,
     % where a sign will be introduced.
 
     % No odd/even trans, but we already dropped
     % off the constant term
-    if par.MethodOrder==1
-      if par.DerivativeOrder==1
+    if par.MethodOrder == 1
+      if par.DerivativeOrder == 1
         % an easy one
         fdarule = 1;
       else
         % 2:4
-        v = zeros(1,par.DerivativeOrder);
+        v = zeros(1, par.DerivativeOrder);
         v(par.DerivativeOrder) = 1;
-        fdarule = v/fdamat(par.StepRatio,0,par.DerivativeOrder);
+        fdarule = v / fdamat(par.StepRatio, 0, par.DerivativeOrder);
       end
     else
       % par.MethodOrder methods drop off the lower order terms,
       % plus terms directly above DerivativeOrder
-      v = zeros(1,par.DerivativeOrder + par.MethodOrder - 1);
+      v = zeros(1, par.DerivativeOrder + par.MethodOrder - 1);
       v(par.DerivativeOrder) = 1;
-      fdarule = v/fdamat(par.StepRatio,0,par.DerivativeOrder+par.MethodOrder-1);
+      fdarule = v / fdamat(par.StepRatio, 0, par.DerivativeOrder + par.MethodOrder - 1);
     end
     
     % correct sign for the 'backward' rule
@@ -327,19 +331,22 @@ switch par.Style
     end
     
 end % switch on par.style (generating fdarule)
-nfda = length(fdarule);
+nfda = numel(fdarule);
 
 % will we need fun(x0)?
-if (rem(par.DerivativeOrder,2) == 0) || ~strncmpi(par.Style,'central',7)
-  if strcmpi(par.Vectorized,'yes')
+if rem(par.DerivativeOrder, 2) == 0 || ~strncmpi(par.Style, 'central', 7)
+  if strcmpi(par.Vectorized, 'yes')
     f_x0 = fun(x0);
+    
   else
     % not vectorized, so loop
     f_x0 = zeros(size(x0));
     for j = 1:numel(x0)
       f_x0(j) = fun(x0(j));
     end
+    
   end
+  
 else
   f_x0 = [];
 end
@@ -362,53 +369,53 @@ for i = 1:n
     % A central rule, so we will need to evaluate
     % symmetrically around x0i.
     if strcmpi(par.Vectorized,'yes')
-      f_plusdel = fun(x0i+h*delta);
-      f_minusdel = fun(x0i-h*delta);
+      f_plusdel = fun(x0i + h * delta);
+      f_minusdel = fun(x0i - h * delta);
     else
       % not vectorized, so loop
       f_minusdel = zeros(size(delta));
       f_plusdel = zeros(size(delta));
       for j = 1:numel(delta)
-        f_plusdel(j) = fun(x0i+h*delta(j));
-        f_minusdel(j) = fun(x0i-h*delta(j));
+        f_plusdel(j) = fun(x0i + h * delta(j));
+        f_minusdel(j) = fun(x0i - h * delta(j));
       end
     end
     
-    if ismember(par.DerivativeOrder,[1 3])
+    if ismember(par.DerivativeOrder, [ 1 , 3 ])
       % odd transformation
-      f_del = (f_plusdel - f_minusdel)/2;
+      f_del = ( f_plusdel - f_minusdel ) / 2;
     else
-      f_del = (f_plusdel + f_minusdel)/2 - f_x0(i);
+      f_del = ( f_plusdel + f_minusdel ) / 2 - f_x0(i);
     end
   elseif par.Style(1) == 'f'
     % forward rule
     % drop off the constant only
-    if strcmpi(par.Vectorized,'yes')
-      f_del = fun(x0i+h*delta) - f_x0(i);
+    if strcmpi(par.Vectorized, 'yes')
+      f_del = fun(x0i + h * delta) - f_x0(i);
     else
       % not vectorized, so loop
       f_del = zeros(size(delta));
       for j = 1:numel(delta)
-        f_del(j) = fun(x0i+h*delta(j)) - f_x0(i);
+        f_del(j) = fun(x0i + h * delta(j)) - f_x0(i);
       end
     end
   else
     % backward rule
     % drop off the constant only
     if strcmpi(par.Vectorized,'yes')
-      f_del = fun(x0i-h*delta) - f_x0(i);
+      f_del = fun(x0i - h * delta) - f_x0(i);
     else
       % not vectorized, so loop
       f_del = zeros(size(delta));
       for j = 1:numel(delta)
-        f_del(j) = fun(x0i-h*delta(j)) - f_x0(i);
+        f_del(j) = fun(x0i - h * delta(j)) - f_x0(i);
       end
     end
   end
   
   % check the size of f_del to ensure it was properly vectorized.
   f_del = f_del(:);
-  if length(f_del)~=ndel
+  if numel(f_del) ~= ndel
     error 'fun did not return the correct size result (fun must be vectorized)'
   end
 
@@ -419,10 +426,10 @@ for i = 1:n
 
   % Form the initial derivative estimates from the chosen
   % finite difference method.
-  der_init = vec2mat(f_del,ne,nfda)*fdarule.';
+  der_init = vec2mat(f_del, ne, nfda) * fdarule.';
 
   % scale to reflect the local delta
-  der_init = der_init(:)./(h*delta(1:ne)).^par.DerivativeOrder;
+  der_init = der_init(:) ./ ( h * delta(1:ne) ) .^ par.DerivativeOrder;
   
   % Each approximation that results is an approximation
   % of order par.DerivativeOrder to the desired derivative.
@@ -431,42 +438,47 @@ for i = 1:n
   % Romberg extrapolation to improve these estimates.
   switch par.Style
     case 'central'
-      rombexpon = 2*(1:par.RombergTerms) + par.MethodOrder - 2;
+      rombexpon = 2 * ( 1:par.RombergTerms ) + par.MethodOrder - 2;
     otherwise
-      rombexpon = (1:par.RombergTerms) + par.MethodOrder - 1;
+      rombexpon = ( 1:par.RombergTerms ) + par.MethodOrder - 1;
   end
-  [der_romb,errors] = rombextrap(par.StepRatio,der_init,rombexpon);
+  [der_romb, errors] = rombextrap(par.StepRatio, der_init, rombexpon);
   
   % Choose which result to return
   
   % first, trim off the 
   if isempty(par.FixedStep)
     % trim off the estimates at each end of the scale
-    nest = length(der_romb);
+    nest = numel(der_romb);
     switch par.DerivativeOrder
-      case {1 2}
-        trim = [1 2 nest-1 nest];
+      case {1, 2}
+        trim = [ 1 , 2 , nest - 1 , nest ];
+        
       case 3
-        trim = [1:4 nest+(-3:0)];
+        trim = [ 1 , 2 , 3 , 4 , nest + [ -3 , -2 , -1 , 0 ] ];
+        
       case 4
-        trim = [1:6 nest+(-5:0)];
+        trim = [ 1 , 2 , 3 , 4 , 5 , 6 , nest + [ -5 , -4 , -3 , -2 , -1 , 0 ]];
+        
     end
     
-    [der_romb,tags] = sort(der_romb);
+    [der_romb, tags] = sort(der_romb);
     
     der_romb(trim) = [];
     tags(trim) = [];
     errors = errors(tags);
     trimdelta = delta(tags);
     
-    [errest(i),ind] = min(errors);
+    [errest(i), ind] = min(errors);
     
-    finaldelta(i) = h*trimdelta(ind);
+    finaldelta(i) = h * trimdelta(ind);
     der(i) = der_romb(ind);
+    
   else
-    [errest(i),ind] = min(errors);
-    finaldelta(i) = h*delta(ind);
+    [errest(i), ind] = min(errors);
+    finaldelta(i) = h * delta(ind);
     der(i) = der_romb(ind);
+    
   end
 end
 
@@ -476,7 +488,7 @@ end % mainline end
 % ============================================
 % subfunction - romberg extrapolation
 % ============================================
-function [der_romb,errest] = rombextrap(StepRatio,der_init,rombexpon)
+function [der_romb, errest] = rombextrap(StepRatio, der_init, rombexpon)
 % do romberg extrapolation for each estimate
 %
 %  StepRatio - Ratio decrease in step
@@ -490,46 +502,46 @@ function [der_romb,errest] = rombextrap(StepRatio,der_init,rombexpon)
 srinv = 1/StepRatio;
 
 % do nothing if no romberg terms
-nexpon = length(rombexpon);
-rmat = ones(nexpon+2,nexpon+1);
+nexpon = numel(rombexpon);
+rmat = ones(nexpon + 2, nexpon + 1);
 switch nexpon
   case 0
     % rmat is simple: ones(2,1)
   case 1
     % only one romberg term
-    rmat(2,2) = srinv^rombexpon;
-    rmat(3,2) = srinv^(2*rombexpon);
+    rmat(2,2) = srinv ^ (1 * rombexpon);
+    rmat(3,2) = srinv ^ (2 * rombexpon);
   case 2
     % two romberg terms
-    rmat(2,2:3) = srinv.^rombexpon;
-    rmat(3,2:3) = srinv.^(2*rombexpon);
-    rmat(4,2:3) = srinv.^(3*rombexpon);
+    rmat(2,[2,3]) = srinv .^ (1 * rombexpon);
+    rmat(3,[2,3]) = srinv .^ (2 * rombexpon);
+    rmat(4,[2,3]) = srinv .^ (3 * rombexpon);
   case 3
     % three romberg terms
-    rmat(2,2:4) = srinv.^rombexpon;
-    rmat(3,2:4) = srinv.^(2*rombexpon);
-    rmat(4,2:4) = srinv.^(3*rombexpon);
-    rmat(5,2:4) = srinv.^(4*rombexpon);
+    rmat(2,[2,3,4]) = srinv .^ (1 * rombexpon);
+    rmat(3,[2,3,4]) = srinv .^ (2 * rombexpon);
+    rmat(4,[2,3,4]) = srinv .^ (3 * rombexpon);
+    rmat(5,[2,3,4]) = srinv .^ (4 * rombexpon);
 end
 
 % qr factorization used for the extrapolation as well
 % as the uncertainty estimates
-[qromb,rromb] = qr(rmat,0);
+[qromb, rromb] = qr(rmat, 0);
 
 % the noise amplification is further amplified by the Romberg step.
 % amp = cond(rromb);
 
 % this does the extrapolation to a zero step size.
-ne = length(der_init);
-rhs = vec2mat(der_init,nexpon+2,max(1,ne - (nexpon+2)));
-rombcoefs = rromb\(qromb.'*rhs); 
+ne = numel(der_init);
+rhs = vec2mat(der_init, nexpon + 2, max(1, ne - (nexpon + 2)));
+rombcoefs = rromb \ (qromb.' * rhs); 
 der_romb = rombcoefs(1,:).';
 
 % uncertainty estimate of derivative prediction
-s = sqrt(sum((rhs - rmat*rombcoefs).^2,1));
-rinv = rromb\eye(nexpon+1);
-cov1 = sum(rinv.^2,2); % 1 spare dof
-errest = s.'*12.7062047361747*sqrt(cov1(1));
+s = sqrt(sum((rhs - rmat * rombcoefs) .^ 2, 1));
+rinv = rromb \ eye(nexpon + 1);
+cov1 = sum(rinv .^ 2, 2); % 1 spare dof
+errest = s.' * 12.7062047361747 * sqrt(cov1(1));
 
 end % rombextrap
 
@@ -537,13 +549,14 @@ end % rombextrap
 % ============================================
 % subfunction - vec2mat
 % ============================================
-function mat = vec2mat(vec,n,m)
+function mat = vec2mat(vec, n, m)
 % forms the matrix M, such that M(i,j) = vec(i+j-1)
-[i,j] = ndgrid(1:n,0:m-1);
-ind = i+j;
+[i, j] = ndgrid(1:n, 0:m-1);
+ind = i + j;
 mat = vec(ind);
-if n==1
+if n == 1
   mat = mat.';
+  
 end
 
 end % vec2mat
@@ -552,7 +565,7 @@ end % vec2mat
 % ============================================
 % subfunction - fdamat
 % ============================================
-function mat = fdamat(sr,parity,nterms)
+function mat = fdamat(sr, parity, nterms)
 % Compute matrix for fda derivation.
 % parity can be
 %   0 (one sided, all terms included but zeroth order)
@@ -561,24 +574,24 @@ function mat = fdamat(sr,parity,nterms)
 % nterms - number of terms
 
 % sr is the ratio between successive steps
-srinv = 1./sr;
+srinv = 1 ./ sr;
 
 switch parity
   case 0
     % single sided rule
-    [i,j] = ndgrid(1:nterms);
-    c = 1./factorial(1:nterms);
-    mat = c(j).*srinv.^((i-1).*j);
+    [i, j] = ndgrid(1:nterms);
+    c = 1 ./ factorial(1:nterms);
+    mat = c(j) .* srinv .^ ((i - 1) .* j);
   case 1
     % odd order derivative
-    [i,j] = ndgrid(1:nterms);
-    c = 1./factorial(1:2:(2*nterms));
-    mat = c(j).*srinv.^((i-1).*(2*j-1));
+    [i, j] = ndgrid(1:nterms);
+    c = 1 ./ factorial(1:2:(2 * nterms));
+    mat = c(j) .* srinv .^ ((i - 1) .* (2 * j - 1));
   case 2
     % even order derivative
-    [i,j] = ndgrid(1:nterms);
-    c = 1./factorial(2:2:(2*nterms));
-    mat = c(j).*srinv.^((i-1).*(2*j));
+    [i, j] = ndgrid(1:nterms);
+    c = 1 ./ factorial(2:2:(2 * nterms));
+    mat = c(j) .* srinv .^ ((i - 1) .* (2 * j));
 end
 
 end % fdamat
@@ -602,7 +615,7 @@ function par = check_params(par)
 if isempty(par.DerivativeOrder)
   par.DerivativeOrder = 1;
 else
-  if (length(par.DerivativeOrder)>1) || ~ismember(par.DerivativeOrder,1:4)
+  if numel(par.DerivativeOrder) > 1 || ~ismember(par.DerivativeOrder, [ 1 , 2 , 3 , 4 ])
     error 'DerivativeOrder must be scalar, one of [1 2 3 4].'
   end
 end
@@ -611,9 +624,9 @@ end
 if isempty(par.MethodOrder)
   par.MethodOrder = 2;
 else
-  if (length(par.MethodOrder)>1) || ~ismember(par.MethodOrder,[1 2 3 4])
+  if numel(par.MethodOrder) > 1 || ~ismember(par.MethodOrder, [ 1 , 2 , 3 , 4 ])
     error 'MethodOrder must be scalar, one of [1 2 3 4].'
-  elseif ismember(par.MethodOrder,[1 3]) && (par.Style(1)=='c')
+  elseif ismember(par.MethodOrder, [ 1 , 3 ]) && par.Style(1) == 'c'
     error 'MethodOrder==1 or 3 is not possible with central difference methods'
   end
 end
@@ -625,11 +638,11 @@ if isempty(par.Style)
 elseif ~ischar(par.Style)
   error 'Invalid Style: Must be character'
 end
-ind = find(strncmpi(par.Style,valid,length(par.Style)));
-if (length(ind)==1)
+ind = find(strncmpi(par.Style, valid, numel(par.Style)));
+if numel(ind) == 1
   par.Style = valid{ind};
 else
-  error(['Invalid Style: ',par.Style])
+  error(['Invalid Style: ' , par.Style])
 end
 
 % vectorized is char
@@ -639,31 +652,31 @@ if isempty(par.Vectorized)
 elseif ~ischar(par.Vectorized)
   error 'Invalid Vectorized: Must be character'
 end
-ind = find(strncmpi(par.Vectorized,valid,length(par.Vectorized)));
-if (length(ind)==1)
+ind = find(strncmpi(par.Vectorized, valid, numel(par.Vectorized)));
+if numel(ind) == 1
   par.Vectorized = valid{ind};
 else
-  error(['Invalid Vectorized: ',par.Vectorized])
+  error(['Invalid Vectorized: ' , par.Vectorized])
 end
 
 % RombergTerms == 2 by default
 if isempty(par.RombergTerms)
   par.RombergTerms = 2;
 else
-  if (length(par.RombergTerms)>1) || ~ismember(par.RombergTerms,0:3)
+  if numel(par.RombergTerms) > 1 || ~ismember(par.RombergTerms, [ 0 , 1 , 2 , 3 ] )
     error 'RombergTerms must be scalar, one of [0 1 2 3].'
   end
 end
 
 % FixedStep == [] by default
-if (length(par.FixedStep)>1) || (~isempty(par.FixedStep) && (par.FixedStep<=0))
+if numel(par.FixedStep) > 1 || ( ~isempty(par.FixedStep) && par.FixedStep <= 0 )
   error 'FixedStep must be empty or a scalar, >0.'
 end
 
 % MaxStep == 10 by default
 if isempty(par.MaxStep)
   par.MaxStep = 10;
-elseif (length(par.MaxStep)>1) || (par.MaxStep<=0)
+elseif numel(par.MaxStep) > 1 || par.MaxStep <= 0
   error 'MaxStep must be empty or a scalar, >0.'
 end
 
@@ -673,7 +686,7 @@ end % check_params
 % ============================================
 % Included subfunction - parse_pv_pairs
 % ============================================
-function params=parse_pv_pairs(params,pv_pairs)
+function params = parse_pv_pairs(params, pv_pairs)
 % parse_pv_pairs: parses sets of property value pairs, allows defaults
 % usage: params=parse_pv_pairs(default_params,pv_pairs)
 %
@@ -729,41 +742,41 @@ function params=parse_pv_pairs(params,pv_pairs)
 % was truncated as supplied. Also note that the order the pairs were
 % supplied was arbitrary.
 
-npv = length(pv_pairs);
-n = npv/2;
+npv = numel(pv_pairs);
+n = npv / 2;
 
-if n~=floor(n)
-  error 'Property/value pairs must come in PAIRS.'
+if n ~= floor(n)
+  error('Property/value pairs must come in PAIRS.');
 end
-if n<=0
+if n <= 0
   % just return the defaults
   return
 end
 
 if ~isstruct(params)
-  error 'No structure for defaults was supplied'
+  error('No structure for defaults was supplied');
 end
 
 % there was at least one pv pair. process any supplied
 propnames = fieldnames(params);
 lpropnames = lower(propnames);
 for i=1:n
-  p_i = lower(pv_pairs{2*i-1});
-  v_i = pv_pairs{2*i};
+  p_i = lower(pv_pairs{2 * i - 1});
+  v_i = pv_pairs{2 * i};
   
-  ind = strmatch(p_i,lpropnames,'exact');
+  ind = strmatch(p_i, lpropnames, 'exact');
   if isempty(ind)
-    ind = find(strncmp(p_i,lpropnames,length(p_i)));
+    ind = find(strncmp(p_i, lpropnames, numel(p_i)));
     if isempty(ind)
-      error(['No matching property found for: ',pv_pairs{2*i-1}])
-    elseif length(ind)>1
-      error(['Ambiguous property name: ',pv_pairs{2*i-1}])
+      error(['No matching property found for: ' , pv_pairs{2 * i-1}])
+    elseif numel(ind) > 1
+      error(['Ambiguous property name: ' , pv_pairs{2 * i-1}])
     end
   end
   p_i = propnames{ind};
   
   % override the corresponding default in params
-  params = setfield(params,p_i,v_i); %#ok
+  params = setfield(params, p_i, v_i); %#ok
   
 end
 

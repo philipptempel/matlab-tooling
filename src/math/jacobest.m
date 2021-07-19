@@ -1,4 +1,4 @@
-function [jac,err] = jacobest(fun,x0, maxh, ratioh)
+function [jac, err] = jacobest(fun, x0, maxh, ratioh)
 %% JACOBEST Estimate the Jacobian matrix of a vector-valued function of N variables
 %
 % JAC = JACOBEST(FUN, X0)
@@ -82,7 +82,7 @@ if nargin < 3 || isempty(maxh)
 end
 
 if nargin < 4 || isempty(ratioh)
-  ratioh =  2.0000001;
+  ratioh = 2.0000001;
 end
 
 % was a string supplied?
@@ -94,23 +94,23 @@ end
 f0 = fun(x0);
 f0 = f0(:);
 n = length(f0);
-if n==0
+if n == 0
   % empty begets empty
-  jac = zeros(0,nx);
+  jac = zeros(0, nx);
   err = jac;
   return
 end
 
-relativedelta = maxh*ratioh .^(0:-1:-25);
+relativedelta = maxh * ratioh .^ (0:-1:-25);
 nsteps = length(relativedelta);
 
 % total number of derivatives we will need to take
-jac = zeros(n,nx);
+jac = zeros(n, nx);
 err = jac;
 for i = 1:nx
   x0_i = x0(i);
   if x0_i ~= 0
-    delta = x0_i*relativedelta;
+    delta = x0_i * relativedelta;
   else
     delta = relativedelta;
   end
@@ -119,15 +119,15 @@ for i = 1:nx
   % difference to give a second order estimate
   fdel = zeros(n,nsteps);
   for j = 1:nsteps
-    fdif = fun(swapelement(x0,i,x0_i + delta(j))) - ...
-      fun(swapelement(x0,i,x0_i - delta(j)));
+    fdif = fun(swapelement(x0, i, x0_i + delta(j))) + ...
+        - fun(swapelement(x0, i, x0_i - delta(j)));
     
     fdel(:,j) = fdif(:);
   end
   
   % these are pure second order estimates of the
   % first derivative, for each trial delta.
-  derest = fdel.*repmat(0.5 ./ delta,n,1);
+  derest = fdel .* repmat(0.5 ./ delta, n, 1);
   
   % The error term on these estimates has a second order
   % component, but also some 4th and 6th order terms in it.
@@ -137,19 +137,19 @@ for i = 1:nx
   % loop here, as rombextrap coupled with the trimming
   % will get complicated otherwise.
   for j = 1:n
-    [der_romb,errest] = rombextrap(ratioh,derest(j,:),[2 4]);
+    [der_romb, errest] = rombextrap(ratioh, derest(j,:), [2 4]);
     
     % trim off 3 estimates at each end of the scale
     nest = length(der_romb);
-    trim = [1:3, nest+(-2:0)];
-    [der_romb,tags] = sort(der_romb);
+    trim = [ 1, 2, 3, nest + (-2:0) ];
+    [der_romb, tags] = sort(der_romb);
     der_romb(trim) = [];
     tags(trim) = [];
     
     errest = errest(tags);
     
     % now pick the estimate with the lowest predicted error
-    [err(j,i),ind] = min(errest);
+    [err(j,i), ind] = min(errest);
     jac(j,i) = der_romb(ind);
   end
 end
@@ -168,7 +168,7 @@ end % sub-function end
 % ============================================
 % subfunction - romberg extrapolation
 % ============================================
-function [der_romb,errest] = rombextrap(StepRatio,der_init,rombexpon)
+function [der_romb, errest] = rombextrap(StepRatio, der_init, rombexpon)
 % do romberg extrapolation for each estimate
 %
 %  StepRatio - Ratio decrease in step
@@ -179,34 +179,34 @@ function [der_romb,errest] = rombextrap(StepRatio,der_init,rombexpon)
 %  errest - error estimates
 %  amp - noise amplification factor due to the romberg step
 
-srinv = 1/StepRatio;
+srinv = 1 / StepRatio;
 
 % do nothing if no romberg terms
 nexpon = length(rombexpon);
-rmat = ones(nexpon+2,nexpon+1);
+rmat = ones(nexpon + 2, nexpon + 1);
 % two romberg terms
-rmat(2,2:3) = srinv.^rombexpon;
-rmat(3,2:3) = srinv.^(2*rombexpon);
-rmat(4,2:3) = srinv.^(3*rombexpon);
+rmat(2,2:3) = srinv .^ ( 1 * rombexpon );
+rmat(3,2:3) = srinv .^ ( 2 * rombexpon );
+rmat(4,2:3) = srinv .^ ( 3 * rombexpon );
 
 % qr factorization used for the extrapolation as well
 % as the uncertainty estimates
-[qromb,rromb] = qr(rmat,0);
+[qromb, rromb] = qr(rmat, 0);
 
 % the noise amplification is further amplified by the Romberg step.
 % amp = cond(rromb);
 
 % this does the extrapolation to a zero step size.
 ne = length(der_init);
-rhs = vec2mat(der_init,nexpon+2,ne - (nexpon+2));
-rombcoefs = rromb\(qromb'*rhs);
+rhs = vec2mat(der_init, nexpon + 2, ne -(nexpon + 2));
+rombcoefs = rromb \ ( qromb' * rhs );
 der_romb = rombcoefs(1,:)';
 
 % uncertainty estimate of derivative prediction
-s = sqrt(sum((rhs - rmat*rombcoefs).^2,1));
-rinv = rromb\eye(nexpon+1);
-cov1 = sum(rinv.^2,2); % 1 spare dof
-errest = s'*12.7062047361747*sqrt(cov1(1));
+s = sqrt(sum( (rhs - rmat * rombcoefs) .^ 2, 1));
+rinv = rromb \ eye(nexpon + 1);
+cov1 = sum(rinv .^ 2, 2); % 1 spare dof
+errest = s' * 12.7062047361747 * sqrt(cov1(1));
 
 end % rombextrap
 
@@ -216,10 +216,10 @@ end % rombextrap
 % ============================================
 function mat = vec2mat(vec,n,m)
 % forms the matrix M, such that M(i,j) = vec(i+j-1)
-[i,j] = ndgrid(1:n,0:m-1);
-ind = i+j;
+[i, j] = ndgrid(1:n, 0:m-1);
+ind = i + j;
 mat = vec(ind);
-if n==1
+if n == 1
   mat = mat';
 end
 
