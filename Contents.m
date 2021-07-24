@@ -1,6 +1,5 @@
-% MATLAB-TOOLING
+% MATLAB
 %
 % Files
-%   finish   - shuts down the project
-%   projpath - returns the path definiton for this project
-%   startup  - starts this project
+%   finish  - shuts down the project
+%   startup - starts this project
