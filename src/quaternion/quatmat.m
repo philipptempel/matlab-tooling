@@ -44,7 +44,7 @@ qv = quatvalid(q, 'quatmat');
 
 %% Calculate matrices
 
-qskm = vec2skew(qv([2,3,4],:).');
+qskm = vec2skew(qv([2,3,4],:));
 
 % Shift number of quaternions into third dimensions
 qv = permute(qv, [1, 3, 2]);
@@ -59,11 +59,11 @@ qvec = qv([2,3,4],:,:);
 eyenq = repmat(eye(3, 3), [1, 1, nq]);
 
 % Quaternion matrix
-Q = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq + qskm));
+Q = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq - qskm));
 
 % Conjugate quaternion matrix, conditionally
 if nargout > 1
-  varargout{1} = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq - qskm));
+  varargout{1} = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq + qskm));
 end
 
 
