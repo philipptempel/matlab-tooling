@@ -46,7 +46,7 @@ cord = min(cord, dim);
 
 % Create an empty vector...
 ev = zeros(dim, 1);
-% ... and set the dim-th value to 1
+% ... and set the cord-th value to 1
 ev(cord) = 1;
 
 
