@@ -1,5 +1,5 @@
 function omega = quat2vel(q, q_dot)%#codegen
-% QUAT2VEL Converts quaternion velocity vector to angular velocity vector
+%% QUAT2VEL Converts quaternion velocity vector to angular velocity vector
 % 
 %   OMEGA = QUAT2VEL(Q, DQ) calculates the angular velocity vector OMEGA from
 %   the quaternion position and velocity vectors Q and DQ, respectively.

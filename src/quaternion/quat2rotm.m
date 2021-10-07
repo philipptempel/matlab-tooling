@@ -1,5 +1,5 @@
 function R = quat2rotm(q)%#codegen
-% QUAT2ROTM converts quaternions to rotation matrices
+%% QUAT2ROTM converts quaternions to rotation matrices
 %
 % R = QUAT2ROTM(Q) converts a unit quaternion, Q, into an orthonormal rotation
 % matrix, R. The input, Q, is an N-by-4 matrix containing N quaternions. Each

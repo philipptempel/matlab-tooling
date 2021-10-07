@@ -3,7 +3,7 @@ function [Q, varargout] = quatmat(q)%#codegen
 %
 % Inputs:
 %
-%   Q                   4xN quaternion(s) with scalar element in last row.
+%   Q                   4xN quaternion(s) with scalar element in first row.
 %
 % Outputs:
 %
@@ -15,8 +15,11 @@ function [Q, varargout] = quatmat(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-24
+% Date: 2021-10-07
 % Changelog:
+%   2021-10-07
+%     * Fix sign of skew-symmetric part in quaternion matrix and its conjugate
+%     quaternion matrix counterpart
 %   2020-11-24
 %     * Updates to support code generation
 %   2020-11-11

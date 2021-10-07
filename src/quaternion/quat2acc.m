@@ -1,5 +1,5 @@
 function alpha = quat2acc(q_dot, q_ddot)%#codegen
-% QUAT2ACC Get angular acceleration from quaternion velocity, and acceleration
+%% QUAT2ACC Get angular acceleration from quaternion velocity, and acceleration
 % 
 %   ALPHA = QUAT2ACC(DQ, DDQ) gets the angular acceleration ALPHA from
 %   quaternion velocity DQ, and quaternion acceleration DDQ.
