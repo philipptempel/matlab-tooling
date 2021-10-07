@@ -21,8 +21,11 @@ function R = quat2rotm(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-24
+% Date: 2021-10-07
 % Changelog:
+%   2021-10-07
+%     * Change algorithm to use Euler-Rodrigues formula for calculation of
+%     rotation matrix
 %   2020-11-24
 %     * Rename variables `s`, `x`, `y`, `z` to `q1`, `q2`, `q3`, `q4`
 %     * Speed up code by pre-calculating common products
@@ -63,38 +66,29 @@ nq = size(qv, 2);
 qq = reshape(qv, [4, 1, nq]);
 
 % Access individual quaternion entries
-q1 = qq(1,1,:);
-q2 = qq(2,1,:);
-q3 = qq(3,1,:);
-q4 = qq(4,1,:);
+qs = qq(1,1,:);
+qv = qq([2,3,4],1,:);
 
-% Pre-calculate common products
-q1q1 = q1 .^ 2;
-q2q2 = q2 .^ 2;
-q3q3 = q3 .^ 2;
-q4q4 = q4 .^ 2;
-q1q2 = q1 .* q2;
-q1q3 = q1 .* q3;
-q2q3 = q2 .* q3;
-q1q4 = q1 .* q4;
-q2q4 = q2 .* q4;
-q3q4 = q3 .* q4;
+% Angle of rotation of each quaternion
+theta = 2 * acos(qs);
 
-% Explicitly define concatenation dimension for codegen
-tempR = cat(1 ...
-  , q1q1 + q2q2 - q3q3 - q4q4,  2 * ( q2q3 - q1q4 ),       2 * ( q2q4 + q1q3 )...
-  , 2 * ( q2q3 + q1q4 ),       q1q1 - q2q2 + q3q3 - q4q4,  2 * ( q3q4 - q1q2 ) ...
-  , 2 * ( q2q4 - q1q3 ),       2 * ( q3q4 + q1q2 ),       q1q1 - q2q2 - q3q3 + q4q4...
-);
-% Original code before speed up optimization
-% tempR = cat(1 ...
-%   , 1 - 2*(q3.^2 + q4.^2),  2*(q2*q3 - q1*q4),    2*(q2*q4 + q1*q3) ...
-%   , 2*(q2*q3 + q1*q4),    1 - 2*(q2.^2 + q4.^2),  2*(q3*q4 - q1*q2) ...
-%   , 2*(q2*q4 - q1*q3),    2*(q3*q4 + q1*q2),    1 - 2*(q2.^2 + q3.^2) ...
-% );
+% Non-zero rotations
+nonzero_theta = ~isclose(theta, 0);
 
-% Reshape to 3x3xN and then transpose each page  (due to MATLAB's column major)
-R = permute(reshape(tempR, [3, 3, nq]), [2, 1, 3]);
+% Calculate axis of rotation of each quaternion
+omega = zeros(3, nq);
+omega(:,nonzero_theta) = qv(:,:,nonzero_theta) ./ (sin(theta(:,:,nonzero_theta) / 2));
+
+% Build skew-symmetric matrix of each rotation axis
+omega_hat = vec2skew(omega);
+
+% Build rotation matrices based on Euler-Rodgrigues formula
+R = repmat(eye(3, 3), 1, 1, nq) + ...
+  + omega_hat .* sin(theta) + ...
+  + pagemtimes( ...
+    pagemtimes(omega_hat, omega_hat) ...
+    , 1 - cos(theta) ...
+  );
 
 % Vanish singular values
 singular = abs(R) < 10 * eps(class(qv)) & R ~= 0;
