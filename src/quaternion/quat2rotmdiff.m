@@ -29,7 +29,7 @@ function dR = quat2rotmdiff(q, dq)%#codegen
 
 % QUAT2ROTMDIFF(Q)
 % QUAT2ROTMDIFF(Q, DQ)
-narginchk(1, 2)
+narginchk(1, 2);
 % QUAT2ROTMDIFF(Q, DQ)
 % DR = QUAT2ROTMDIFF(Q, DQ)
 nargoutchk(0, 1);
