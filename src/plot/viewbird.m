@@ -5,8 +5,10 @@ function viewbird(hax)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-18
+% Date: 2021-10-20
 % Changelog:
+%   2021-10-20
+%       * Fix viewport angles
 %   2021-03-18
 %       * Store previous original viewport in axes' UserData when it is not
 %       already there. This allows for easier restoring of the very original
@@ -33,7 +35,7 @@ if isempty(hax.UserData) && ~isfield(hax.UserData, 'ViewPortOriginal')
   hax.UserData.ViewPortOriginal = hax.View;
 end
 
-hax.View = [ 37.5,  10];
+hax.View = [ +37.5 ,  +10 ];
 hax.XAxis.Direction = 'normal';
 hax.YAxis.Direction = 'normal';
 
