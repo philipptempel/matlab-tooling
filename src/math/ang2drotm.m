@@ -21,8 +21,11 @@ function dR = ang2drotm(a, da)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-04-21
+% Date: 2021-05-03
 % Changelog:
+%   2021-05-03
+%       * Fix wrong default value if no angular position is given.
+%       * Fix wrong function name in inline comments
 %   2021-04-21
 %       * Fix bug in calculation of rotation matrix derivative
 %       * Update code to use `cat` and `reshape` (should be faster now)
@@ -35,17 +38,17 @@ function dR = ang2drotm(a, da)%#codegen
 
 %% Parse arguments
 
-% ANG2ROTM()
-% ANG2ROTM(A)
-% ANG2ROTM(A, DA)
+% ANG2DROTM()
+% ANG2DROTM(A)
+% ANG2DROTM(A, DA)
 narginchk(0, 2);
-% ANG2ROTM(...)
-% R = ANG2ROTM(...)
+% ANG2DROTM(...)
+% R = ANG2DROTM(...)
 nargoutchk(0, 1);
 
 % Quickly bail out for no argument 
 if nargin < 1 || isempty(a)
-  dR = eye(2);
+  dR = zeros(2);
   
   return
 
@@ -72,7 +75,7 @@ st = sin(ap);
 ct = cos(ap);
 
 % Concate components with row major
-tempR = cat(2, -st, ct, -ct, -st);
+tempR = cat(1, -st, ct, -ct, -st);
 
 % And reshape into 2x2xN, then multiply each page with the angular velocity
 dR = reshape(tempR, 2, 2, na) .* dap;

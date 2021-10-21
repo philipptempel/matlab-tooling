@@ -30,13 +30,13 @@ classdef Identifiable < handle & matlab.mixin.Copyable
   
   
   %% COMPARATORS
-  methods
+  methods ( Sealed )
     
     function f = eq(this, that)
       %% EQ
       
       
-      f = strcmp(char(this), char(that));
+      f = eq@handle(this, that);
       
     end
     
@@ -45,7 +45,7 @@ classdef Identifiable < handle & matlab.mixin.Copyable
       %% NE
       
       
-      f = ~eq(this, that);
+      f = ne@handle(this, that);
       
     end
     

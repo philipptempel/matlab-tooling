@@ -32,8 +32,10 @@ function [c, idx] = ffdcoeffs(d, a)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-05-31
+% Date: 2021-06-16
 % Changelog:
+%   2021-06-16
+%       * Fix bug in checking for wrong `nargout` count
 %   2021-05-31
 %       * Initial release
 

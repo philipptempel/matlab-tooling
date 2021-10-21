@@ -39,9 +39,9 @@ function c = color(varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-29
+% Date: 2021-03-12
 % Changelog:
-%   2021-03-29
+%   2021-03-12
 %       * Add darker and lighter gray colors
 %       * Add alias `grey` for `gray`
 %       * Add support for actions such as `add`ing or `remove`ing a color or
