@@ -11,8 +11,11 @@ function stopalltimers()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-08-26
+% Date: 2021-10-25
 % Changelog:
+%   2021-10-25
+%       * Wrap timers' `stop` into `try/catch` to not fail if one timer fails
+%       stopping
 %   2018-08-26
 %       * Revert back to a simple for-loop. Feels more real looping, doesn't it?
 %   2017-01-21
@@ -22,15 +25,24 @@ function stopalltimers()
 
 
 
-%% Do your code magic here
+%% Perform
+
 % Get all timers
-tiTimers = timerfindall();
+tmrs = timerfindall();
 
 % Loop over each timer and stop it if it's running
-for iT = 1:numel(tiTimers)
-  if strcmp(tiTimers(iT).Running, 'on')
-    stop(tiTimers(iT));
+for iT = 1:numel(tmrs)
+  if strcmp(tmrs(iT).Running, 'on')
+    try
+      stop(tmrs(iT));
+      
+    catch me
+      warning(me.identifier, '%s', me.message);
+      
+    end
+    
   end
+  
 end
 
 
