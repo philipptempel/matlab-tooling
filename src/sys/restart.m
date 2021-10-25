@@ -1,14 +1,18 @@
 %% RESTART executes a few functions to reset MATLAB workspace
 %
-%   Reset of the MATLAB workspace done more ressource friendly than a
-%   ```clear('all')``` is.
+% Reset of the MATLAB workspace done more ressource friendly than a
+% ```clear('all')``` is.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-08-11
+% Date: 2021-10-25
 % Changelog:
+%   2021-10-25
+%       * Add better handling of hidden handles that have modified
+%       `CreateCancelBtn` callbacks
+%       * Make sure all function calls are syntaxed with `()` at the end.
 %   2018-08-11
 %       * Add file footer
 %   2018-04-10
@@ -32,7 +36,13 @@ close('all');
 % explicitely close them
 close('all', 'hidden');
 
-% Windows with a modified DeleteFcn that might not have been closed until now
+% Really close all hidden objects
+p = get(groot(), 'ShowHiddenHandles');
+set(groot(), 'ShowHiddenHandles', 'on');
+delete(get(groot(), 'Children'));
+set(groot(), 'ShowHiddenHandles', p);
+
+% Windows with modified `DeleteFcn` that might not have been closed until now
 % need to be closed explicitely, too
 close('all', 'force');
 
@@ -46,14 +56,14 @@ clear('global')
 % Clear all memoized function caches
 clearAllMemoizedCaches();
 
-% Lastly, we will stop all timers that may still be running in the backgroudn
+% Lastly, we will stop all timers that may still be running in the background
 try
-    stopalltimers
+    stopalltimers();
 catch me
 end
 
 % For a clean start we will of course need a clean command window
-clc
+clc();
 
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as
