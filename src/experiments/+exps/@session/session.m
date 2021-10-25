@@ -211,7 +211,7 @@ classdef session < handle ...
         
         % Create each trial
         for iTrial = 1:this.NTrial
-          this.Trial(iTrial).create();
+          create(this.Trial(iTrial));
         end
         
         % Create the 'media' directory
@@ -706,7 +706,7 @@ classdef session < handle ...
       %% MKDIR creates the directory for this experimental session
       
       
-      [varargout{1:nargout}] = this.create();
+      [varargout{1:nargout}] = create(this);
       
     end
     

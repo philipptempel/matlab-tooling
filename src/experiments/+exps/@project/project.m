@@ -125,7 +125,7 @@ classdef project < handle ...
       % No name set?
       if isempty(this.Name)
         % Infer the name from the path
-        this.Name = this.infer_name();
+        this.Name = infer_name(this);
       end
       
       % Load configuration
@@ -156,7 +156,7 @@ classdef project < handle ...
         
         % Create each session
         for iSess = 1:this.NSession
-          this.Session(iSess).create();
+          create(this.Session(iSess));
         end
         
         % Success logical
@@ -565,7 +565,7 @@ classdef project < handle ...
       %% MKDIR creates the directory for this experimental project
       
       
-      [varargout{1:nargout}] = this.create();
+      [varargout{1:nargout}] = create(this);
       
     end
     

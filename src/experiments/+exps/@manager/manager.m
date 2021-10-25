@@ -234,7 +234,7 @@ classdef manager < handle
             
             
             % Load the projects
-            this.load_projects_();
+            load_projects_(this);
             
             
         end
@@ -271,7 +271,7 @@ classdef manager < handle
             catch me
                 % No match, so let's suggest projects based on their string
                 % distance
-                pclose = this.closest_projects(name);
+                pclose = closest_projects(this, name);
                 
                 % Found similarly sounding projects?
                 if ~isempty(pclose)
@@ -314,7 +314,7 @@ classdef manager < handle
             
             try
                 % Find project
-                p = this.find(name);
+                p = find(this, name);
                 
                 % Go to project
                 p.go();
@@ -331,7 +331,7 @@ classdef manager < handle
             
             try
                 % Find project and get path of it
-                p = path(this.find(name));
+                p = path(find(this, name));
             catch me
                 throwAsCaller(me);
             end
