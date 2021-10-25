@@ -72,7 +72,7 @@ qs = qq(1,1,:);
 qv = qq([2,3,4],1,:);
 
 % Angle of rotation of each quaternion
-theta = 2 * acos(qs);
+theta = 2 * acos(limit(qs, -1, 1));
 
 % Non-zero rotations
 nonzero_theta = ~isclose(theta, 0);
