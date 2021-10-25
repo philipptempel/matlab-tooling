@@ -1,4 +1,4 @@
-function [Q, varargout] = quatmat(q)%#codegen
+function [Q, Qc] = quatmat(q)%#codegen
 %% QUATMAT Calculate quaternion matrix and conjugate quaternion matrix
 %
 % Inputs:
@@ -15,8 +15,10 @@ function [Q, varargout] = quatmat(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-10-07
+% Date: 2021-10-21
 % Changelog:
+%   2021-10-21
+%     * Revert previous "fix"
 %   2021-10-07
 %     * Fix sign of skew-symmetric part in quaternion matrix and its conjugate
 %     quaternion matrix counterpart
@@ -59,11 +61,11 @@ qvec = qv([2,3,4],:,:);
 eyenq = repmat(eye(3, 3), [1, 1, nq]);
 
 % Quaternion matrix
-Q = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq - qskm));
+Q = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq + qskm));
 
 % Conjugate quaternion matrix, conditionally
 if nargout > 1
-  varargout{1} = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq + qskm));
+  Qc = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq - qskm));
 end
 
 
