@@ -66,7 +66,7 @@ try
 
   % Ideally we now only have one entry left. If not, bail out
   if numel(srcdirs) == 0
-    throw(MException('PHILIPPTEMPEL:CONTINUUMROBOTICS:FUNCTIONS:BUILD:NoSrcDirectory', 'No `src` directory found.'));
+    throw(MException('PHILIPPTEMPEL:FUNCTIONS:BUILD:NoSrcDirectory', 'No `src` directory found.'));
   end
 
   % Cleanup object to safely return
@@ -81,7 +81,7 @@ try
   % Remove this cleanup object
   clear coCwd;
 catch me
-  throw(addCause(MException('PHILIPPTEMPEL:CONTINUUMROBOTICS:FUNCTIONS:BUILD:BuildConfigurationInvalid', 'No valid build configuration found in current directory. Bailing out!'), me));
+  throw(addCause(MException('PHILIPPTEMPEL:FUNCTIONS:BUILD:BuildConfigurationInvalid', 'No valid build configuration found in current directory. Bailing out!'), me));
 end
 
 % Get all default target
