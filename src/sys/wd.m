@@ -65,7 +65,7 @@ switch action
     wd_ls(varargin{:});
   
   case 'path'
-    [varargout{1:nargout}] = deal(wd_path(varargin{:}));
+    [varargout{1:nargout}] = wd_path(varargin{:});
   
   case 'clean'
     wd_clean(varargin{:});
