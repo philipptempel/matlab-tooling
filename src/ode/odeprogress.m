@@ -23,8 +23,11 @@ function status = odeprogress(t, y, flag, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-11-20
+% Date: 2021-10-25
 % Changelog:
+%   2021-10-25
+%       * Update to display figure name and text more consistently over the
+%       various call modes
 %   2017-11-20
 %       * Implement missing logic for canceling the ODE callback in case the
 %       stop button has been pressed
@@ -36,7 +39,7 @@ function status = odeprogress(t, y, flag, varargin)
 
 
 %% Initialize function
-persistent hpTarget
+persistent hWait
 
 % Assume stop button wasn't pushed.
 status = 0;
@@ -54,42 +57,64 @@ end
 
 switch ( flag )
     
-    case ''    % odeplot(t,y,'')
-        if isempty(hpTarget)
+    % ODEPROGRESS(t, y, '')
+    case ''
+        % No figure exists
+        if isempty(hWait)
             error(message('PHILIPPTEMPEL:MATLAB:ODEPROGRESS:NotCalledWithInit'));
-        elseif ishghandle(hpTarget)  % figure still open
+        
+        % Figure still open
+        elseif ishghandle(hWait)
 
             try
                 % Has stop button been pushed?
-                if hpTarget.UserData.stop == 1
+                if hWait.UserData.stop == 1
                     status = 1;
+                
                 else
-                    dMaxTime = hpTarget.UserData.Time;
+                    dMaxTime = hWait.UserData.tspan(2);
 
                     dProgress = t(1)/dMaxTime;
-                    waitbar(dProgress, hpTarget, sprintf('Simulation time: %.4f/%.2f', t(1), dMaxTime));
-                    hpTarget.Name = sprintf('Progress: %.2f %%', dProgress*100);
+                    waitbar(dProgress, hWait, sprintf('Simulation time: %.4f/%.2f', t(1), dMaxTime));
+                    
                 end
             catch ME
-                error(message('MATLAB:odeplot:ErrorUpdatingWindow', ME.message));
+                error(message('PHILIPPTEMPEL:MATLAB:odeprogress:ErrorUpdatingWindow', ME.message));
             end
 
         end
     
-    case 'init'    % odeplot(tspan,y0,'init')
-        hpTarget = waitbar(0, 'Initializing...', 'Name', 'Initializing', 'CreateCancelBtn', @in_cb_stopbutton);
-        hpTarget.UserData.Time = max(t);
-        hpTarget.UserData.stop = 0;
+    % ODEPROGRESS(tspan, y0, 'init')
+    case 'init'
+        hWait = waitbar( ...
+            0 ...
+            , 'Initializing...' ...
+            , 'Name', 'ODE Progress' ...
+            , 'CreateCancelBtn', @in_cb_stopbutton ...
+        );
+        set( ...
+            findobj(hWait.Children, 'Tag', 'TMWWaitbarCancelButton') ...
+            , 'String', 'Stop' ...
+        );
+        hWait.UserData.tspan = [ min(t) , max(t) ];
+        hWait.UserData.stop = 0;
     
-    case 'done'    % odeplot([],[],'done')
+    % ODEPROGRESS([], [], 'done')
+    case 'done'
+        set( ...
+            findobj(hWait.Children, 'Tag', 'TMWWaitbarCancelButton') ...
+            , 'String', 'Done' ...
+            , 'Enable', 'off' ...
+          );
         % Reset the persistent progress bar window
-        hpWindow = hpTarget;
-        hpTarget = [];
+        hWindow = hWait;
+        hWait = [];
         
-        delete(hpWindow);
+        delete(hWindow);
         
     otherwise
         error(message('PHILIPPTEMPEL:MATLAB:ODEPROGRESS:UnrecognizedFlag', flag));
+    
 end
 % END switch ( flag )
 
@@ -98,14 +123,29 @@ end
 
 
 function in_cb_stopbutton(~, ~)
+%% IN_CB_STOPBUTTON
 
-ud = get(gcbf, 'UserData');
-ud.stop = 1;
-set(gcbf, 'UserData', ud);
+
+% Get current callback object and its figure
+[~, fig] = gcbo();
+
+% Add `stop` marker to figure
+fig.UserData.stop = 1;
+% Update axes text to say "Stopping..."
+ax = findobj(fig.Children, 'Type', 'axes');
+set( ...
+  ax.Title ...
+  , 'String', 'Stopping...' ...
+);
+% Update button text
+set( ...
+  findobj(fig.Children, 'Tag', 'TMWWaitbarCancelButton') ...
+  , 'String', 'Stopping...' ...
+)
+
+
 
 end 
-
-
 
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as
