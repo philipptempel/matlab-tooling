@@ -80,7 +80,7 @@ theta = repmat(theta, 3, 3, 1);
 
 % Calculate axis of rotation of each quaternion
 omega = zeros(3, nq);
-omega(:,nonzero_theta) = qv(:,:,nonzero_theta) ./ sin(theta(:,1,nonzero_theta) ./ ( 2 * ones(3, 1, numel(nonzero_theta)) ) );
+omega(:,nonzero_theta) = qv(:,:,nonzero_theta) ./ sin(theta(:,1,nonzero_theta) ./ ( 2 * ones(3, 1, sum(nonzero_theta)) ) );
 
 % Build skew-symmetric matrix of each rotation axis
 omega_hat = vec2skew(omega);
