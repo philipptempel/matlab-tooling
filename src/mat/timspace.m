@@ -1,10 +1,10 @@
-function ts = tspan(t0, tf, h)%#codegen
-% TSPAN creates a properly and evenly spaced vector
+function ts = timspace(t0, tf, h)%#codegen
+% TIMSPACE creates a properly and evenly spaced vector
 %
-%   TS = TSPAN(T0, TF) creates a properly and evenly spaced vector between T0
+%   TS = TIMSPACE(T0, TF) creates a properly and evenly spaced vector between T0
 %   and TF using a step size of 1e-2.
 %
-%   TS = TSPAN(T0, TF, H) uses step size H to span the range from T0 to TF.
+%   TS = TIMSPACE(T0, TF, H) uses step size H to span the range from T0 to TF.
 %
 %   Inputs:
 %
@@ -25,8 +25,13 @@ function ts = tspan(t0, tf, h)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-02-22
+% Date: 2021-10-25
 % Changelog:
+%   2021-10-25
+%       * Rename to `timspace` to avoid overloading local variables `tspan` and
+%       to make it consistent with `linspace`
+%       * Make output vector be same shape as the result of the underlying
+%       `linspace` call
 %   2019-02-22
 %       * Round number of elements passed to `linspace` to be non-rational
 %   2018-08-30
@@ -45,8 +50,11 @@ end
 %% Perform creation of TS
 
 % Simply pass the properly formatted values to linspace
-ts = linspace(t0, tf, round((tf - t0)/h + 1));
-ts = ts(:);
+ts = linspace( ...
+    t0 ...
+  , tf...
+  , round( ( tf - t0 ) / h + 1 ) ...
+);
 
 
 end
