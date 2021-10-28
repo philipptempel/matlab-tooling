@@ -36,9 +36,8 @@ end
 
 try
   f0 = feval(odefun,tspan(1),y0,varargin{:});
-catch
-  msg = ['Unable to evaluate the ODEFUN at t0,y0. ',lasterr];
-  error(msg);  
+catch me
+  error(['Unable to evaluate the ODEFUN at (t0, y0). ', me.message]);  
 end  
 
 y0 = y0(:);   % Make a column vector.
