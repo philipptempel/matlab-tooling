@@ -1,5 +1,5 @@
-function Y = ode4(odefun,tspan,y0,varargin)
-%ODE4  Solve differential equations with a non-adaptive method of order 4.
+function Y = ode4(odefun, tspan, y0, varargin)
+%% ODE4  Solve differential equations with a non-adaptive method of order 4.
 %   Y = ODE4(ODEFUN,TSPAN,Y0) with TSPAN = [T1, T2, T3, ... TN] integrates 
 %   the system of differential equations y' = f(t,y) by stepping from T0 to 
 %   T1 to TN. Function ODEFUN(T,Y) must return f(t,y) in a column vector.
@@ -63,3 +63,6 @@ for i = 2:N
   Y(:,i) = yi + (hi/6)*(F(:,1) + 2*F(:,2) + 2*F(:,3) + F(:,4));
 end
 Y = Y.';
+
+
+end

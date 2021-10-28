@@ -1,5 +1,5 @@
-function Y = ode2(odefun,tspan,y0,varargin)
-%ODE2  Solve differential equations with a non-adaptive method of order 2.
+function Y = ode2(odefun, tspan, y0, varargin)
+%% ODE2  Solve differential equations with a non-adaptive method of order 2.
 %   Y = ODE2(ODEFUN,TSPAN,Y0) with TSPAN = [T1, T2, T3, ... TN] integrates 
 %   the system of differential equations y' = f(t,y) by stepping from T0 to 
 %   T1 to TN. Function ODEFUN(T,Y) must return f(t,y) in a column vector.
@@ -61,3 +61,6 @@ for i = 2:N
   Y(:,i) = yi + (hi/2)*(F(:,1) + F(:,2));
 end
 Y = Y.';
+
+
+end

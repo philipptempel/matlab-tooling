@@ -1,5 +1,5 @@
-function Y = ode1(odefun,tspan,y0,varargin)
-%ODE1  Solve differential equations with a non-adaptive method of order 1.
+function Y = ode1(odefun, tspan, y0, varargin)
+%% ODE1  Solve differential equations with a non-adaptive method of order 1.
 %   Y = ODE1(ODEFUN,TSPAN,Y0) with TSPAN = [T1, T2, T3, ... TN] integrates 
 %   the system of differential equations y' = f(t,y) by stepping from T0 to 
 %   T1 to TN. Function ODEFUN(T,Y) must return f(t,y) in a column vector.
@@ -11,6 +11,7 @@ function Y = ode1(odefun,tspan,y0,varargin)
 %
 %   This is a non-adaptive solver. The step sequence is determined by TSPAN.
 %   The solver implements the forward Euler method of order 1.   
+%
 %
 %   Example 
 %         tspan = 0:0.1:20;
@@ -54,3 +55,6 @@ for i = 1:N-1
   Y(:,i+1) = Y(:,i) + h(i)*feval(odefun,tspan(i),Y(:,i),varargin{:});
 end
 Y = Y.';
+
+
+end
