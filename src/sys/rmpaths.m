@@ -18,6 +18,7 @@ function P = rmpaths(varargin)
 % Date: 2021-11-02
 % Changelog:
 %   2021-11-02
+%       * Fix error removing paths if `DIR` was a relative path
 %       * Add `NARGINCHK` and `NARGOUTCHK`
 %       * Add section to properly parse arguments
 %       * Use `CONTAINS` instead of `STRFIND` where recommended by MATLAB
@@ -85,18 +86,18 @@ for iPath = numel(cePaths):-1:1
         % Get path's canonical name i.e., turn any relative path into an absolute
         % path
         % @see http://stackoverflow.com/questions/18395892/how-to-resolve-a-relative-directory-path-to-canonical-path-in-matlab-octave
-        jFile = java.io.File(chPath);
-        chPath = char(jFile.getCanonicalPath);
-
+        pinfo = what(chPath);
+        if ~isempty(pinfo)
+          chPath = pinfo.path;
+        end
+        
         % Only remove the path if it is on the path
-        if any(ismember(chPath, cePathList)) && 7 == exist(chPath, 'dir')
+        if any(ismember(chPath, cePathList))
             % Try removing the folder from the path. If things fail here, we'll
             % be save because we're just TRYing to remove the folder so a
             % failure won't break the whole script
             try
-                % Remove the path
-                rmpath(chPath);
-                % Startup file path
+                % Finish file path
                 chFinishFile = fullfile(chPath, 'finish.m');
                 % Finish file exists and we're not calling the same finish file
                 % that we are currently being called from?
@@ -105,6 +106,10 @@ for iPath = numel(cePaths):-1:1
                     run(chFinishFile);
                     
                 end
+                
+                % Remove path from PATH
+                rmpath(chPath);
+                
             catch ME
                 warning(ME.message);
                 
