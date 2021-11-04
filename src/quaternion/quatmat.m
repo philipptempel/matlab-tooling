@@ -61,11 +61,11 @@ qvec = qv([2,3,4],:,:);
 eyenq = repmat(eye(3, 3), [1, 1, nq]);
 
 % Quaternion matrix
-Q = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq + qskm));
+Q = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq - qskm));
 
 % Conjugate quaternion matrix, conditionally
 if nargout > 1
-  Qc = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq - qskm));
+  Qc = cat(1, cat(2, qsca, -permute(qvec, [2, 1, 3])), cat(2, qvec, qsca .* eyenq + qskm));
 end
 
 
