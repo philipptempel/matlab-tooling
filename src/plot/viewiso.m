@@ -30,7 +30,7 @@ if isempty(hax.UserData) && ~isfield(hax.UserData, 'ViewPortOriginal')
   hax.UserData.ViewPortOriginal = hax.View;
 end
 
-hax.View = [ +135 ,  +45 ];
+hax.View = [ +45 ,  +30 ];
 hax.XAxis.Direction = 'normal';
 hax.YAxis.Direction = 'normal';
 
