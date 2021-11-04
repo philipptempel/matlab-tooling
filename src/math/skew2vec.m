@@ -16,8 +16,11 @@ function vec = skew2vec(skew)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-25
+% Date: 2021-11-02
 % Changelog:
+%   2021-11-02
+%       * Use mean value of skew-symmetric matrix to obtain mean off-diagonal
+%       values
 %   2020-11-25
 %       * Change to return a 3xN array
 %   2020-11-17
@@ -41,6 +44,9 @@ validateattributes(skew, {'numeric'}, {'nonempty', '3d', 'nrows', 3, 'ncols', 3}
 
 % Number of vectors to create
 nvec = size(skew, 3);
+
+% Mean value to avoid for numerical issues in matrix's non-symmetry
+skew = ( 0.5 * ones(3, 3, nvec) ) .* ( skew - permute(skew, [2, 1, 3]) );
 
 % Shift into the right dimension
 skew = permute(skew, [3, 1, 2]);
