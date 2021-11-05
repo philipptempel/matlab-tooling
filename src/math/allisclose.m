@@ -17,9 +17,11 @@ function f = allisclose(g, c, atol, rtol, varargin)%#codegen
 %
 %   C                 NxM array of candidate values.
 %
-%   ATOL              Absolute tolerance to use in comparing values of A and B.
+%   ATOL              Absolute tolerance in comparing values. Defaults to
+%                     `1e4 * eps(class(G))`.
 %
-%   RTOL              Relative toleraance to use in comparing values of A and B.
+%   RTOL              Relative tolerance in comparing values. Defaults to
+%                     `1e-8`.
 %
 % Outputs:
 %
@@ -33,8 +35,10 @@ function f = allisclose(g, c, atol, rtol, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-04-23
+% Date: 2021-11-04
 % Changelog:
+%   2021-11-04
+%     * Update H1 documentation to include defaults of `ATOL` and `RTOL`
 %   2021-04-23
 %     * Rename arguments `A` to `G` and `B` to `C` for `G`round and `C`andidate
 %     * Update H1 documentation accordingly

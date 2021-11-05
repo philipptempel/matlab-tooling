@@ -18,9 +18,11 @@ function f = isclose(g, c, atol, rtol)%#codegen
 %
 %   C                 NxM array of candidate values.
 %
-%   ATOL              Absolute tolerance to compare with. Defaults to 1e4*eps.
+%   ATOL              Absolute tolerance in comparing values. Defaults to
+%                     `1e4 * eps(class(G))`.
 %
-%   RTOL              Relative tolerance to compare with. Defaults to 1e-8.
+%   RTOL              Relative tolerance in comparing values. Defaults to
+%                     `1e-8`.
 %
 % Outputs:
 %
@@ -30,14 +32,16 @@ function f = isclose(g, c, atol, rtol)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-04-30
+% Date: 2021-11-04
 % Changelog:
+%   2021-11-04
+%     * Update H1 documentation
 %   2021-04-30
 %     * Fix error when either `atol` or `rtol` are passed as vectors/arrays of
-%     relative tolerances.
+%     relative tolerances
 %   2021-04-23
 %     * Revert previous commit and now assume `A` to be the gorund truth for
-%     comparison.
+%     comparison
 %     * Rename arguments `A` to `G` and `B` to `C` for `G`round and `C`andidate
 %     * Update H1 documentation accordingly
 %   2021-04-22
