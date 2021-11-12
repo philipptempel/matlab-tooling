@@ -19,9 +19,10 @@ function qmp = quatmul(q, p)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-25
+% Date: 2021-11-12
 % Changelog:
-%   2020-11-25
+%   2021-11-12
+%     * Fix code
 %     * Update H1 documentation
 %     * Remove `MException` and incerase code generation compatability
 %   2020-11-24
@@ -56,12 +57,15 @@ mp = size(pv, 2);
 if mq == 1 && mp  > 1
   qvn = repmat(qv, [1, mp]);
   pvn = pv;
+  
 elseif mp == 1 && mq > 1
   qvn = qv;
   pvn = repmat(pv, [1, mq]);
+  
 else
   qvn = qv;
   pvn = pv;
+  
 end
 
 
@@ -76,8 +80,8 @@ psca = pvn(1,:);
 
 % And compute quaternion product
 qmp = [ ...
-  qsca .* psca - dot(qvec, pvec, 1) ...
-  ; repmat(qsca, [3, 1]) .* pvec + repmat(psca, [3, 1]) .* qvec - cross(qvec, pvec, 1) ...
+    qsca .* psca - dot(qvec, pvec, 1) ...
+  ; repmat(+qsca, [3, 1]) .* pvec + repmat(+psca, [3, 1]) .* qvec + cross(qvec, pvec, 1) ...
 ];
 
 

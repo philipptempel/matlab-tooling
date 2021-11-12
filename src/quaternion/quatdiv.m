@@ -1,7 +1,7 @@
 function qdp = quatdiv(q, p)%#codegen
 %% QUATDIV Divide two quaternions
 %
-% QDP = QUATDIV(Q, P) divides quaternion Q by quaternion P i.e., QDP = Q / P.
+% QDP = QUATDIV(Q, P) divides quaternion Q by quaternion P i.e., QDP = Q * P^-1.
 %
 % Inputs:
 %
@@ -19,8 +19,10 @@ function qdp = quatdiv(q, p)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-25
+% Date: 2021-11-12
 % Changelog:
+%   2021-11-12
+%     * Fix code
 %   2020-11-25
 %     * Remove `MException` and incerase code generation compatability
 %   2020-11-24
@@ -49,12 +51,15 @@ mp = size(pv, 2);
 if mq == 1 && mp  > 1
   qvn = repmat(qv, [1, mp]);
   pvn = pv;
+  
 elseif mp == 1 && mq > 1
   qvn = qv;
   pvn = repmat(pv, [1, mq]);
+  
 else
   qvn = qv;
   pvn = pv;
+  
 end
 
 
@@ -67,16 +72,10 @@ qsca = qvn(1,:);
 pvec = pvn([2,3,4],:);
 psca = pvn(1,:);
 
-if mq < mp
-  qvec = repmat(qvec, [1, mp]);
-elseif mp < mq
-  pvec = repmat(pvec, [1, mq]);
-end
-
 % And compute quaternion product
 qdp = [ ...
     qsca .* psca + dot(qvec, pvec, 1) ...
-  ; - repmat(qsca, [3, 1]) .* pvec + repmat(psca, [3, 1]) .* qvec - cross(qvec, pvec, 1) ...
+  ; repmat(-qsca, [3, 1]) .* pvec + repmat(+psca, [3, 1]) .* qvec - cross(qvec, pvec, 1) ...
 ];
 
 
