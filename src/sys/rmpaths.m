@@ -15,8 +15,10 @@ function P = rmpaths(varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-02
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Remove empty paths that may appear in path array
 %   2021-11-02
 %       * Fix error removing paths if `DIR` was a relative path
 %       * Add `NARGINCHK` and `NARGOUTCHK`
@@ -71,6 +73,7 @@ for iPath = numel(cePaths):-1:1
     if contains(chPath, pathsep)
         % Split this path into each of its subpaths
         cePathPathList = regexp(chPath, pathsep, 'Split');
+        cePathPathList(cellfun(@isempty, cePathPathList)) = [];
         
         % Try removing each of the paths inside this path list separately
         try
