@@ -25,8 +25,10 @@ function ts = timspace(t0, tf, h)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-10-25
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Rename to `timespace` to be more verbose in function name
 %   2021-10-25
 %       * Rename to `timspace` to avoid overloading local variables `tspan` and
 %       to make it consistent with `linspace`
