@@ -1,18 +1,20 @@
 function stopalltimers()
-% STOPALLTIMERS stops all timers whether they are visible or not
+%% STOPALLTIMERS stops all timers whether they are visible or not
 %
-%   STOPALLTIMERS stops all currently running timers regardless their
-%   visibility. Displays a warning if a timer could not be stopped.
+% STOPALLTIMERS stops all currently running timers regardless their visibility.
+% Displays a warning if a timer could not be stopped.
 %
-%   See also:
+% See also:
 %   TIMERFINDALL TIMER/STOP
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-10-25
+% Date: 2021-11-16
 % Changelog:
+%   2021-11-16
+%       * Fix H1 documentation
 %   2021-10-25
 %       * Wrap timers' `stop` into `try/catch` to not fail if one timer fails
 %       stopping
@@ -22,6 +24,16 @@ function stopalltimers()
 %       * Make use of arrayfun over simple loops
 %   2016-09-02
 %       * Initial release
+
+
+
+%% Parse arguments
+
+% STOPALLTIMERS()
+narginchk(0, 0);
+
+% STOPALLTIMERS()
+nargoutchk(0, 0);
 
 
 
