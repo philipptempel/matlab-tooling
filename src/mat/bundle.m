@@ -1,16 +1,25 @@
-function p = pack(varargin)%#codegen
-%% PACK 
+function b = bundle(varargin)%#codegen
+%% BUNDLE Bundle variable arguments together
+%
+% B = BUNDLE(A, B, ...) bundles variables A, B, etc. together into one column
+% vector.
 %
 % Outputs:
 %
-%   P                   Description of argument P
+%   B                   Nx1 vector of bundle variables where N is the product of
+%                       all dimensions of the arguments.
+%
+% See also:
+%   UNBUNDLE
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-09
+% Date: 2021-11-18
 % Changelog:
+%   2021-11-18
+%       * Rename from `PACK` to `BUNDLE`
 %   2021-11-09
 %       * Initial release
 
@@ -18,11 +27,11 @@ function p = pack(varargin)%#codegen
 
 %% Parse arguments
 
-% PACK(A1, ...)
+% BUNDLE(A1, ...)
 narginchk(1, Inf);
 
-% PACK(A1, ...)
-% P = PACK(A1, ...)
+% BUNDLE(A1, ...)
+% B = BUNDLE(A1, ...)
 nargoutchk(0, 1);
 
 
@@ -30,15 +39,15 @@ nargoutchk(0, 1);
 %% Pack it
 
 % Copy inputs
-p = varargin;
+b = varargin;
 
 % Loop over all inputs and turn matrices into column vectors
-for ip = 1:numel(p)
-  p{ip} = p{ip}(:);
+for ip = 1:nargin
+  b{ip} = reshape(b{ip}, [], 1);
 end
 
 % Put into column vector
-p = vertcat(p{:});
+b = vertcat(b{:});
 
 
 end
