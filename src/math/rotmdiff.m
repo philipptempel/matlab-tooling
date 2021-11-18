@@ -1,28 +1,29 @@
 function Rdiff = rotmdiff(Rot1, Rot2)%#codegen
-% ROTMDIFF determine the difference between two rotation matrices
+%% ROTMDIFF determine the difference between two rotation matrices
 % 
-%   RDIFF = ROTMDIFF(ROT1, ROT2) calculates the difference between ROT2 and ROT1
-%   and returns this value
+% RDIFF = ROTMDIFF(ROT1, ROT2) calculates the difference between ROT2 and ROT1
+% and returns this value.
 % 
-%   Inputs:
+% Inputs:
 % 
-%   ROT1: 3x3 rotation matrix to compare ROT2 against.
+%   ROT1                3x3 rotation matrix to compare ROT2 against.
 %
-%   ROT2: 3x3 rotation matrix to compare ROT1 against.
+%   ROT2                3x3 rotation matrix to compare ROT1 against.
 % 
-%   Outputs:
+% Outputs:
 % 
-%   RDIFF: Difference from ROT2 to ROT1. Note that this algorithms sets values
-%   of the difference smaller than 2*eps to zero to vanish all remains of
-%   numerical errors
-%
+%   RDIFF               Difference from ROT2 to ROT1. Note that this algorithms
+%                       sets values of the difference smaller than 2*eps to zero
+%                       to vanish all remains of numerical errors
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-05-02
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-05-02
 %       * Initial release
 

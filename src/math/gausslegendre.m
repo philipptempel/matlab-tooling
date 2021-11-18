@@ -1,19 +1,19 @@
-function [x, w] = gausslegendre(n, l, u)
-% GAUSSLEGENDRE Determine Gauss-Legendre Quadrature abscissae and weights
+function [x, w] = gausslegendre(n, l, u)%#codegen
+%% GAUSSLEGENDRE Determine Gauss-Legendre Quadrature abscissae and weights
 %
-%   [X, W] = GAUSSLEGENDRE(N) calculates quadrature abscissae values X and
-%   weights W for a Gauss-Legendre quadrature using N points. The quadrature
-%   interval will be set to [-1, 1].
+% [X, W] = GAUSSLEGENDRE(N) calculates quadrature abscissae values X and weights
+% W for a Gauss-Legendre quadrature using N points. The quadrature interval will
+% be set to [-1, 1].
 %
-%   [X, W] = GAUSSLEGENDRE(N, L) transforms the abscissae values and weights
-%   such that they apply to the new interval [L, 1]. L is a 1xK array of lower
-%   boundary values.
+% [X, W] = GAUSSLEGENDRE(N, L) transforms the abscissae values and weights such
+% that they apply to the new interval [L, 1]. L is a 1xK array of lower boundary
+% values.
 %
-%   [X, W] = GAUSSLEGENDRE(N, L, U) transforms the abscissae values and weights
-%   such that they apply to the new interval [L, U]. L and U are 1xK array of
-%   lower and upper boundary values, respectively.
+% [X, W] = GAUSSLEGENDRE(N, L, U) transforms the abscissae values and weights
+% such that they apply to the new interval [L, U]. L and U are 1xK array of
+% lower and upper boundary values, respectively.
 %
-%   Inputs:
+% Inputs:
 %
 %   N                   Number of quadrature points to use.
 %
@@ -21,7 +21,7 @@ function [x, w] = gausslegendre(n, l, u)
 %
 %   U                   1xK array of upper bounds.
 %
-%   Outputs:
+% Outputs:
 %
 %   X                   NxK array of abscissae values for all intervals.
 %
@@ -32,52 +32,50 @@ function [x, w] = gausslegendre(n, l, u)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-11-08
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2018-11-08
 %       * Initial release
 
 
 
 %% Validate attributes
-try
-  narginchk(1, 3);
-  
-  nargoutchk(0, 2);
-  
-  % GAUSSLEGENDRE(X)
-  if nargin < 2
-    l = -1;
-  end
-  
-  % GAUSSLEGENDRE(X, L)
-  if nargin < 3
-    u = ones(size(l));
-  end
-  
-  
-  % GAUSSLEGENDRE(X, L, U)
-  validateattributes(n, {'numeric'}, {'scalar', 'nonempty', 'positive', 'nonnan', 'finite', 'nonsparse'}, mfilename, 'N');
-  validateattributes(l, {'numeric'}, {'row', 'nonempty', 'nonnan', 'finite', 'nonsparse'}, mfilename, 'L');
-  validateattributes(u, {'numeric'}, {'row', 'nonempty', 'nonnan', 'finite', 'nonsparse'}, mfilename, 'U');
-  assert(all(l < u), 'Upper boundaries must be larger than lower boundaries');
-  
-catch me
-  me.throwAsCaller()
+narginchk(1, 3);
+
+nargoutchk(0, 2);
+
+% GAUSSLEGENDRE(X)
+if nargin < 2
+  l = -1;
 end
+
+% GAUSSLEGENDRE(X, L)
+if nargin < 3
+  u = ones(size(l));
+end
+
+
+% GAUSSLEGENDRE(X, L, U)
+validateattributes(n, {'numeric'}, {'scalar', 'nonempty', 'positive', 'nonnan', 'finite', 'nonsparse'}, mfilename(), 'N');
+validateattributes(l, {'numeric'}, {'row', 'nonempty', 'nonnan', 'finite', 'nonsparse'}, mfilename(), 'L');
+validateattributes(u, {'numeric'}, {'row', 'nonempty', 'nonnan', 'finite', 'nonsparse'}, mfilename(), 'U');
+assert(all(l < u), 'Upper boundaries must be larger than lower boundaries');
 
 
 
 %% Do your code magic here
-% Number of boundaries i.e., how many polynomials to solve
-nb = numel(l);
+
+% % Number of boundaries i.e., how many polynomials to solve
+% nb = numel(l);
 
 % % Init variables
 % x = zeros(n, nb);
 % w = zeros(n, nb);
 
 % Width of intervals
-h = u - l;
+% h = u - l;
 
 % First, we will calculate the abscissae and weights for the standard [-1, 1]
 % interval and for one function only. Afterwards, we will transform the

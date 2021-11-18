@@ -1,26 +1,26 @@
-function Row = rotm2row(Matrix)%#codegen
-% ROTM2ROW converts a 3d rotation matrix to a row
+function rr = rotm2row(rm)%#codegen
+%% ROTM2ROW converts a 3D rotation matrix to a row
 % 
-%   ROW = ROTM2ROW(MATRIX) converts the 2x2xM or 3x3xM matrix into a Mx4 or Mx9
-%   rotation vector.
+% RR = ROTM2ROW(RM) converts the 2x2xM or 3x3xM matrix into a Mx4 or Mx9 vector.
 %   
 %   
-%   Inputs:
+% Inputs:
 %   
-%   MATRIX              A 2x2xM or 3x3xN matrix of rotation matrices.
+%   RM                  A 2x2xM or 3x3xN matrix of rotation matrices.
 % 
-%   Outputs:
+% Outputs:
 % 
-%   ROW                 Mx4 or Mx9 matrix of rotation matrix rows where the
+%   RR                  Mx4 or Mx9 matrix of rotation matrix rows where the
 %                       columns of MATRIX are horizontally concatenated.
-%
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-04-22
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2018-04-22
 %        * Add support for two-dimensional rotation matrices
 %   2017-04-17
@@ -36,18 +36,18 @@ function Row = rotm2row(Matrix)%#codegen
 narginchk(1, 1);
 nargoutchk(0, 1);
 
-assert(any([any(size(Matrix, 2) == [2, 2, NaN]), any(size(Matrix, 2) == [3, 3, NaN])]), 'Invalid count of length along dimension 2. Expected Matrix to be of size 2x2xM or 3x3xM.');
-validateattributes(Matrix, {'numeric'}, {'3d', 'nonnan', 'nonsparse', 'finite', '<=', 1, '>=', -1}, mfilename, 'Matrix');
+assert(any([any(size(rm, 2) == [2, 2, NaN]), any(size(rm, 2) == [3, 3, NaN])]), 'Invalid count of length along dimension 2. Expected Matrix to be of size 2x2xM or 3x3xM.');
+validateattributes(rm, {'numeric'}, {'3d', 'nonnan', 'nonsparse', 'finite', '<=', 1, '>=', -1}, mfilename, 'Matrix');
 
 
 
 %% Transformation
 % Number of matrices to convert
-nMatrices = size(Matrix, 3);
+nMatrices = size(rm, 3);
 % Size of the rotation matrix
-nDim = size(Matrix, 2);
+nDim = size(rm, 2);
 % And reshape to match size Nx9
-Row = reshape(permute(Matrix, [3, 2, 1]), nMatrices, nDim*nDim);
+rr = reshape(permute(rm, [3, 2, 1]), nMatrices, nDim*nDim);
 
 
 end

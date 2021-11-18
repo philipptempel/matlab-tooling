@@ -1,79 +1,90 @@
 function [jac, err] = jacobest(fun, x0, maxh, ratioh)
 %% JACOBEST Estimate the Jacobian matrix of a vector-valued function of N variables
 %
-% JAC = JACOBEST(FUN, X0)
+% JAC = JACOBEST(FUN, X0) estimate the Jacobian matrix of a vector valued
+% function of N variables usage.
 %
-% JAC = JACOBEST(FUN, X0, MAXH)
+% JAC = JACOBEST(FUN, X0, MAXH) sets maximum step size for Jacobian calculation
+% to MAXH.
 %
-% JAC = JACOBEST(FUN, X0, MAXH, RATIOH)
+% JAC = JACOBEST(FUN, X0, MAXH, RATIOH) sets ratio between 
 %
-% [JAC, ERR] = JACOBEST(___)
-%
-% gradest: estimate of the Jacobian matrix of a vector valued function of n
-% variables usage: [jac,err] = jacobianest(fun,x0)
-%
+% [JAC, ERR] = JACOBEST(___) also returns error estimates of each partial
+% derivative in JAC.
 % 
-% arguments: (input)
-%  fun -  (vector valued) analytical function to differentiate. fun must be a
-%         function of the vector or array x0.
+% Inputs:
 % 
-%  x0  -  vector location at which to differentiate fun. If x0 is an nxm array,
-%         then fun is assumed to be a function of n*m variables.
+%   FUN                 Analytical (vector valued) function to differentiate.
+%                       FUN must be a function of the vector or array X0.
+% 
+%   X0                  Vector location at which to differentiate FUN. If X0 is
+%                       an NxM array, FUN is assumed to be a function of NxM
+%                       variables.
 %
+% Outputs:
 %
-% arguments: (output)
-%  jac -  array of first partial derivatives of fun. Assuming that x0 is a
-%         vector of length p and fun returns a vector of length n, then jac will
-%         be an array of size (n,p)
+%   JAC                 Array of first partial derivatives of FUN. Assuming that
+%                       X0 is a vector of length M and FUN returns a vector of
+%                       length N, then JAC will be an array of size NxM.
 %
-%  err -  vector of error estimates corresponding to each partial derivative in
-%         jac.
+%   ERR                 NxM array of error estimates corresponding to each
+%                       partial derivative in JAC.
 %
+% Examples:
 %
-% Example: (nonlinear least squares)
-%  xdata = (0:.1:1)';
-%  ydata = 1+2*exp(0.75*xdata);
-%  fun = @(c) ((c(1)+c(2)*exp(c(3)*xdata)) - ydata).^2;
+% Nonlinear least-squares
+%   xdata = (0:.1:1).';
+%   ydata = 1 + 2*exp(0.75 * xdata);
+%   fun = @(c) ((c(1) + c(2)*exp(c(3)*xdata)) - ydata).^2;
 %
-%  [jac,err] = jacobianest(fun,[1 1 1])
+%   [jac, err] = jacobianest(fun, [1, 1, 1])
 %
-%  jac =
-%           -2           -2            0
-%      -2.1012      -2.3222     -0.23222
-%      -2.2045      -2.6926     -0.53852
-%      -2.3096      -3.1176     -0.93528
-%      -2.4158      -3.6039      -1.4416
-%      -2.5225      -4.1589      -2.0795
-%       -2.629      -4.7904      -2.8742
-%      -2.7343      -5.5063      -3.8544
-%      -2.8374      -6.3147      -5.0518
-%      -2.9369      -7.2237      -6.5013
-%      -3.0314      -8.2403      -8.2403
+%   jac =
+%            -2           -2            0
+%       -2.1012      -2.3222     -0.23222
+%       -2.2045      -2.6926     -0.53852
+%       -2.3096      -3.1176     -0.93528
+%       -2.4158      -3.6039      -1.4416
+%       -2.5225      -4.1589      -2.0795
+%        -2.629      -4.7904      -2.8742
+%       -2.7343      -5.5063      -3.8544
+%       -2.8374      -6.3147      -5.0518
+%       -2.9369      -7.2237      -6.5013
+%       -3.0314      -8.2403      -8.2403
 %
-%  err =
-%   5.0134e-15   5.0134e-15            0
-%   5.0134e-15            0   2.8211e-14
-%   5.0134e-15   8.6834e-15   1.5804e-14
-%            0     7.09e-15   3.8227e-13
-%   5.0134e-15   5.0134e-15   7.5201e-15
-%   5.0134e-15   1.0027e-14   2.9233e-14
-%   5.0134e-15            0   6.0585e-13
-%   5.0134e-15   1.0027e-14   7.2673e-13
-%   5.0134e-15   1.0027e-14   3.0495e-13
-%   5.0134e-15   1.0027e-14   3.1707e-14
-%   5.0134e-15   2.0053e-14   1.4013e-12
+%   err =
+%       5.0134e-15   5.0134e-15            0
+%       5.0134e-15            0   2.8211e-14
+%       5.0134e-15   8.6834e-15   1.5804e-14
+%               0      7.09e-15   3.8227e-13
+%       5.0134e-15   5.0134e-15   7.5201e-15
+%       5.0134e-15   1.0027e-14   2.9233e-14
+%       5.0134e-15            0   6.0585e-13
+%       5.0134e-15   1.0027e-14   7.2673e-13
+%       5.0134e-15   1.0027e-14   3.0495e-13
+%       5.0134e-15   1.0027e-14   3.1707e-14
+%       5.0134e-15   2.0053e-14   1.4013e-12
 %
-%  (At [1 2 0.75], jac should be numerically zero)
+%  (At [1, 2, 0.75], jac should be numerically zero)
 %
-%
-% See also: derivest, gradient, gradest
-%
-%
-% Author: John D'Errico, Philipp Tempel
-% e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
-% Release: 1.1
-% Release date: 2021-07-16
+% See also
+%   DERIVEST GRADIENT GRADEST
 
+
+
+%% File information
+% Author: John D'Errico <woodchips@rochester.rr.com>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2021-07-16
+%       * Initial release
+
+
+
+%% Algorithm
 % get the length of x0 for the size of jac
 nx = numel(x0);
 

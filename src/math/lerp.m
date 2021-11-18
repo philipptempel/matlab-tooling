@@ -15,7 +15,7 @@ function l = lerp(a, b, t)
 %
 % Outputs:
 %
-%   L                   NxKxS array of interpolated values
+%   L                   NxKxS array of interpolated values.
 
 
 

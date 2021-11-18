@@ -1,5 +1,5 @@
 function B = adjugate(A)
-% ADJUGATE Calculate the adjugate matrix of A
+%% ADJUGATE Calculate the adjugate matrix of A
 %
 % This finds the adjugate of square matrix A, and is valid even if A is singular
 % or complex-valued. With U, S, and V obtained from [U,S,V] = SVD(A), it makes
@@ -8,15 +8,15 @@ function B = adjugate(A)
 % accomplishes the evaluation of ADJ(S), each of whose diagonal elements is the
 % product of all but one of the diagonal elements of S.
 %
-%   Inputs:
+% Inputs:
 %
 %   A                   NxN matrix of N at least 2.
 %
-%   Outputs:
+% Outputs:
 %
 %   B                   NxN matrix being the adjugate of A.
 %
-%   See also
+% See also
 %   SVD TOEPLITZ
 
 
@@ -25,8 +25,10 @@ function B = adjugate(A)
 % Author: Roger Stafford - 10/18/06 https://mathworks.com/matlabcentral/profile/authors/870327-roger-stafford
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
 % See: https://mathworks.com/matlabcentral/fileexchange/12692-adjugate-adjugate-of-a-square-matrix
-% Date: 2018-11-20
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2018-11-20
 %       * Rename to `adjugate` as it really is the matrix adjugate rather than
 %       the matrix adjoint
@@ -39,19 +41,19 @@ function B = adjugate(A)
 
 %% Do your code magic here
 
-[m,n] = size(A);
+[m, n] = size(A);
 
-if (m ~= n) | (n < 2)
+if ( m ~= n ) || ( n < 2 )
  error('Matrix A should be size n x n with n >= 2.')
 end
 
-[u,s,v] = svd(A);
+[u, s, v] = svd(A);
 
 s0 = diag(s);
 
-ix = toeplitz(ones(n-1,1),[1 zeros(1,n-1)]) + repmat((1:n-1)',1,n);
+ix = toeplitz(ones(n - 1, 1), [ 1 , zeros(1, n-1) ]) + repmat((1:n-1).', 1, n);
    
-B = det(u*v')*v*diag(prod(reshape(s0(ix),n-1,n),1))*u';
+B = det(u * v') * v * diag(prod(reshape(s0(ix), n - 1, n), 1)) * u';
 
 
 end

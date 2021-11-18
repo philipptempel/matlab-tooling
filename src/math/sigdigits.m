@@ -1,5 +1,5 @@
 function n = sigdigits(x)
-% SIGDIGITS Return significant digits in a numeric non-uint64 number
+%% SIGDIGITS Return significant digits in a numeric non-uint64 number
 %
 % SIGDIGITS(X) returns "significant" digits in a number, in the sense that if
 % you printed any fewer digits the reverse conversion would not equal the
@@ -7,13 +7,14 @@ function n = sigdigits(x)
 % number of digits you must print in order to recover the original number with a
 % reverse conversion.
 %
-%   Inputs:
+% Inputs:
 %
-%   X                   Description of argument X
+%   X                   Scalar value to calculate number of significant digits
+%                       for.
 %
-%   Outputs:
+% Outputs:
 %
-%   N                   Description of argument N
+%   N                   Number of significant digits of X.
 
 
 
@@ -21,8 +22,10 @@ function n = sigdigits(x)
 % Author: James Tursa
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
 % See: https://de.mathworks.com/matlabcentral/answers/142819-how-to-find-number-of-significant-figures-in-a-decimal-number
-% Date: 2018-11-08
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2018-11-08
 %       * Initial release
 

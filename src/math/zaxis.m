@@ -1,5 +1,5 @@
 function z = zaxis()%#codegen
-%% YAXIS Return a 3D Z-axis vector
+%% ZAXIS Return a 3D Z-axis vector
 %
 % Outputs:
 %
@@ -9,8 +9,10 @@ function z = zaxis()%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-13
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2020-11-13
 %       * Update to use `evecn`
 %   2020-11-12

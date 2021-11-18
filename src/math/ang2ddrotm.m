@@ -12,11 +12,11 @@ function ddR = ang2ddrotm(a, da, dda)%#codegen
 %
 % Inputs:
 %
-%   A                   1xN array of angular positions.
+%   A                   Nx1 array of angular positions.
 %
-%   DA                  1xN array of angular velocities. Defaults to 1.
+%   DA                  Nx1 array of angular velocities. Defaults to 1.
 %
-%   DDA                 1xN array of angular accelerations. Defaults to 0.
+%   DDA                 Nx1 array of angular accelerations. Defaults to 0.
 %
 % Outputs:
 %

@@ -1,25 +1,27 @@
 function [M, I] = mmax(A)
-% MMAX behaves similar to MAX except that it automatically shrinks down to
+%% MMAX behaves similar to MAX except that it automatically shrinks down to
 % dimension 1
 %
-%   M = MMAX(A) returns the maximum value of A over all dimensions of A.
+% M = MMAX(A) returns the maximum value of A over all dimensions of A.
 %
-%   Inputs:
+% Inputs:
 %
-%   A                    Arbitrarily sized matrix A.
+%   A                   Arbitrarily sized matrix A.
 %
-%   Outputs:
+% Outputs:
 %
-%   M                    Maximum value found in A.
+%   M                   Maximum value found in A.
 %
-%   I                    Linear index of maximum M in A.
+%   I                   Linear index of maximum M in A.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-11-13
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-11-13
 %       * Initial release
 

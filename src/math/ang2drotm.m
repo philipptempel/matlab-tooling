@@ -9,9 +9,9 @@ function dR = ang2drotm(a, da)%#codegen
 %
 % Inputs:
 %
-%   A                   1xN array of angular positions.
+%   A                   Nx1 array of angular positions.
 %
-%   DA                  1xN array of angular velocities.
+%   DA                  Nx1 array of angular velocities.
 %
 % Outputs:
 %

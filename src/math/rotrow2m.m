@@ -1,35 +1,36 @@
-function Matrix = rotrow2m(Row)%#codegen
-% ROTROW2M converts a 1d rotation matrix row vector to its matrix representation
+function m = rotrow2m(r)%#codegen
+%% ROTROW2M converts a 1d rotation matrix row vector to its matrix representation
 % 
-%   MATRIX = ROTROW2M(ROW) converts the Nx4 matrix ROW into its 2x2xN matrix
-%   representation form where each consecutive three elements of ROW are placed
-%   in each row the matrix
+% RM = ROTROW2M(RR) converts the Nx4 matrix ROW into its 2x2xN matrix
+% representation form where each consecutive three elements of ROW are placed in
+% each row the matrix
 %
-%   MATRIX = ROTROW2M(ROW) converts the Nx9 matrix ROW into its 3x3xN matrix
-%   representation form where each consecutive three elements of ROW are placed
-%   in each row the matrix
+% RM = ROTROW2M(RR) converts the Nx9 matrix ROW into its 3x3xN matrix
+% representation form where each consecutive three elements of ROW are placed in
+% each row the matrix
 %   
 %   
-%   Inputs:
+% Inputs:
 % 
-%   ROW                 The Nx4 or Nx9 row vector representing [R11 R12 R21 R22]
+%   RR                  The Nx4 or Nx9 row vector representing [R11 R12 R21 R22]
 %                       or [R11 R12 R13 R21 R22 R23 R31 R32 R33] per row,
-%                       respectively
+%                       respectively.
 % 
-%   Outputs:
+% Outputs:
 %   
-%   MATRIX              2x2xN or 3x3xN matrix of the rotation row where along
+%   RM                  2x2xN or 3x3xN matrix of the rotation row where along
 %                       the first dimension the matrix looks like [R11, R12;
 %                       R21, R22] or [R11, R12, R13; R21, R22, R23; R31, R32,
 %                       R33], respectively.
-% 
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-04-22
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2018-04-22
 %        * Add support for two-dimensional rotation matrices
 %   2017-04-17
@@ -45,18 +46,18 @@ function Matrix = rotrow2m(Row)%#codegen
 narginchk(1, 1);
 nargoutchk(0, 1);
 
-assert(any(size(Row, 2) == [4, 9]), 'Invalid count of length along dimension 2. Must be 4 or 9');
-validateattributes(Row, {'numeric'}, {'2d', 'nonnan', 'nonsparse', 'finite', '<=', 1, '>=', -1}, mfilename, 'Row');
+assert(any(size(r, 2) == [4, 9]), 'Invalid count of length along dimension 2. Must be 4 or 9');
+validateattributes(r, {'numeric'}, {'2d', 'nonnan', 'nonsparse', 'finite', '<=', 1, '>=', -1}, mfilename, 'Row');
 
 
 
 %% Transformation
 % Number of Rows to convert
-nRows = size(Row, 1);
+nRows = size(r, 1);
 % Dimension of the rotation matrix
-nDim = size(Row, 2);
+nDim = size(r, 2);
 % And reshape to match size Nx9
-Matrix = permute(reshape(transpose(Row), sqrt(nDim), sqrt(nDim), nRows), [2 1 3]);
+m = permute(reshape(transpose(r), sqrt(nDim), sqrt(nDim), nRows), [2 1 3]);
 
 
 end

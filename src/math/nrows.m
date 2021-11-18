@@ -1,30 +1,30 @@
 function [N] = nrows(A, NExpected)%#codegen
-% NROWS Count number of rows of matrix A
+%% NROWS Count number of rows of matrix A
 %
-%   N = NROWS(A) get the number of rows of 2D matrix A.
+% N = NROWS(A) get the number of rows of 2D matrix A.
 %
-%   N = NROWS(A, NEXPECTED) checks the number of rows of 2D matrix A against
-%   NEXPECTED. If it is the same number, then M is true, otherwise false.
+% N = NROWS(A, NEXPECTED) checks the number of rows of 2D matrix A against
+% NEXPECTED. If it is the same number, then M is true, otherwise false.
 %
+% Inputs:
 %   
-%   Inputs:
-%   
-%   A: Matrix or vector to count the rows of
+%   A                   Matrix or vector to count the rows of.1
 %
-%   MEXPECTED: Expected number of rows
+%   MEXPECTED           Expected number of rows.
 % 
-%   Outputs:
+% Outputs:
 % 
-%   N: Number of rows of A or true/false if NExpected given and number of rows
-%   of A equals NExpected
-% 
+%   N                   Number of rows of A or true/false if NExpected given and
+%                       number of rows of A equals NExpected.
 
 
 
-%% File Information
+%% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-04-08
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-04-08
 %       * Replace validateattributes by assert
 %       * Update docs

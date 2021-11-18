@@ -4,11 +4,11 @@ function vec = skew2vec(skew)%#codegen
 % VEC = SKEW2VEC(SKEW) converts skew-symmetric matrix S into its skew-symmetric
 % vector form such.
 %
-%   Inputs:
+% Inputs:
 %
 %   S                   3x3xN matrix of skew-symmetric matrices.
 %
-%   Outputs:
+% Outputs:
 %
 %   V                   3xN array of skew-symmetric vectors.
 

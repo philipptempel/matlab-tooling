@@ -1,29 +1,31 @@
 function [i, cv] = closest(x, v)
-% CLOSEST finds the row and column of the matrix element closest to a given
+%% CLOSEST finds the row and column of the matrix element closest to a given
 % value
 %
-%   [ROW, COL] = CLOSEST(MATRIX, VAL) finds the row and column index of a value
-%   inside matrix MATRIX that is closest to value VAL.
+% [ROW, COL] = CLOSEST(X, V) finds the row and column index of a value
+% inside matrix MATRIX that is closest to value VAL.
 %
-%   Inputs:
+% Inputs:
 %
-%   MATRIX      Matrix or vector to extract value from.
+%   X                   Matrix or vector to extract value from.
 %
-%   VALUE       Value to find closest matrix element to. Can also be 
+%   V                   Value to find closest matrix element to.
 %
-%   Outputs:
+% Outputs:
 %
-%   ROW         Row in which the closest value was found.
+%   ROW                 Row in which the closest value was found.
 %
-%   COL         Column in which the closes value was found.
+%   COL                 Column in which the closes value was found.
 
 
 
 %% File information
 % Author: Dr. Murtaza Khan <drkhanmurtaza@gmail.com>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-09-13
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-09-13
 %       * Update to using binary search and then linear search
 %   2016-09-02

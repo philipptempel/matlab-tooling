@@ -6,24 +6,26 @@ function p = maxprime(n)%#codegen
 %
 % Inputs:
 %
-%   N                   Description of argument N
+%   N                   Scalar value used to calculate all prime values until N.
 %
 % Outputs:
 %
-%   P                   Description of argument P
+%   P                   Largest prime number in all prime numbers until N.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-07-15
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-07-15
 %       * Initial release
 
 
 
-%% Do your code magic here
+%% Algorithm
 
 p = max(primes(n));
 

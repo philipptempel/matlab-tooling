@@ -1,23 +1,24 @@
 function Mn = mnormrow(M)%#codegen
-% MNORMROW Normalize a matrix per row
+%% MNORMROW Normalize a matrix per row
 % 
-%   MN = MNORMROW(M) normalizes each row of matrix MAT by its norm.
-%
+% MN = MNORMROW(M) normalizes each row of matrix MAT by its norm.
 %   
-%   Inputs:
+% Inputs:
 %   
-%   M: Matrix of variable dimension to be normalized.
+%   M                   Matrix of variable dimension to be normalized.
 %
-%   Outputs:
+% Outputs:
 %
-%   MN: Matrix with each row's norm being one.
+%   MN                  Matrix with each row's norm being one.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-04-14
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2017-04-14
 %       * Change assertion from ```assert``` to ```validateattributes```
 %   2016-04-04
@@ -25,7 +26,8 @@ function Mn = mnormrow(M)%#codegen
 
 
 
-%% Assert arguments
+%% Parse arguments
+
 narginchk(1, 1);
 nargoutchk(0, 1);
 
@@ -33,8 +35,9 @@ validateattributes(M, {'numeric'}, {'2d', 'nonempty', 'finite'}, mfilename, 'M')
 
 
 
-%% Magic, do your thing and create the output right away
-Mn = bsxfun(@times, M, 1./sqrt(sum(M.^2,2)));
+%% Algorithm
+
+Mn = bsxfun(@times, M, 1 ./ sqrt(sum(M .^ 2, 2)));
 
 
 end

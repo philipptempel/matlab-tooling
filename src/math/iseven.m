@@ -1,32 +1,33 @@
 function flag = iseven(number)
-% ISEVEN checks the given number(s) for being even
+%% ISEVEN checks the given number(s) for being even
 %
-%   ISEVEN(NUMBER) returns true, if the number NUMBER are even i.e., dividable
-%   by 2.
+% ISEVEN(NUMBER) returns true, if the number NUMBER are even i.e., dividable
+% by 2.
 %
-%   FLAG = ISEVEN(NUMBER) returns the flag.
+% Inputs:
 %
-%   Input:
+%   NUMBER              Nx1 array to check for being even.
 %
-%   NUMBER      Nx1 array to check for being even.
+% Outputs:
 %
-%   Outputs:
-%
-%   FLAG        Logical flag whether NUMBER is even (FLAG == 1) or odd (FLAG ==
-%       0).
+%   FLAG                Logical flag whether NUMBER is even (FLAG == 1) or odd
+%                       (FLAG == 0).
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-09-19
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-09-19
 %       * Initial release
 
 
 
-%% Do your code magic here
+%% Algorithm
+
 flag = mod(number, 2) == 0;
 
 

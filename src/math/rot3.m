@@ -1,16 +1,16 @@
-function R = rot(angle, axis)
-%% ROT Rotate with an angle about the given axis
+function R = rot3(angle, axis)%#codegen
+%% ROT3 Rotate with an angle about the given axis
 %
-%   R = ROT(ANGLE, AXIS) rotates about axis AXIS with angle ANGLE.
+% R = ROT3(ANGLE, AXIS) rotates about axis AXIS with angle ANGLE.
 %
-%   Inputs:
+% Inputs:
 %
 %   ANGLE               Nx1 array of angles to rotate.
 %
 %   AXIS                zxis to rotate about. supported axes are 'X', 'Y', and
 %                       'Z'.
 %
-%   Outputs:
+% Outputs:
 %
 %   R                   3x3xN matrix of rotation matrices with a rotation of A
 %                       about axis AXIS.
@@ -19,8 +19,10 @@ function R = rot(angle, axis)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-17
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2019-01-17
 %       * Initial release
 

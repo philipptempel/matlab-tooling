@@ -1,15 +1,15 @@
 function l = loglim(d)
 %% LOGLIM returns logarithmic limits
 %
-%   L = LOGLIM(D) returns logarithmic limits L for the values given in D. The
-%   formula is simple:
-%   L = [floor( ( log10(q) / 3 - 1 ) * 3), ceil( ( log10(q) / 3 + 1 ) * 3)]
+% L = LOGLIM(D) returns logarithmic limits L for the values given in D. The
+% formula is simple:
+% L = [floor( ( log10(q) / 3 - 1 ) * 3), ceil( ( log10(q) / 3 + 1 ) * 3)]
 %
-%   Inputs:
+% Inputs:
 %
 %   D                   NxK array of values to obtain limits for.
 %
-%   Outputs:
+% Outputs:
 %
 %   L                   Nx2 array of lower and upper logarithmic limits.
 
@@ -17,8 +17,10 @@ function l = loglim(d)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-06
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2019-01-06
 %       * Fix implementation not working correcty for numbers in
 %       [1+eps,1000-eps].

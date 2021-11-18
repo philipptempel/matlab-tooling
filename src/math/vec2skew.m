@@ -1,25 +1,20 @@
 function skew = vec2skew(vec)%#codegen
 %% VEC2SKEW Turn the input into its skew-symmetrix matrix form
 % 
-% S = VEC2SKEW(V) turns vec into its skew-symmetric matrix. Vector V can be
-% either a 2D or 3D vector.
+% S = VEC2SKEW(V) turns vec into its skew-symmetric matrix S. S is defined for a
+% vector V as
 %
-% In case of 2D vectors i.e., size(V, 1) == 2, S is
-%   [-V(2), V(1)]
-%
-% In case of 3D vectors i.e., size(V, 1) == 3, S is
 %   [     0, -V(3), V(2) ]
 %   [  V(3),    0, -V(1) ]
 %   [ -V(2), V(1),    0 ]
 %   
 % Inputs:
 %   
-%   V                   2xN or 3xN array.
+%   V                   3xN array.
 %
 % Outputs:
 %
-%   SKEW                1x2xN or 3x3xN array of skew-symmetric matrices of
-%                       vector V.
+%   SKEW                3x3xN array of skew-symmetric matrices of vector V.
 %
 % See also:
 %   CROSS
@@ -28,8 +23,12 @@ function skew = vec2skew(vec)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-03-01
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%       * Remove ability to pass 2D vectors and encourage use of `VEC2D2SKEW`
+%       for these cases
 %   2021-03-01
 %       * Update to also support case of `V` in R2.
 %       * Enforce arguemnt to vec2skew to be a 2xN or 3xN column-major array.
@@ -70,28 +69,15 @@ nv = size(vec, 2);
 % Reshape the vector in the depth dimension
 vec3 = reshape(vec, [ndim, 1, nv]);
 
-% Vector in R3
-if ndim == 3
-  % Quicker access to important parts
-  s = zeros(1, 1, nv);
-  x = vec3(1,1,:);
-  y = vec3(2,1,:);
-  z = vec3(3,1,:);
+% Quicker access to important parts
+s = zeros(1, 1, nv);
+x = vec3(1,1,:);
+y = vec3(2,1,:);
+z = vec3(3,1,:);
 
-  % Explicitly define concatenation dimension for codegen
-  tempS = cat(1, s, -z, y, z, s, -x, -y, x, s);
-  skew = permute(reshape(tempS, [3, 3, nv]), [2, 1, 3]);
-
-% Vector in R2
-else
-  x = vec3(1,1,:);
-  y = vec3(2,1,:);
-  
-  % Explicitly define concatenation dimension for codegen
-  tempS = cat(1, -y, x);
-  skew = reshape(tempS, [1, 2, nv]);
-  
-end
+% Explicitly define concatenation dimension for codegen
+tempS = cat(1, s, -z, y, z, s, -x, -y, x, s);
+skew = permute(reshape(tempS, [3, 3, nv]), [2, 1, 3]);
 
 
 end

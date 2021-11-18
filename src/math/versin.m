@@ -1,20 +1,24 @@
-function v = versin(th)
-% VERSIN calculates the versine of the argument
+function v = versin(th)%#codegen
+%% VERSIN calculates the versine of the argument
 %
-%   Inputs:
+% VERSIN(TH) calculates versine of value TH.
 %
-%   TH                  NxM array of values to calculate versine of
+% Inputs:
 %
-%   Outputs:
+%   TH                  NxM array of values to calculate versine of.
 %
-%   V                   NxM array of versines of Z
+% Outputs:
+%
+%   V                   NxM array of versines of Z.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-10-10
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2017-10-10
 %       * Initial release
 

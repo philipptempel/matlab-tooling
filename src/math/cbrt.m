@@ -1,20 +1,24 @@
-function v = cbrt(x)
+function v = cbrt(x)%#codegen
 %% CBRT Cubic root of X
+%
+% V = CBRT(X) calculates the cubic root of X i.e., V = X ^ (1/3).
 %
 % Inputs:
 %
-%   X                   Description of argument X
+%   X                   NxMx...xL array of values.
 %
 % Outputs:
 %
-%   V                   Description of argument V
+%   V                   NxMx...xL array of cubic roots.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-10-07
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-10-07
 %       * Initial release
 
@@ -22,7 +26,7 @@ function v = cbrt(x)
 
 %% Do your code magic here
 
-v = x ^ (1/3);
+v = x .^ ( 1.0 / 3.0 );
 
 
 end

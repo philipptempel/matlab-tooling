@@ -1,20 +1,29 @@
 function isp = isprime2(X)
-%ISPRIME2 True for prime numbers.
+%% ISPRIME2 True for prime numbers.
 %
-%    ISPRIME2(X) is 1 for the elements of X which are prime, 0 otherwise.
+% ISPRIME2(X) is 1 for the elements of X which are prime, 0 otherwise.
 %
-%    See also FACTOR, PRIMES, ISPRIME.
+% See also
+%   FACTOR PRIMES ISPRIME
 
-%    Author:        Peter J. Acklam
-%    Time-stamp:  2003-10-13 15:11:12 +0200
-%    E-mail:        pjacklam@online.no
-%    URL:            http://home.online.no/~pjacklam
+
+
+%% File information
+% Author: Peter J. Acklam <pjacklam@online.no>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% URL: http://home.online.no/~pjacklam
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2021-10-03
+%       * Initial release
 
 % check number of input arguments
 narginchk(1, 1);
 
 if isempty(X)
-    isp = logical(zeros(size(X)));
+    isp = false(size(X));
     return
 end
 

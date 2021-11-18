@@ -9,7 +9,7 @@ function ev = evecn(dim, cord)%#codegen
 %
 % Outputs:
 %
-%   EV                  DIMx1 vector with its CORD-th entry set to 1
+%   EV                  DIMx1 vector with its CORD-th entry set to 1.
 
 
 
@@ -24,7 +24,7 @@ function ev = evecn(dim, cord)%#codegen
 
 
 
-%% Do your code magic here
+%% Parse arguments
 
 % EVECN(DIM, CORD)
 narginchk(2, 2);

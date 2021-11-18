@@ -1,14 +1,25 @@
 function g = gcd2(x)
-%GCD2 Greatest common divisor of all elements.
+%% GCD2 Greatest common divisor of all elements.
 %
-%    GCD2(X) is the greatest common divisor of all elements in X.
+% GCD2(X) is the greatest common divisor of all elements in X.
 %
-%    See also GCD, LCM, LCMALL.
+% See also
+%   GCD LCM LCMALL
 
-%    Author:        Peter J. Acklam
-%    Time-stamp:  2004-02-09 18:31:56 +0100
-%    E-mail:        pjacklam@online.no
-%    URL:            http://home.online.no/~pjacklam
+
+
+%% File Information
+% Author: Peter J. Acklam <pjacklam@online.no>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% URL: http://home.online.no/~pjacklam
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2021-02-09
+%       * Initial release
+
+
 
 % Check number of input arguments.
 narginchk(1, 1);

@@ -1,23 +1,25 @@
 function f = w2f(w)
-% W2F turns angular frequency into ordinary frequency
+%% W2F turns angular frequency into ordinary frequency
 %
-%   F = W2F(W) turns angular frequency W in rad/s into ordinary frequency F in
-%   hertz.
+% F = W2F(W) turns angular frequency W in rad/s into ordinary frequency F in
+% hertz.
 %
-%   Inputs
+% Inputs
 %
-%   W: Angular frequency measured in radians per second.
+%   W                   Angular frequency measured in radians per second.
 %
-%   Outputs
+% Outputs
 %
-%   F: Ordinary frequency measured in hertz.
+%   F                   Ordinary frequency measured in hertz.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-06-27
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-06-27
 %       * Initial release
 
@@ -25,7 +27,7 @@ function f = w2f(w)
 
 %% Magic
 
-f = w./(2*pi);
+f = w ./ (2 * pi);
 
 
 end

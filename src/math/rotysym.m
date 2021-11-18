@@ -1,24 +1,26 @@
 function Ry = rotysym(beta)%#codegen
-% ROTYSYM Symbolic rotation matrix about the y-axis
+%% ROTYSYM Symbolic rotation matrix about the y-axis
 %
-%   ROTMAT = ROTYSYM(BETA) returns the rotation matrix, ROTMAT, that rotates a
-%   point around the y-axis for an angle BETA (in degrees). The point is
-%   specified in the form of [x;y;z], with the x, y, and z axes forming a
-%   right-handed Cartesian coordinate system. With the x axis pointing towards
-%   the observer, BETA is measured counter-clockwise in the z-x plane.
+% ROTMAT = ROTYSYM(BETA) returns the rotation matrix, ROTMAT, that rotates a
+% point around the y-axis for an angle BETA (in degrees). The point is specified
+% in the form of [x;y;z], with the x, y, and z axes forming a right-handed
+% Cartesian coordinate system. With the x axis pointing towards the observer,
+% BETA is measured counter-clockwise in the z-x plane.
 %
-%   ROTMAT is a 3x3 matrix. The rotation of the point can be achieved by
-%   left-multiplying ROTMAT with the point's coordinate vector [x;y;z].
+% ROTMAT is a 3x3 matrix. The rotation of the point can be achieved by
+% left-multiplying ROTMAT with the point's coordinate vector [x;y;z].
 %
-%   See also: ROTY
-%
+% See also
+%   ROTY
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-09-02
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-09-02
 %       * Formatted source code
 %   2016-04-05

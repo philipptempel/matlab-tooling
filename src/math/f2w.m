@@ -1,23 +1,25 @@
-function w = f2w(f)
-% F2W turns ordinary frequency into angular frequency
+function w = f2w(f)%#codegen
+%% F2W turns ordinary frequency into angular frequency
 %
-%   W = F2W(F) turns ordinary frequency F in hertz into angular frequency W in
-%   rad/s.
+% W = F2W(F) turns ordinary frequency F in hertz into angular frequency W in
+% rad/s.
 %
-%   Inputs
+% Inputs
 %
-%   F: Ordinary frequency measured in hertz.
+%   F                   Ordinary frequency measured in hertz.
 %
-%   Outputs
+% Outputs
 %
-%   W: Angular frequency measured in radians per second.
+%   W                   Angular frequency measured in radians per second.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-06-27
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-06-27
 %       * Initial release
 
@@ -25,7 +27,7 @@ function w = f2w(f)
 
 %% Magic
 
-w = 2*pi.*f;
+w = 2 * pi .* f;
 
 
 end

@@ -1,25 +1,27 @@
-function r = reldiff(x, y)
+function r = reldiff(x, y)%#codegen
 %% RELDIFF Calculate relative difference of X and Y
 %
-%   R = RELDIFF(X, Y) calulcates the relative difference of X and Y based on
-%   R = |X - Y| / (0.5 * ( |X| + |Y| ) );
+% R = RELDIFF(X, Y) calulcates the relative difference of X and Y based on
+% R = |X - Y| / (0.5 * ( |X| + |Y| ) );
 %
-%   Inputs:
+% Inputs:
 %
 %   X                   1xN vector of values.
 %
 %   Y                   1xK vector values.
 %
-%   Outputs:
+% Outputs:
 %
-%   RD                  NxK matrix of relative differences of all values
+%   RD                  NxK matrix of relative differences of all values.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-04
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2019-01-04
 %       * Initial release
 

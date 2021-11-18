@@ -5,7 +5,7 @@ function R = ang2rotm(a)%#codegen
 %
 % Inputs:
 %
-%   A                   1xN array of angular positions.
+%   A                   Nx1 array of angular positions.
 %
 % Outputs:
 %
@@ -15,8 +15,10 @@ function R = ang2rotm(a)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-04-21
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-04-21
 %       * Update code to use `cat` and `reshape` (should be faster now)
 %   2021-02-04

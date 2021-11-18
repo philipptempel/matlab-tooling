@@ -1,25 +1,27 @@
 function [M, I] = mmin(A)
-% MMIN behaves similar to MIN except that it automatically shrinks down to
+%% MMIN behaves similar to MIN except that it automatically shrinks down to
 % dimension 1
 %
-%   M = MMIN(A) returns the maximum value of A over all dimensions of A.
+% M = MMIN(A) returns the maximum value of A over all dimensions of A.
 %
-%   Inputs:
+% Inputs:
 %
-%   A                    Arbitrarily sized matrix A.
+%   A                   Arbitrarily sized matrix A.
 %
-%   Outputs:
+% Outputs:
 %
-%   M                    Minimum value found in A.
+%   M                   Minimum value found in A.
 %
-%   I                    Linear index of minimum M in A.
+%   I                   Linear index of minimum M in A.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-11-13
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-11-13
 %       * Initial release
 

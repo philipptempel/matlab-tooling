@@ -1,22 +1,9 @@
 function [der, errest, finaldelta] = derivest(fun, x0, varargin)
 %% DERIVEST Estimate the N-th derivative of a fun at X0
 %
-% DERIV = DERIVEST(FUN, X0)
-%
-% DERIV = DERIVEST(FUN, X0, Name, Value, ...)
-%
-% [DERIV, ERR] = DERIVEST(___)
-%
-% [DERIV, ERR, FINALDELTA] = DERIVEST(___)
-%
-%
-% DERIVEST: estimate the n'th derivative of fun at x0, provide an error estimate
-% usage: [der,errest] = DERIVEST(fun,x0)  % first derivative
-% usage: [der,errest] = DERIVEST(fun,x0,prop1,val1,prop2,val2,...)
-%
 % Derivest will perform numerical differentiation of an analytical function
-% provided in fun. It will not differentiate a function provided as data. Use
-% gradient for that purpose, or differentiate a spline model.
+% provided in FUN. It will not differentiate a function provided as data. Use
+% GRADIENT for that purpose, or differentiate a spline model.
 %
 % The methods used by DERIVEST are finite difference approximations of various
 % orders, coupled with a generalized (multiple term) Romberg extrapolation. This
@@ -24,125 +11,104 @@ function [der, errest, finaldelta] = derivest(fun, x0, varargin)
 % to provide the best estimate that it can by its automatic choice of a
 % differencing interval.
 %
-% Finally, While I have not written this function for the absolute maximum
-% speed, speed was a major consideration in the algorithmic design. Maximum
-% accuracy was my main goal.
+% Finally, while this function was not writtten for the absolute maximum speed,
+% speed was a major consideration in the algorithmic design. Maximum accuracy
+% was the main goal.
 %
+% DERIV = DERIVEST(FUN, X0) calculates the first derivative of function FUN at
+% X0.
 %
-% Arguments (input)
-%  fun -  function to differentiate. May be an inline function, anonymous, or an
-%         m-file. fun will be sampled at a set of distinct points for each
-%         element of x0. If there are additional parameters to be passed into
-%         fun, then use of an anonymous function is recommended.
+% DERIV = DERIVEST(___, Name, Value, ...) pass additional configuration
+% variables as Name/Value pairs.
 %
-%         fun should be vectorized to allow evaluation at multiple locations at
-%         once. This will provide the best possible speed. IF fun is not so
-%         vectorized, then you MUST set 'vectorized' property to 'no', so that
-%         derivest will then call your function sequentially instead.
+% [DERIV, ERR] = DERIVEST(___) also return unvertainty estimates for each
+% partial derivative of FUN.
 %
-%         Fun is assumed to return a result of the same shape as its input x0.
+% [DERIV, ERR, FINALDELTA] = DERIVEST(___) returns final overall step size
+% chosen by DERIVEST.
 %
-%  x0  -  scalar, vector, or array of points at which to differentiate fun.
+% Inputs:
 %
-% Additional inputs must be in the form of property/value pairs.
-%  Properties are character strings. They may be shortened
-%  to the extent that they are unambiguous. Properties are
-%  not case sensitive. Valid property names are:
+%   FUN                 Function to differentiate. May be an inline function,
+%                       anonymous, or an m-file. FUN will be sampled at a set of
+%                       distinct points for each element of X0. If there are
+%                       additional parameters to be passed into FUN, then use of
+%                       an anonymous function is recommended. FUN should be
+%                       vectorized to allow evaluation at multiple locations at
+%                       once. This will provide the best possible speed. IF fun
+%                       is not so vectorized, then you MUST set 'vectorized'
+%                       property to 'no', so that derivest will then call your
+%                       function sequentially instead. FUN is assumed to return
+%                       a result of the same shape as its input X0.
 %
-%  'DerivativeOrder', 'MethodOrder', 'Style', 'RombergTerms'
-%  'FixedStep', 'MaxStep'
+%   X0                  Scalar, vector, or NxM array of points at which to
+%                       differentiate FUN.
 %
-%  All properties have default values, chosen as intelligently
-%  as I could manage. Values that are character strings may
-%  also be unambiguously shortened. The legal values for each
-%  property are:
+% Additional inputs must be in the form of property/value pairs. Properties are
+% character strings. They may be shortened to the extent that they are
+% unambiguous. Properties are not case sensitive. Valid property names are:
 %
-%  'DerivativeOrder' - specifies the derivative order estimated.
-%        Must be a positive integer from the set [1,2,3,4].
+%   DerivativeOrder     Specifies the derivative order estimated. Must be a
+%                       positive integer from the set [1,2,3,4].
+%                       Default: 1.
 %
-%        DEFAULT: 1 (first derivative of fun)
+%   FixedStep           Allows the specification of a fixed step size,
+%                       preventing the adaptive logic from working. This will be
+%                       considerably faster, but not necessarily as accurate as
+%                       allowing the adaptive logic to run.
+%                       Note: If specified, 'FixedStep' will define the maximum
+%                       excursion from X0 that will be used.
+%                       Default: [].
 %
-%  'MethodOrder' - specifies the order of the basic method
-%        used for the estimation.
+%   MaxStep             Specifies the maximum excursion from X0 that will be
+%                       allowed, as a multiple of X0.
+%                       Default: 100
 %
-%        For 'central' methods, must be a positive integer
-%        from the set [2,4].
+%   MethodOrder         Specifies the order of the basic method used for the
+%                       estimation. For 'central' methods, must be a positive
+%                       integer from the set [2,4]. For 'forward' or 'backward'
+%                       difference methods, must be a positive integer from the
+%                       set [1,2,3,4].
+%                       Note: higher order methods will generally be more
+%                       accurate, but may also suffer more from numerical
+%                       problems.
+%                       Note: First order methods would usually not be
+%                       recommended.
+%                       Default: 4.
 %
-%        For 'forward' or 'backward' difference methods,
-%        must be a positive integer from the set [1,2,3,4].
+%   RombergTerms        Allows the user to specify the generalized Romberg
+%                       extrapolation method used, or turn it off completely.
+%                       Must be a positive integer from the set [0,1,2,3].
+%                       Note: 0 disables the Romberg step completely.
+%                       Default: 2.
 %
-%        DEFAULT: 4 (a second order method)
+%   StepRatio           Derivest uses a proportionally cascaded series of
+%                       function evaluations, moving away from your point of
+%                       evaluation. The StepRatio is the ratio used between
+%                       sequential steps.
+%                       Note: use of a non-integer stepratio is intentional, to
+%                       avoid integer multiples of the period of a periodic
+%                       function under some circumstances.
+%                       Default: 2.0000001
 %
-%        Note: higher order methods will generally be more
-%        accurate, but may also suffere more from numerical
-%        problems.
+%   Style               Specifies the style of the basic method used for the
+%                       estimation. 'central', 'forward', or 'backwards'
+%                       difference methods are used.
+%                       Note: Central difference methods are usually the most
+%                       accurate, but sometiems one must not allow evaluation in
+%                       one direction or the other.
+%                       Default: 'Central'.
 %
-%        Note: First order methods would usually not be
-%        recommended.
-%
-%  'Style' - specifies the style of the basic method
-%        used for the estimation. 'central', 'forward',
-%        or 'backwards' difference methods are used.
-%
-%        Must be one of 'Central', 'forward', 'backward'.
-%
-%        DEFAULT: 'Central'
-%
-%        Note: Central difference methods are usually the
-%        most accurate, but sometiems one must not allow
-%        evaluation in one direction or the other.
-%
-%  'RombergTerms' - Allows the user to specify the generalized
-%        Romberg extrapolation method used, or turn it off
-%        completely.
-%
-%        Must be a positive integer from the set [0,1,2,3].
-%
-%        DEFAULT: 2 (Two Romberg terms)
-%
-%        Note: 0 disables the Romberg step completely.
-%
-%  'FixedStep' - Allows the specification of a fixed step
-%        size, preventing the adaptive logic from working.
-%        This will be considerably faster, but not necessarily
-%        as accurate as allowing the adaptive logic to run.
-%
-%        DEFAULT: []
-%
-%        Note: If specified, 'FixedStep' will define the
-%        maximum excursion from x0 that will be used.
-%
-%  'Vectorized' - Derivest will normally assume that your
-%        function can be safely evaluated at multiple locations
-%        in a single call. This would minimize the overhead of
-%        a loop and additional function call overhead. Some
-%        functions are not easily vectorizable, but you may
-%        (if your matlab release is new enough) be able to use
-%        arrayfun to accomplish the vectorization.
-%
-%        When all else fails, set the 'vectorized' property
-%        to 'no'. This will cause derivest to loop over the
-%        successive function calls.
-%
-%        DEFAULT: 'yes'
-%
-%
-%  'MaxStep' - Specifies the maximum excursion from x0 that
-%        will be allowed, as a multiple of x0.
-%
-%        DEFAULT: 100
-%
-%  'StepRatio' - Derivest uses a proportionally cascaded
-%        series of function evaluations, moving away from your
-%        point of evaluation. The StepRatio is the ratio used
-%        between sequential steps.
-%
-%        DEFAULT: 2.0000001
-%
-%        Note: use of a non-integer stepratio is intentional,
-%        to avoid integer multiples of the period of a periodic
-%        function under some circumstances.
-%
+%   Vectorized          Derivest will normally assume that your function can be
+%                       safely evaluated at multiple locations in a single call.
+%                       This would minimize the overhead of a loop and
+%                       additional function call overhead. Some functions are
+%                       not easily vectorizable, but you may (if your matlab
+%                       release is new enough) be able to use arrayfun to
+%                       accomplish the vectorization. When all else fails, set
+%                       the 'vectorized' property to 'no'. This will cause
+%                       derivest to loop over the successive function calls.
+%                       Default: 'yes'.
 %
 % See the document DERIVEST.pdf for more explanation of the algorithms behind
 % the parameters of DERIVEST. In most cases, I have chosen good values for these
@@ -150,49 +116,56 @@ function [der, errest, finaldelta] = derivest(fun, x0, varargin)
 % possibly the DerivativeOrder. I've also tried to make my code robust enough
 % that it will not need much. But complete flexibility is in there for your use.
 %
+% Outputs:
+% 
+%   DER                 Derivative estimate for each element of X0. DER will
+%                       have the same shape as X0.
 %
-% Arguments: (output)
-%  der - derivative estimate for each element of x0
-%        der will have the same shape as x0.
+%  	ERREST              95% uncertainty estimate of the derivative, such that
+%                       abs(der(j) - f'(x0(j))) < erest(j)
 %
-%  errest - 95% uncertainty estimate of the derivative, such that
+%   FINDELTA            The final overall stepsize chosen by DERIVEST.
 %
-%        abs(der(j) - f'(x0(j))) < erest(j)
+% Examples:
 %
-%  finaldelta - The final overall stepsize chosen by DERIVEST
-%
-%
-% Example usage:
-%  First derivative of exp(x), at x == 1
-%   [d,e]=derivest(@(x) exp(x),1)
+% First derivative of exp(x), at x == 1
+%   [d, e] = derivest(@(x) exp(x), 1)
 %   d =
 %       2.71828182845904
 %
 %   e =
 %       1.02015503167879e-14
 %
-%  True derivative
+% True derivative
 %   exp(1)
 %   ans =
 %       2.71828182845905
 %
-% Example usage:
-%  Third derivative of x.^3+x.^4, at x = [0,1]
-%   derivest(@(x) x.^3 + x.^4,[0 1],'deriv',3)
+% Third derivative of x.^3+x.^4, at x = [0,1]
+%   derivest(@(x) x.^3 + x.^4, [0, 1], 'deriv', 3)
 %   ans =
 %       6       30
 %
-%  True derivatives: [6,30]
+%  True derivatives: [6, 30]
 %
-%
-% See also: gradient
-%
-%
-% Author: John D'Errico, Philipp Tempel
-% e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
-% Release: 1.1
-% Release date: 2021-07-16
+% See also
+%   GRADIENT
 
+
+
+%% File information
+% Author: John D'Errico <woodchips@rochester.rr.com>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2021-07-16
+%       * Initial release
+
+
+
+%% Parse arguments
 par = struct();
 par.DerivativeOrder = 1;
 par.MethodOrder = 4;
@@ -482,7 +455,7 @@ for i = 1:n
   end
 end
 
-end % mainline end
+end
 
 
 % ============================================
@@ -594,7 +567,7 @@ switch parity
     mat = c(j) .* srinv .^ ((i - 1) .* (2 * j));
 end
 
-end % fdamat
+end
 
 
 
@@ -680,7 +653,7 @@ elseif numel(par.MaxStep) > 1 || par.MaxStep <= 0
   error 'MaxStep must be empty or a scalar, >0.'
 end
 
-end % check_params
+end
 
 
 % ============================================
@@ -780,4 +753,4 @@ for i=1:n
   
 end
 
-end % parse_pv_pairs
+end

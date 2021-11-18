@@ -1,5 +1,5 @@
 function skw = vec2d2skew(vec)%#codegen
-% VEC2D2SKEW Turn the input into its skew-symmetrix matrix form
+%% VEC2D2SKEW Turn the input into its skew-symmetrix matrix form
 % 
 % SKEW = VEC2D2SKEW(VEC) turns vec into its skew-symmetric matrix form of type
 % [-vec(2), vec(1)]. If VEC is a 2xN matrix, then SKEW is a 2xN matrix of
@@ -16,14 +16,15 @@ function skw = vec2d2skew(vec)%#codegen
 %   
 %   SKEW              Nx2 matrix of skew-symmetrix matrices where each page
 %                     corresponds to a single input vector.
-%
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-12-28
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2020-12-28
 %       * Clean up code and fix H1 and inline documentation
 %   2020-12-18

@@ -13,20 +13,20 @@ function f = allisclose(g, c, atol, rtol, varargin)%#codegen
 %
 % Inputs:
 %
-%   G                 NxM array of ground truth values.
+%   G                   NxM array of ground truth values.
 %
-%   C                 NxM array of candidate values.
+%   C                   NxM array of candidate values.
 %
-%   ATOL              Absolute tolerance in comparing values. Defaults to
-%                     `1e4 * eps(class(G))`.
+%   ATOL                Absolute tolerance in comparing values. Defaults to
+%                       `1e4 * eps(class(G))`.
 %
-%   RTOL              Relative tolerance in comparing values. Defaults to
-%                     `1e-8`.
+%   RTOL                Relative tolerance in comparing values. Defaults to
+%                       `1e-8`.
 %
 % Outputs:
 %
-%   F                 True/false flag denoting if all elements of C are close to
-%                     or not close to G.
+%   F                   True/false flag denoting if all elements of C are close
+%                       to or not close to G.
 %
 % See also:
 %   ISCLOSE ALL
@@ -35,8 +35,10 @@ function f = allisclose(g, c, atol, rtol, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-04
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-11-04
 %     * Update H1 documentation to include defaults of `ATOL` and `RTOL`
 %   2021-04-23

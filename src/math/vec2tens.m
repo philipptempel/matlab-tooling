@@ -1,21 +1,26 @@
-function [I] = vec2tens(v)
-% VEC2TENS converts a vector to its 2d tensor matrix representation.
+function I = vec2tens(v)%#codegen
+%% VEC2TENS converts a vector to its 2d tensor matrix representation.
 %
-%   Inputs:
+% VEC2TENS(V) calculates vector into its 2D tensor matrix representation.
 %
-%   V       Mx6 Vector of tensor components ordered by [I_11, I_22, I_33, I_12,
-%           I_23, I_13]. For each row of v, a tensor matrix will be generated.
+% Inputs:
 %
-%   Outputs:
+%   V                   Mx6 Vector of tensor components ordered by [I_11, I_22,
+%                       I_33, I_12, I_23, I_13]. For each row of v, a tensor
+%                       matrix will be generated.
 %
-%   I       Tensor matrix of vector T as 3x3xM matrix.
+% Outputs:
+%
+%   I                   Tensor matrix of vector T as 3x3xM matrix.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-08-25
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-08-25
 %       * Initial release
 
@@ -55,8 +60,6 @@ I_xz = aVectors2(6,1,:);
 tempI = cat(1, I_xx, I_xy, I_xz, I_xy, I_yy, I_yz, I_xz, I_yz, I_zz);
 I = reshape(tempI, [3, 3, nVectors]);
 I = permute(I, [2, 1, 3]);
-
-
 
 
 end

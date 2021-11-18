@@ -1,14 +1,27 @@
 function c = lcm2(x)
-%LCMALL Least common multiple of all elements.
+%% LCM2 Least common multiple of all elements.
 %
-%    LCMALL(X) is the least common multiple of all elements in X.
+% LCM2(X) is the least common multiple of all elements in X.
 %
-%    See also GCD, LCM, GCDALL.
+% See also
+%   GCD LCM GCDALL
 
-%    Author:        Peter J. Acklam
-%    Time-stamp:  2002-03-03 13:51:44 +0100
-%    E-mail:        pjacklam@online.no
-%    URL:            http://home.online.no/~pjacklam
+
+
+%% File information
+% Author: Peter J. Acklam <pjacklam@online.no>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% URL: http://home.online.no/~pjacklam
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2021-03-03
+%       * Initial release
+
+
+
+%% Process
 
 % Check input arguments.
 narginchk(1, 1);

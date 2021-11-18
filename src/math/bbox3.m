@@ -1,5 +1,5 @@
 function [bx, trav] = bbox3(X, Y, Z)%#codegen
-% BBOX3 Calculates the 3D bounding box for the given points
+%% BBOX3 Calculates the 3D bounding box for the given points
 %  
 % BOX = BBOX3(X, Y, Z) calculates the bounding box for the given points in X,
 % Y, Z position and returns a matrix of size 3x8 where each column is one of
@@ -16,28 +16,29 @@ function [bx, trav] = bbox3(X, Y, Z)%#codegen
 %   
 % Inputs:
 %   
-%   X                 Nx1 vector or Nx3 matrix of points on the YZ-plane
+%   X                   Nx1 vector or Nx3 matrix of points on the YZ-plane.
 %   
-%   Y                 Nx1 Vector of points on the XZ-plane
+%   Y                   Nx1 Vector of points on the XZ-plane.
 %
-%   Z                 Nx1 vector of points on the XY-plane
+%   Z                   Nx1 vector of points on the XY-plane.
 %
 % Outputs:
 %
-%   BOX               8x3 matrix of entries that correspond the corners of the
-%                     bounding box with their relation as given in the second
-%                     output parameter TRAVERSAL
+%   BOX                 8x3 matrix of entries that correspond the corners of the
+%                       bounding box with their relation as given in the second
+%                       output parameter TRAVERSAL.
 %
-%   TRAVERSAL         6x3 matrix where each row corresponds to one traversal of
-%                     the bounding box BOX for using the patch command.
-%
+%   TRAVERSAL           6x3 matrix where each row corresponds to one traversal
+%                       of the bounding box BOX for using the patch command.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-03-12
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-03-12
 %       * Fix H1 documentation
 %       * Add CODEGEN directive and remove try/catch block

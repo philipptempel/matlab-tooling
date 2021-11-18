@@ -14,26 +14,28 @@ function f = isclose(g, c, atol, rtol)%#codegen
 %
 % Inputs:
 %
-%   G                 NxM array of ground truth values.
+%   G                   NxM array of ground truth values.
 %
-%   C                 NxM array of candidate values.
+%   C                   NxM array of candidate values.
 %
-%   ATOL              Absolute tolerance in comparing values. Defaults to
-%                     `1e4 * eps(class(G))`.
+%   ATOL                Absolute tolerance in comparing values. Defaults to
+%                       `1e4 * eps(class(G))`.
 %
-%   RTOL              Relative tolerance in comparing values. Defaults to
-%                     `1e-8`.
+%   RTOL                Relative tolerance in comparing values. Defaults to
+%                       `1e-8`.
 %
 % Outputs:
 %
-%   F                 NxM array of logical values where C is/are close to G.
+%   F                   NxM array of logical values where C is/are close to G.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-04
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-11-04
 %     * Update H1 documentation
 %   2021-04-30

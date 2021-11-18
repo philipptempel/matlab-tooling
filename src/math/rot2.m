@@ -1,12 +1,12 @@
 function R = rot2(ang)%#codegen
 %% ROT2 creates the 2D rotation matrix of angles A
 %
-%   Inputs:
+% Inputs:
 %
 %   ANG                 Nx1 vector of angles in radian to turn into rotation
 %                       matrices.
 %
-%   Outputs:
+% Outputs:
 %
 %   R                   2x2xN rotation matrix for each agle.
 
@@ -14,8 +14,10 @@ function R = rot2(ang)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-12-19
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2020-12-19
 %       * Copy from personal MATLAB package
 %   2017-03-06

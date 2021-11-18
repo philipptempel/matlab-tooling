@@ -5,11 +5,12 @@ function c = collatz(n)
 %
 % Inputs:
 %
-%   N                   Description of argument N
+%   N                   NxMx...xL array of values to calculate Collatz number
+%                       of.
 %
 % Outputs:
 %
-%   C                   Description of argument C
+%   C                   NxMx...xL array of associated Collatz number.
 
 
 

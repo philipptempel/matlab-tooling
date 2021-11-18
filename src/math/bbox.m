@@ -1,5 +1,5 @@
 function [bx, trav] = bbox(X, Y)%#codegen
-% BBOX Calculates the 2D bounding box for the given points
+%% BBOX Calculates the 2D bounding box for the given points
 %  
 % BOX = BBOX(X, Y) calculates the bounding box for the given points in X and Y
 % position and returns a matrix of size 3x8 where each column is one of the
@@ -13,27 +13,28 @@ function [bx, trav] = bbox(X, Y)%#codegen
 %   
 % Inputs:
 %   
-%   X                 Nx1 vector or Nx2 matrix of points on the X-axis.
+%   X                   Nx1 vector or Nx2 matrix of points on the X-axis.
 %   
-%   Y                 Nx1 vector of points on the Y-axis.
+%   Y                   Nx1 vector of points on the Y-axis.
 %
 % Outputs:
 %
-%   BOX               Matrix of 4x2 entries that correspond the corners of the
-%                     bounding box with their relation as given in the second
-%                     output parameter TRAVERSAL
+%   BOX                 Matrix of 4x2 entries that correspond the corners of the
+%                       bounding box with their relation as given in the second
+%                       output parameter TRAVERSAL.
 %
-%   TRAVERSAL         Matrix of 6 rows of size 3 where each row corresponds to
-%                     one traversal of the bounding box BOX for using the patch
-%                     command
-%
+%   TRAVERSAL           Matrix of 6 rows of size 3 where each row corresponds to
+%                       one traversal of the bounding box BOX for using the
+%                       patch command.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-03-12
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2021-03-12
 %       * Fix H1 documentation
 %       * Add CODEGEN directive and remove try/catch block

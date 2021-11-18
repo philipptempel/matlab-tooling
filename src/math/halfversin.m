@@ -1,15 +1,18 @@
-function Mn = mnormcol(M)%#codegen
-%% MNORMCOL Normalize a matrix per column
-% 
-% MN = MNORMCOL(M) normalizes each column of matrix MAT by its norm.
-%   
+function h = halfversin(z)%#codegen
+%% HALFVERSIN creates the half versine value
+%
+% HALFVERSIN(Z) calculates the half of the Versine value of Z.
+%
 % Inputs:
-%   
-%   M                   Matrix of variable dimension to be normalized.
+%
+%   Z                   NxM matrix of values to calculate the half versine of.
 %
 % Outputs:
 %
-%   MN                  Matrix with each column's norm being one.
+%   H                   NxM matrix of halfs of versine values.
+%
+% See also:
+%   VERSIN
 
 
 
@@ -19,23 +22,23 @@ function Mn = mnormcol(M)%#codegen
 % Changelog:
 %   2021-11-17
 %       * Update H1 to correct format
-%   2016-04-04
+%   2017-10-10
 %       * Initial release
 
 
 
-%% Parse arguments
+%% Validate arguments
 
 narginchk(1, 1);
 nargoutchk(0, 1);
 
-assert(isa(M, 'double'), 'Input must be of type double');
+validateattributes(z, {'numeric'}, {'nonempty', 'finite', 'nonnan', 'nonsparse'}, mfilename(), 'z');
 
 
 
-%% Algorithm
+%% Calculate half versine
 
-Mn = transpose(mnormrow(transpose(M)));
+h = 1 / 2 .* versin(z);
 
 
 end

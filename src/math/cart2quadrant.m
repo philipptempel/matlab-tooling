@@ -1,21 +1,21 @@
-function Q = cart2quadrant(X, Y)
-% CART2QUADRANT returns the quadrant of the given Cartesian coordinates
+function Q = cart2quadrant(X, Y)%#codegen
+%% CART2QUADRANT returns the quadrant of the given Cartesian coordinates
 %
-%   CART2QUADRANT(X, Y) returns
+% CART2QUADRANT(X, Y) returns
 %       1 if    X > 0 & Y > 0
 %       2 if    X < 0 & Y > 0
 %       3 if    X < 0 & Y < 0
 %       4 if    X > 0 & Y < 0
 %       0       else
-%   for any value inside the corresponding (i,j) pair of (X,Y).
+% for any value inside the corresponding (i,j) pair of (X,Y).
 %
-%   Inputs:
+% Inputs:
 %
 %   X                   NxM array of Cartesian X-coordinates.
 %
 %   Y                   NxM array of Cartesian Y-coordinates.
 %
-%   Outputs:
+% Outputs:
 %
 %   Q                   NxM array of quadrant number of the given coordinates.
 
@@ -23,27 +23,25 @@ function Q = cart2quadrant(X, Y)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-08-01
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2018-08-01
 %       * Initial release
 
 
 
 %% Assert arguments
-try
-    % CART2QUADRANT(X, Y)
-    narginchk(2, 2);
-    
-    % CART2QUADRANT(X, Y)
-    % Q = CART2QUADRANT(X, Y)
-    nargoutchk(0, 1);
-    
-    validateattributes(X, {'numeric'}, {'2d', 'nonempty', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'X');
-    validateattributes(Y, {'numeric'}, {'2d', 'nonempty', 'size', size(X), 'finite', 'nonnan', 'nonsparse'}, mfilename, 'Y');
-catch me
-    throwAsCaller(me);
-end
+% CART2QUADRANT(X, Y)
+narginchk(2, 2);
+
+% CART2QUADRANT(X, Y)
+% Q = CART2QUADRANT(X, Y)
+nargoutchk(0, 1);
+
+validateattributes(X, {'numeric'}, {'2d', 'nonempty', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'X');
+validateattributes(Y, {'numeric'}, {'2d', 'nonempty', 'size', size(X), 'finite', 'nonnan', 'nonsparse'}, mfilename, 'Y');
 
 
 

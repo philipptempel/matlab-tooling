@@ -1,62 +1,69 @@
 function [hess,err] = hessest(fun,x0)
 %% HESSEST Estimate Hessian matrix of a scalar function
 %
-% HESS = HESSEST(FUN, XO)
+% HESS = HESSEST(FUN, XO) estimate elements of the Hessian matrix (array of 2nd
+% partials) of function FUN at X0.
 %
-% [HESS, ERR] = HESSEST(FUN, XO)
-%
-% hessian: estimate elements of the Hessian matrix (array of 2nd partials)
-% usage: [hess,err] = hessian(fun,x0)
+% [HESS, ERR] = HESSEST(FUN, XO) also return error estiamtes of each element in
+% HESS.
 %
 % Hessian is NOT a tool for frequent use on an expensive to evaluate objective
 % function, especially in a large number of dimensions. Its computation will use
 % roughly O(6*n^2) function evaluations for n parameters.
+%
+% Inputs:
+%
+%   FUN                 Scalar analytical function to differentiate. FUN must be
+%                       a function ofthe vector or array X0. FUN does not need
+%                       to be vectorized.
 % 
-% arguments: (input)
-%  fun -  SCALAR analytical function to differentiate. fun must be a function of
-%         the vector or array x0. fun does not need to be vectorized.
+%   X0                  Nx1 vector location at which to compute the Hessian.
+%
+% Outputs:
 % 
-%  x0  -  vector location at which to compute the Hessian.
+%   HESS                NxN symmetric array of second partial derivatives of
+%                       FUN, evaluated at X0.
 %
-% arguments: (output)
-%  hess - nxn symmetric array of second partial derivatives of fun, evaluated at
-%         x0.
+%   ERR                 NxN array of error estimates corresponding to each
+%                       second partial derivative in HESS.
 %
-%  err -  nxn array of error estimates corresponding toeach second partial
-%         derivative in hess.
+% Examples:
 %
-%
-% Example usage:
-%  Rosenbrock function, minimized at [1,1]
-%  rosen = @(x) (1-x(1)).^2 + 105*(x(2)-x(1).^2).^2;
-%  
-%  [h,err] = hessian(rosen,[1 1])
-%  h =
+% Rosenbrock function, minimized at [1,1]
+%   rosen = @(x) (1 - x(1)).^2 + 105*(x(2) - x(1).^2).^2;
+%   [h, err] = hessian(rosen, [1, 1])
+%   h =
 %           842         -420
 %          -420          210
-%  err =
+%   err =
 %    1.0662e-12   4.0061e-10
 %    4.0061e-10   2.6654e-13
 %
 %
-% Example usage:
-%  cos(x-y), at (0,0)
-%  Note: this hessian matrix will be positive semi-definite
-%
-%  hessian(@(xy) cos(xy(1)-xy(2)),[0 0])
-%  ans =
+% Calculate positive semi-definite matrix of cos(x-y) at (0,0)
+%   hessian(@(xy) cos(xy(1) - xy(2)), [0, 0])
+%   ans =
 %           -1            1
 %            1           -1
 %
-%
-% See also: derivest, gradient, gradest, hessdiag
-%
-%
-% Author: John D'Errico, Philipp Tempel
-% e-mail: woodchips@rochester.rr.com, philipp.tempel@ls2n.fr
-% Release: 1.1
-% Release date: 2021-07-16
+% See also
+%   DERIVEST GRADIENT GRADEST HESSDIAG
 
+
+
+%% File information
+% Author: John D'Errico <woodchips@rochester.rr.com>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2021-07-16
+%       * Initial release
+
+
+
+%% Algorithm
 % parameters that we might allow to change
 params.StepRatio = 2.0000001;
 params.RombergTerms = 3;
@@ -88,7 +95,7 @@ end
 
 % get the gradient vector. This is done only to decide
 % on intelligent step sizes for the mixed partials
-[grad,graderr,stepsize] = gradest(fun,x0);
+[~, ~, stepsize] = gradest(fun,x0);
 
 % Get params.RombergTerms+1 estimates of the upper
 % triangle of the hessian matrix
@@ -111,7 +118,7 @@ for i = 2:nx
     dij = dij./(dfac.^2);
     
     % Romberg extrapolation step
-    [hess(i,j),err(i,j)] =  rombextrap(params.StepRatio,dij,[2 4]);
+    [hess(i,j), err(i,j)] =  rombextrap(params.StepRatio, dij, [2 4]);
     hess(j,i) = hess(i,j);
     err(j,i) = err(i,j);
   end
