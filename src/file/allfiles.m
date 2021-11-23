@@ -1,53 +1,60 @@
 function Files = allfiles(d, varargin)
 % ALLFILES Finds all files in directory DIR and returns them in a structure
 %
-%   FILES = ALLFILES() scans through current working directory and returns all
-%   files. This is basically the same as calling the `dir` function. However,
-%   the power lies in the magic of this function. Read more to see what is
-%   meant.
+% FILES = ALLFILES() scans through current working directory and returns all
+% files. This is basically the same as calling the `dir` function. However, the
+% power lies in the magic of this function. Read more to see what is meant.
 %
-%   FILES = ALLFILES(DIR) scans through directory DIR and returns all files.
+% FILES = ALLFILES(DIR) scans through directory DIR and returns all files.
 %
-%   FILES = ALLFILES(DIR, 'csv') scans through directory DIR and returns all
-%   files with extension 'csv' (or, '.csv' to be more precise).
+% FILES = ALLFILES(DIR, '.csv') scans through directory DIR and returns all
+% files with extension '.csv'.
 %
-%   FILES = ALLFILES('Name', 'Value', ...) with additional options specified by
-%   one or more Name,Value pair arguments.
+% FILES = ALLFILES('Name', 'Value', ...) with additional options specified by
+% one or more Name,Value pair arguments.
 %
 %   Optional Inputs -- specified as parameter value pairs
 %
-%   Dir             Directory to list files from. Defaults to `pwd`.
+%   Dir                 Directory to list files from.
+%                       Default: `pwd`
 %
-%   Extension       Extension to match. Allows for easy filtering of all
-%       'csv' files in a given directory. Extension must be without the trailing
-%       period and also without any placeholders. Defaults to '.*'.
+%   Extension           Extension to match. Allows for easy filtering of e.g.,
+%                       all 'csv' files in a given directory. `Extension` must
+%                       contain the trailing . (period; file-extension
+%                       separator).
+%                       Default: '.*'
 %
-%   Prefix          Prefix to match files against. When given, only files
-%       starting with 'Prefix' are searched and returned. Defaults to '.*'.
+%   Prefix              Prefix to match files against. When given, only files
+%                       starting with 'Prefix' are searched and returned.
+%                       Default: '' (empty, no prefix)
 %
-%   Suffix          Suffix to match files against. When given, only files ending
-%       with 'Suffix' are searched and returned. Defaults to '.*'.
+%   Suffix              Suffix to match files against. When given, only files
+%                       ending with 'Suffix' are searched and returned.
+%                       Default: '' (empty, no prefix)
 %
-%   IncludeHidden   Switch to include hidden files i.e., files starting with a
-%       '.' (period). Possible options are:
-%           'on', 'yes'     Include hidden files
-%           'off', 'no'     Do not include hidden files
-%       Defaults to 'off'.
+%   IncludeHidden       Switch to include hidden files i.e., files starting with
+%                       a '.' (period). Possible options are:
+%                       'on', 'yes'     Include hidden files
+%                       'off', 'no'     Do not include hidden files
+%                       Default: 'off'.
 %
-%   Recurse         Flag whether to recurse into subdirectories, too. Possible
-%       options are
-%           'on', 'yes'     Recurse into subdirectories
-%           'off', 'no'     Do not recurse into subdirectories
-%       Defaults to 'off'
+%   Recurse             Flag whether to recurse into subdirectories, too.
+%                       Possible options are
+%                       'on', 'yes'     Recurse into subdirectories
+%                       'off', 'no'     Do not recurse into subdirectories
+%                       Default: 'off'
 %
-%   See also: dir
+% See also:
+%   DIR
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-11-17
+% Date: 2021-11-23
 % Changelog:
+%   2021-11-23
+%       * Update H1
 %   2020-11-17
 %       * Change bug that would stop function from recursing into package
 %       directories
@@ -122,8 +129,8 @@ ip.FunctionName = mfilename;
 % Parse the provided inputs
 try
     % Default argument fallback
-    if nargin == 0 || isempty(d) || 0 == exist('d', 'var')
-        d = pwd;
+    if nargin == 0 || isempty(d)
+        d = pwd();
     end
     
     % ALLFILES(D)
@@ -133,11 +140,11 @@ try
     % F = ALLFILES(...)
     nargoutchk(0, 1);
     
-    args = [{d}, varargin];
+    parse(ip, d, varargin{:});
     
-    ip.parse(args{:});
 catch me
     throwAsCaller(me);
+    
 end
 
 
