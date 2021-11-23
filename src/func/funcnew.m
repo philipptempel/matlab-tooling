@@ -13,41 +13,51 @@ function funcnew(Name, varargin)
 %
 % Inputs:
 %
-%   NAME:               Name of the function. Can also be a fully qualified file
+%   NAME                Name of the function. Can also be a fully qualified file
 %                       name from which the function name will then be
 %                       extracted.
 %
-%   ARGIN:              Cell array of input variable names. If empty, function
-%                       will not take any arguments. Placeholder 'varargin' can
+%   ARGIN               Cell array of input variable names. If empty, function
+%                       will not take any arguments. Placeholder `varargin` can
 %                       be used by liking. Note that, any variable name occuring
-%                       after 'varargin' will be striped.
+%                       after `varargin` will be striped.
 %
 %   ARGOUT              Cell array of output variable names. If empty i.e., {},
 %                       function will not return any arguments. Placeholder
-%                       'varargout' may be used by requirement. Note that, any
-%                       variable name occuring after 'varargout' will be
+%                       `varargout` may be used by requirement. Note that, any
+%                       variable name occuring after `varargout` will be
 %                       striped.
 %
 % Optional Inputs -- specified as parameter value pairs
 %
-%   Author          Author string to be set. Most preferable you'd use something
-%                   like
-%                   'Firstname Lastname <author-email@example.com>'
+%   Author              Author string to be set. Most preferable you will  use
+%                       something like
+%                       'Firstname Lastname <author-email@example.com>'
 %   
-%   Description     Description of function which is usually the first line
-%                   after the function declaration and contains the function
-%                   name in all caps.
+%   Description         Description of function which is usually the first line
+%                       after the function declaration and contains the function
+%                       name in all caps.
 %
-%   Template        Path to a template file that should be used instead of the
-%                   default `functiontemplate.mtpl` found in this function's
-%                   root directory.
+%   NArgIn              Number of input arguments to use in `narginchk`.
+%                       Default: [] i.e., all arguments required.
+%
+%   NArgOut             Number of output arguments to use in `nargoutchk`.
+%                       Default: [] i.e., all arguments required.
+%
+%   Template            Path to a template file that should be used instead of
+%                       the default found in this function's directory.
+%                       Default: 'functiontemplate.mtpl'
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-11-12
+% Date: 2021-11-23
 % Changelog:
+%   2021-11-23
+%       * Fix H1 Documentation
+%       * Add Name/Value options `NArgin` and `NArgout`
+%       * Add section "Parse arguments" in generated file
 %   2020-11-12
 %       * Fix indentation of 'Inputs:' and 'Outputs:' in generated code
 %   2020-11-02
@@ -109,39 +119,45 @@ function funcnew(Name, varargin)
 ip = inputParser;
 
 % Require: Filename
-valFcn_Name = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Name');
+valFcn_Name = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Name');
 addRequired(ip, 'Name', valFcn_Name);
 
 % Allow custom input argument list
-valFcn_ArgIn = @(x) validateattributes(x, {'cell'}, {}, mfilename, 'ArgIn');
+valFcn_ArgIn = @(x) validateattributes(x, {'cell'}, {}, mfilename(), 'ArgIn');
 addOptional(ip, 'ArgIn', {}, valFcn_ArgIn);
 
 % Allow custom return argument list
-valFcn_ArgOut = @(x) validateattributes(x, {'cell'}, {}, mfilename, 'ArgOut');
+valFcn_ArgOut = @(x) validateattributes(x, {'cell'}, {}, mfilename(), 'ArgOut');
 addOptional(ip, 'ArgOut', {}, valFcn_ArgOut);
 
 % Author: Char. Non-empty
-valFcn_Author = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Author');
+valFcn_Author = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Author');
 addParameter(ip, 'Author', 'Philipp Tempel <philipp.tempel@ls2n.fr>', valFcn_Author);
 
 % Description: Char. Non-empty
-valFcn_Description = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Description');
+valFcn_Description = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Description');
 addParameter(ip, 'Description', '', valFcn_Description);
 
+% Number of input/output arguments
+valFcn_NArgIn  = @(x) validateattributes(x, {'double'}, {'vector', 'numel', 2, 'nonnegative', 'nondecreasing', 'nonnan'}, mfilename(), 'NArgIn');
+valFcn_NArgOut = @(x) validateattributes(x, {'double'}, {'vector', 'numel', 2, 'nonnegative', 'nondecreasing', 'nonnan'}, mfilename(), 'NArgOut');
+addParameter(ip, 'NArgIn', [], valFcn_NArgIn);
+addParameter(ip, 'NArgOut', [], valFcn_NArgOut);
+
 % Overwrite: Char. Matches {'on', 'off', 'yes', 'no'}. Defaults 'no';
-valFcn_Overwrite = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no'}, mfilename, 'Overwrite'));
+valFcn_Overwrite = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no'}, mfilename(), 'Overwrite'));
 addParameter(ip, 'Overwrite', 'off', valFcn_Overwrite);
 
 % A package name may also be provided
-valFcn_Package = @(x) validateattributes(x, {'char'}, {}, mfilename, 'Package');
+valFcn_Package = @(x) validateattributes(x, {'char'}, {}, mfilename(), 'Package');
 addParameter(ip, 'Package', '', valFcn_Package);
 
 % Silent: Char. Matches {'on', 'off', 'yes', 'no'}. Defaults 'off'
-valFcn_Silent = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no'}, mfilename, 'Silent'));
+valFcn_Silent = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no'}, mfilename(), 'Silent'));
 addParameter(ip, 'Silent', 'off', valFcn_Silent);
 
 % Template: Char; non-empty
-valFcn_Template = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Template');
+valFcn_Template = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Template');
 addParameter(ip, 'Template', '', valFcn_Template);
 
 % Configuration of input parser
@@ -184,9 +200,9 @@ if isempty(chFunction_Ext)
     chFunction_Ext = '.m';
 end
 % List of input arguments
-ceArgIn = ip.Results.ArgIn;
+[ceArgIn, fVarArgIn] = parse_vararg('in', ip.Results.ArgIn);
 % List of output arguments
-ceArgOut = ip.Results.ArgOut;
+[ceArgOut, fVarArgOut] = parse_vararg('out', ip.Results.ArgOut);
 % Description text
 chDescription = ip.Results.Description;
 % Author name
@@ -199,6 +215,9 @@ chOverwrite = parseswitcharg(ip.Results.Overwrite);
 chTemplate = ip.Results.Template;
 % Package name
 chPackage = ip.Results.Package;
+% Number of input/output arguments
+nArgI = ip.Results.NArgIn;
+nArgO = ip.Results.NArgOut;
 
 %%% Local variables
 % No templtae file given?
@@ -251,27 +270,8 @@ catch me
     throwAsCaller(MException(me.identifier, me.message));
 end
 
-% String of input arguments
-if ~isempty(ceArgIn)
-    % Find the index of 'varargin' in the input argument names
-    idxVarargin = find(strcmp(ceArgIn, 'varargin'));
-    % Reject everything after 'varargin'
-    if ~isempty(idxVarargin) && numel(ceArgIn) > idxVarargin
-        ceArgIn(idxVarargin+1:end) = [];
-    end
-end
 % Join the input arguments
 chArgsIn = strjoin(cellfun(@(chArg) matlab.lang.makeValidName(chArg), ceArgIn, 'UniformOutput', false), ', ');
-
-% String of output arguments
-if ~isempty(ceArgOut)
-    % Find the index of 'varargin' in the input argument names
-    idxVarargout = find(strcmp(ceArgOut, 'varargout'));
-    % Reject everything after 'varargin'
-    if ~isempty(idxVarargout) && numel(ceArgOut) > idxVarargout
-        ceArgOut(idxVarargout+1:end) = [];
-    end
-end
 % Join the output arguments
 chArgsOut = strjoin(cellfun(@(chArg) matlab.lang.makeValidName(chArg), ceArgOut, 'UniformOutput', false), ', ');
 % Wrap output argumets in square brackets if there are more than one
@@ -282,6 +282,10 @@ if numel(ceArgOut) > 0
     
     chArgsOut = sprintf('%s = ', chArgsOut);
 end
+
+% Input/output argument checking
+arginchk = build_argchk('in', nArgI);
+argoutchk = build_argchk('out', nArgO);
 
 % Description string
 chDescription = in_createDescription(chDescription, ceArgIn, ceArgOut);
@@ -295,6 +299,8 @@ ceReplacers = {...
     'DESCRIPTION', chDescription; ...
     'AUTHOR', chAuthor; ...
     'DATE', chDate;
+    'ARGINCHK', arginchk ; ...
+    'ARGOUTCHK', argoutchk ; ...
 };
 % Replace all placeholders with their respective content
 for iReplace = 1:size(ceReplacers, 1)
@@ -331,69 +337,104 @@ if strcmp(chSilent, 'off')
 end
 
 
-    function chDesc = in_createDescription(chDescription, ceArgIn, ceArgOut)
-        % Determine if there is 'varargin' or 'varargout' in the arg list
-        lHasVarargin = ismember('varargin', ceArgIn);
-        lHasVarargout = ismember('varargout', ceArgOut);
-        %%% Clean the list of input and output arguments
-        % Remove 'varargin' from list of in arguments
-        if lHasVarargin
-            ceArgIn(strcmp(ceArgIn, 'varargin')) = [];
-        end
-        % Remove 'varargin' from list of in arguments
-        if lHasVarargout
-            ceArgOut(strcmp(ceArgOut, 'varargout')) = [];
-        end
-        % Holds the formatted list entries of inargs and outargs
-        ceArgIn_List = cell(numel(ceArgIn), min(numel(ceArgIn), 1));
-        ceArgOut_List = cell(numel(ceArgOut), min(numel(ceArgOut), 1));
-        
-        % Determine longest argument name for input
-        nCharsLongestArg_In = max(cellfun(@(x) length(x), ceArgIn));
-        if isempty(nCharsLongestArg_In)
-            nCharsLongestArg_In = 0;
-        end
-        % and output
-        nCharsLongestArg_Out = max(cellfun(@(x) length(x), ceArgOut));
-        if isempty(nCharsLongestArg_Out)
-            nCharsLongestArg_Out = 0;
-        end
-        
-        % Determine the longer argument names: input or output?
-        nCharsLongestArg = max([nCharsLongestArg_In, nCharsLongestArg_Out]);
-        % Get the index of the next column (dividable by 4) but be at least at
-        % column 21
-        nNextColumn = max([21, 4*ceil((nCharsLongestArg + 1)/4) + 1]);
-        
-        % First, create a lits of in arguments
-        if ~isempty(ceArgIn)
-            % Prepend comment char and whitespace before uppercased argument
-            % name, append whitespace up to filling column and a placeholder at
-            % the end
-            ceArgIn_List = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, nNextColumn - length(x) - 1), 'Description of argument', upper(x)), ceArgIn, 'Uniform', false);
-        end
-        
-        % Second, create a lits of out arguments
-        if ~isempty(ceArgOut)
-            % Prepend comment char and whitespace before uppercased argument
-            % name, append whitespace up to filling column and a placeholder at
-            % the end
-            ceArgOut_List = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, nNextColumn - length(x) - 1), 'Description of argument', upper(x)), ceArgOut, 'Uniform', false);
-        end
-        
-        % Create the description first from the text given by the user
-        chDesc = sprintf('%s', chDescription);
-        
-        % Append list of input arguments?
-        if ~isempty(ceArgIn_List)
-            chDesc = sprintf('%s\n%%\n%% Inputs:\n%%\n%s', chDesc, strjoin(ceArgIn_List, '\n%\n'));
-        end
-        
-        % Append list of output arguments?
-        if ~isempty(ceArgOut_List)
-            chDesc = sprintf('%s\n%%\n%% Outputs:\n%%\n%s', chDesc, strjoin(ceArgOut_List, '\n%\n'));
-        end
-    end
+end
+
+
+function chDesc = in_createDescription(chDescription, ceArgIn, ceArgOut)
+%% IN_CREATEDESCRIPTION
+
+
+
+% Holds the formatted list entries of inargs and outargs
+ceArgIn_List = cell(numel(ceArgIn), min(numel(ceArgIn), 1));
+ceArgOut_List = cell(numel(ceArgOut), min(numel(ceArgOut), 1));
+
+% Determine longest argument name for input
+nCharsLongestArg_In = max(cellfun(@(x) length(x), ceArgIn));
+if isempty(nCharsLongestArg_In)
+    nCharsLongestArg_In = 0;
+end
+% and output
+nCharsLongestArg_Out = max(cellfun(@(x) length(x), ceArgOut));
+if isempty(nCharsLongestArg_Out)
+    nCharsLongestArg_Out = 0;
+end
+
+% Determine the longer argument names: input or output?
+nCharsLongestArg = max([nCharsLongestArg_In, nCharsLongestArg_Out]);
+% Get the index of the next column (dividable by 4) but be at least at
+% column 21
+nNextColumn = max([21, 4*ceil((nCharsLongestArg + 1)/4) + 1]);
+
+% First, create a lits of in arguments
+if ~isempty(ceArgIn)
+    % Prepend comment char and whitespace before uppercased argument
+    % name, append whitespace up to filling column and a placeholder at
+    % the end
+    ceArgIn_List = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, nNextColumn - length(x) - 1), 'Description of argument', upper(x)), ceArgIn, 'Uniform', false);
+end
+
+% Second, create a lits of out arguments
+if ~isempty(ceArgOut)
+    % Prepend comment char and whitespace before uppercased argument
+    % name, append whitespace up to filling column and a placeholder at
+    % the end
+    ceArgOut_List = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, nNextColumn - length(x) - 1), 'Description of argument', upper(x)), ceArgOut, 'Uniform', false);
+end
+
+% Create the description first from the text given by the user
+chDesc = sprintf('%s', chDescription);
+
+% Append list of input arguments?
+if ~isempty(ceArgIn_List)
+    chDesc = sprintf('%s\n%%\n%% Inputs:\n%%\n%s', chDesc, strjoin(ceArgIn_List, '\n%\n'));
+end
+
+% Append list of output arguments?
+if ~isempty(ceArgOut_List)
+    chDesc = sprintf('%s\n%%\n%% Outputs:\n%%\n%s', chDesc, strjoin(ceArgOut_List, '\n%\n'));
+end
+
+
+end
+
+
+function [args, f] = parse_vararg(t, args)
+%% PARSE_VARARG
+%
+% [ARGS, F] = PARSE_VARARG(T, ARGS)
+
+
+
+% Find the index of 'varargin' in the input argument names
+idxS = find(strcmpi(args, sprintf('vararg%s', t)));
+f = ~isempty(idxS) && numel(args) >= idxS;
+% Reject everything after 'varargin'
+if f
+  args((idxS + 1):end) = [];
+end
+
+
+end
+
+
+function a = build_argchk(t, n)
+%% BUILD_ARGCHK
+%
+% A = BUILD_ARGCHK(T, N)
+
+
+
+if ~isempty(n)
+  a = sprintf('narg%schk(%d, %d);', t, n(1), n(2));
+  if strcmpi(t, 'in')
+    a = sprintf('\n%s\n', a);
+  elseif strcmpi(t, 'out')
+    a = sprintf('%s\n\n', a);
+  end
+else
+  a = '';
+end
 
 
 end
