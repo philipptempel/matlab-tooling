@@ -102,12 +102,12 @@ function Files = allfiles(d, varargin)
 ip = inputParser;
 
 % Optional: Directory. Char. Non-empty.
-valFcn_Dir = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Dir');
-ip.addRequired('Dir', valFcn_Dir);
+valFcn_Dir = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Dir');
+addRequired(ip, 'Dir', valFcn_Dir);
 
 % Parameter: Extension. Char. Non-empty.
-valFcn_Extension = @(x) validateattributes(x, {'char'}, {}, mfilename, 'Extension');
-ip.addOptional('Extension', '.*', valFcn_Extension);
+valFcn_Extension = @(x) validateattributes(x, {'char'}, {}, mfilename(), 'Extension');
+addOptional(ip, 'Extension', '.*', valFcn_Extension);
 
 % Paramter: Prefix. Char. Non-empty.
 valFcn_Prefix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Prefix');
@@ -118,12 +118,12 @@ valFcn_Suffix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 
 addParameter(ip, 'Suffix', '', valFcn_Suffix);
 
 % Parameter: IncludeHidden. Char. Matches {on, yes, off, no}
-valFcn_IncludeHidden = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'IncludeHidden'));
-ip.addParameter('IncludeHidden', 'off', valFcn_IncludeHidden);
+valFcn_IncludeHidden = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename(), 'IncludeHidden'));
+addParameter(ip, 'IncludeHidden', 'off', valFcn_IncludeHidden);
 
 % Parameter: Recurse. Char. Matches {on, yes, off, no}
-valFcn_Recurse = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'Recurse'));
-ip.addParameter('Recurse', 'off', valFcn_Recurse);
+valFcn_Recurse = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename(), 'Recurse'));
+addParameter(ip, 'Recurse', 'off', valFcn_Recurse);
 
 % Parameter: Pattern. Char. Non-empty.
 valFcn_Pattern = @(x) validateattributes(x, {'char'}, {'nonempty', mfilename(), 'Pattern'});
