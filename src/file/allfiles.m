@@ -57,6 +57,7 @@ function Files = allfiles(d, varargin)
 %       * Update H1
 %       * Make `Prefix` and `Suffix` option more easy to use by using it as-is
 %       in `regexp`
+%       * Add hidden input argument `Pattern` to allow easier recursive calls
 %   2020-11-17
 %       * Change bug that would stop function from recursing into package
 %       directories
@@ -123,6 +124,10 @@ ip.addParameter('IncludeHidden', 'off', valFcn_IncludeHidden);
 % Parameter: Recurse. Char. Matches {on, yes, off, no}
 valFcn_Recurse = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'Recurse'));
 ip.addParameter('Recurse', 'off', valFcn_Recurse);
+
+% Parameter: Pattern. Char. Non-empty.
+valFcn_Pattern = @(x) validateattributes(x, {'char'}, {'nonempty', mfilename(), 'Pattern'});
+addParameter(ip, 'Pattern', '', valFcn_Pattern);
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
