@@ -55,6 +55,8 @@ function Files = allfiles(d, varargin)
 % Changelog:
 %   2021-11-23
 %       * Update H1
+%       * Make `Prefix` and `Suffix` option more easy to use by using it as-is
+%       in `regexp`
 %   2020-11-17
 %       * Change bug that would stop function from recursing into package
 %       directories
@@ -107,12 +109,12 @@ valFcn_Extension = @(x) validateattributes(x, {'char'}, {}, mfilename, 'Extensio
 ip.addOptional('Extension', '.*', valFcn_Extension);
 
 % Paramter: Prefix. Char. Non-empty.
-valFcn_Prefix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Prefix');
-ip.addParameter('Prefix', '.*', valFcn_Prefix);
+valFcn_Prefix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Prefix');
+addParameter(ip, 'Prefix', '', valFcn_Prefix);
 
 % Parameter: Suffix. Char. Non-empty.
-valFcn_Suffix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Suffix');
-ip.addParameter('Suffix', '.*', valFcn_Suffix);
+valFcn_Suffix = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Suffix');
+addParameter(ip, 'Suffix', '', valFcn_Suffix);
 
 % Parameter: IncludeHidden. Char. Matches {on, yes, off, no}
 valFcn_IncludeHidden = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'IncludeHidden'));
@@ -162,12 +164,22 @@ chSuffix = ip.Results.Suffix;
 chIncludeHidden = parseswitcharg(ip.Results.IncludeHidden);
 % Recurse into subdirectories: char, {'on', 'off'})
 chRecurse = parseswitcharg(ip.Results.Recurse);
+% Custom pattern
+pat = ip.Results.Pattern;
 
 
 
 %% Magic, collect the files
 % Get all the files in the given directory
 stFiles = dir(chDir);
+
+% Build regex pattern
+if isempty(pat)
+  pat = sprintf( ...
+      '^%s$' ...
+    , [ chPrefix , '.*' , chSuffix , regexptranslate('wildcard', chExtension) ] ...
+  );
+end
 
 % Build list of arguments for recursing
 if strcmp('on', chRecurse)
@@ -183,6 +195,7 @@ if strcmp('on', chRecurse)
     ceArgsRecurse{1} = ip.Results.Extension;
     ceArgsRecurse(2:2:end) = arguments;
     ceArgsRecurse(3:2:end) = struct2cell(ip_results);
+    
 end
 
 % Proceed only from here on if there were any files found
@@ -215,7 +228,8 @@ if ~isempty(stFiles)
     stFiles([stFiles.isdir]) = [];
     
     % And now filter the files that do not match the requested pattern
-    stFiles(cellfun(@isempty, regexp({stFiles.name}, ['^' , chPrefix , '.*' , chSuffix , '\.' , chExtension , '$'], 'match', 'once'))) = [];
+    stFiles(cellfun(@isempty, regexp({stFiles.name}, pat))) = [];
+    
 end
 
 
