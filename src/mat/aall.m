@@ -1,49 +1,49 @@
-function A = aall(V, dim)
-% AALL is a wrapper over recursive calls to all(all(all(....)))
+function tf = aall(v)
+%% AALL is a wrapper over recursive calls to all(all(all(....)))
 %
-%   Inputs:
+% TF = AALL(V)
 %
-%   V                    Any type of value that is also accepted by `all(V)```
+% Inputs:
 %
-%   Outputs:
+%   V                   Any type of value that is also accepted by `all(V)```
 %
-%   A                    Boolean flag, whether really all(all(all(...))) is
-%       given or not.
+%   DIM                 Dimension along with to check ALL.
+%                       Default: []
+%
+% Outputs:
+%
+%   TF                  Boolean flag, whether really all(all(all(...))) is
+%                       given or not.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-12-03
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%       * Remove parameter `DIM`
 %   2016-12-03
 %       * Initial release
 
 
 
 %% Assert arguments
-% AALL(V) or AALL(V, DIM)
-narginchk(1, 2);
+% AALL(V)
+narginchk(1, 1);
+% AALL(___)
+% T = AALL(___)
+nargoutchk(0, 1);
 
 
 
-%% Do your code magic here
+%% Algorithm
 
-% If no dimension is given, we will call ALL without dimension and let it decide
-% what to do
-if nargin < 2 || isempty(dim)
-    A = all(V);
-    
-    while ~isscalar(A)
-        A = all(A);
-    end
-% Called with dimension, so pass along to ALL
-else
-    A = all(V, dim);
-    
-    while ~isscalar(A)
-        A = all(A, dim);
-    end
+tf = all(v);
+
+while ~isscalar(tf)
+  tf = all(tf);
 end
 
 

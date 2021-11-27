@@ -1,49 +1,47 @@
-function A = aany(V, dim)
-% AANY is a wrapper over recursive calls to any(any(any(....)))
+function tf = aany(v)
+%% AANY is a wrapper over recursive calls to any(any(any(....)))
 %
-%   Inputs:
+% TF = AANY(V)
 %
-%   V                    Any type of value that is also accepted by `all(V)```
+% Inputs:
 %
-%   Outputs:
+%   V                   Any type of value that is also accepted by `all(V)```
 %
-%   A                    Boolean flag, whether really all(all(all(...))) is
-%       given or not.
+% Outputs:
+%
+%   A                   Boolean flag, whether really all(all(all(...))) is given
+%                       or not.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-04
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%       * Remove parameter `DIM`
 %   2021-11-04
 %       * Initial release
 
 
 
 %% Assert arguments
-% AANY(V) or AANY(V, DIM)
-narginchk(1, 2);
+% AANY(V)
+narginchk(1, 1);
+
+% AANY(___)
+% TF = AANY(___)
+nargoutchk(0, 1);
 
 
 
-%% Do your code magic here
+%% Algorithm
 
-% If no dimension is given, we will call ANY without dimension and let it decide
-% what to do
-if nargin < 2 || isempty(dim)
-    A = any(V);
-    
-    while ~isscalar(A)
-        A = any(A);
-    end
-% Called with dimension, so pass along to ANY
-else
-    A = any(V, dim);
-    
-    while ~isscalar(A)
-        A = any(A, dim);
-    end
+tf = any(v);
+
+while ~isscalar(tf)
+  tf = any(tf);
 end
 
 
