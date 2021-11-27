@@ -64,12 +64,12 @@ else
 end
 
 % do the real part of `x'
-[fr, er] = unpack(real(x), base, n);
+[fr, er] = unpack_fe(real(x), base, n);
 
 % only do the imaginary part of `x' if necessary
 if nargout > 2
   if any(imag(x(:)))
-    [fi, ei] = unpack(imag(x), base, n);
+    [fi, ei] = unpack_fe(imag(x), base, n);
     
   else
     fi = zeros(size(fr));
@@ -84,12 +84,14 @@ end
 
 
 
-function [f, e] = unpack(x, base, n)
-%% UNPACK Unpack real number into fraction and exponent.
-
+function [f, e] = unpack_fe(x, base, n)
+%% UNPACK_FE Unpack real number into fraction and exponent.
+%
 % We could treat `base = 2' as a special case and use `log2', but that would
 % require more work than I think it's worth -- especially when `base' is not a
 % scalar.
+
+
 
 ax = abs(x);
 % avoid log(0) error
