@@ -1,26 +1,28 @@
-function [s] = mergestructs(varargin)
-% MERGESTRUCTS merges multiple structs into one
+function s = mergestructs(varargin)
+%% MERGESTRUCTS merges multiple structs into one
 %
-%   S = MERGESTRUCTS(S1, S2, ...) merges S2 and succeeding structs into S1. The
-%   values of the latest struct will overwrite the previous structs respective
-%   fields.
+% S = MERGESTRUCTS(S1, S2, ...) merges S2 and succeeding structs into S1. Values
+% of later structures overwrite values of preceding structures.
 %
-%   Inputs:
+% Inputs:
 %
-%   S1      Base struct that shall be merged into.
+%   S1                  Base struct that shall be merged into.
 %
-%   S2      Structure array that shall be merged into S1
+%   S2                  Structure array that shall be merged into S1.
 %
-%   Outputs:
+% Outputs:
 %
-%   S       Structure array merge of all other structures from S1 to SN
+%   S                   Structure array merge of all other structures from S1 to
+%                       SN.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-03-18
+% Date: 2021-11-25
 % Changelog:
+%   2021-11-25
+%       * Correct H1 format
 %   2017-03-18
 %       * Allow all structs to be empty
 %   2016-09-21
@@ -29,17 +31,24 @@ function [s] = mergestructs(varargin)
 
 
 %% Assert arguments
+
+% MERGESTRUCTS(S1, ...)
 narginchk(1, Inf);
+
+% MERGESTRUCTS(S1, ...)
+% S = MERGESTRUCTS(S1, ...)
+nargoutchk(0, 1);
+
 % All arguments must be struct
 assert(all(cellfun(@(x) isstruct(x), varargin)), 'PHILIPPTEMPEL:MATLAB_TOOLING:MERGESTRUCTS:InvalidType', 'All arguments must be struct');
-% Any argument must be non-empty
-% assert(any(cellfun(@(x) ~isempty(fieldnames(x)), varargin)), 'PHILIPPTEMPEL:MATLAB_TOOLING:MERGESTRUCTS:EmptyStructs', 'At least one struct must be non-empty.');
 
 
 
-%% Do your code magic here
+%% Algorithm
+
 % Get the base struct
 s = varargin{1};
+
 % Get all other structs
 os = varargin(2:end);
 

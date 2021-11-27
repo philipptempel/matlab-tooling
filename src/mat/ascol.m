@@ -1,15 +1,15 @@
 function Y = ascol(X, varargin)%#codegen
-% ASCOL returns elements of array as column vector
+%% ASCOL returns elements of array as column vector
 %
-%   ASCOL(X) returns the elements of X as a column vector, running through
-%   the elements X in column major order.
+% ASCOL(X) returns the elements of X as a column vector, running through the
+% elements X in column major order.
 %
-%   ASCOL(X, ORDER) will run through the dimensions of X in the order
-%   specified in ORDER.  Unspecified dimensions will be run through in
-%   increasing order after the specified dimensions.  For instance, if X is
-%   4-D, then ASCOL(X, [2 3]) = ASCOL(X, [2 3 1 4]).
+% ASCOL(X, ORDER) will run through the dimensions of X in the order specified in
+% ORDER. Unspecified dimensions will be run through in increasing order after
+% the specified dimensions. For instance, if X is 4-D, then ASCOL(X, [2 3]) =
+% ASCOL(X, [2 3 1 4]).
 %
-%   For example, if
+% For example, if
 %
 %      X = [4 6 8   then  ASCOL(X) = [4   and  ASCOL(X, 2) = [4
 %           5 7 9]                    5                       6
@@ -18,29 +18,32 @@ function Y = ascol(X, varargin)%#codegen
 %                                     8                       7
 %                                     9]                      9]
 %
-%   where ASCOL(X) = ASCOL(X, 1) = ASCOL(X, [1 2]) and
-%   ASCOL(X, 2) = ASCOL(X, [2 1]).
+% where ASCOL(X) = ASCOL(X, 1) = ASCOL(X, [1, 2])
+% and ASCOL(X, 2) = ASCOL(X, [2, 1]).
 % 
-%   Inputs:
+% Inputs:
 % 
-%   X               An arbitrary array to be sorted as row vector Y.
+%   X                   An arbitrary array to be sorted as row vector Y.
 %
-%   ORDER           Specifies the order in which dimensions should be sorted
-%       into row vector Y.
+%   ORDER               Specifies the order in which dimensions should be sorted
+%                       into row vector Y.
 % 
-%   Outputs:
+% Outputs:
 % 
-%   ROW             Sorted row vector
+%   ROW                 Sorted row vector
 %
-%   See also: ASROW, ASVEC, RESHAPE, PERMUTE.
+% See also
+%   ASROW ASVEC RESHAPE PERMUTE
 
 
 
 %% File information
 % Author: Peter J. Acklam <pjacklam@online.no>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-12-03
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-12-03
 %       * After adding `asvec` make this function use that function
 %       * Add Peter J. Acklam as additional (first) author

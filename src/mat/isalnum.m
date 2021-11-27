@@ -1,11 +1,11 @@
-function t = isalnum(c)
-%ISALNUM True for alphanumerics (letters and digits).
+function t = isalnum(c)%#codegen
+%% ISALNUM True for alphanumerics (letters and digits).
 %
-%   For a string C, ISALNUM(C) is 1 for alphanumerics (letters and
-%   digits) and 0 otherwise.
+% For a string C, ISALNUM(C) is 1 for alphanumerics (letters and digits) and 0
+% otherwise.
 %
-%   See also: ISALPHA, ISASCII, ISDIGIT, ISLOWER, ISPRTCHR, ISUPPER,
-%   ISXDIGIT.
+% See also:
+%   ISALPHA ISASCII ISDIGIT ISLOWER ISPRTCHR ISUPPER ISXDIGIT
 
 %   Author:      Peter J. Acklam
 %   Time-stamp:  2002-03-03 13:51:11 +0100

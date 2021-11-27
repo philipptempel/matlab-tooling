@@ -1,45 +1,50 @@
 function Y = asvec(X, Dim, Order)
-% ASVEC return elements of array X as a vector
+%% ASVEC return elements of array X as a vector
 %
-%   ASCOL(X) returns the elements of X as a column vector, running through the
-%   elements of X in column major order.
+% ASVEC(X) returns the elements of X as a column vector, running through the
+% elements of X in column major order.
 %
-%   ASVEC(X, DIM) returns the elements of X as a vector along dimension DIM. For
-%   instance, ASVEC(X, 1) returns the elements of X as a column vector and
-%   ASVEC(X, 2) returns the elements as a row vector.
+% ASVEC(X, DIM) returns the elements of X as a vector along dimension DIM. For
+% instance, ASVEC(X, 1) returns the elements of X as a column vector and
+% ASVEC(X, 2) returns the elements as a row vector.
 %
-%   ASVEC(X, DIM, ORDER) will run through the dimensions of X in the order
-%   specified in ORDER.  Unspecified dimensions will be run through in
-%   increasing order after the specified dimensions.  For instance, if X is 4-D,
-%   then ASVEC(X, DIM, [2 3]) = ASVEC(X, DIM, [2 3 1 4]).  Row major order is
-%   obtained with ASVEC(X, DIM, 2).
+% ASVEC(X, DIM, ORDER) will run through the dimensions of X in the order
+% specified in ORDER. Unspecified dimensions will be run through in increasing
+% order after the specified dimensions. For instance, if X is 4-D, then ASVEC(X,
+% DIM, [2 3]) = ASVEC(X, DIM, [2 3 1 4]). Row major order is obtained with
+% ASVEC(X, DIM, 2).
 %
-%   ASVEC(X, DIM) is equivalent to ASVEC(X, DIM, 1:NDIMS(X)).
+% ASVEC(X, DIM) is equivalent to ASVEC(X, DIM, 1:NDIMS(X)).
 %
-%   See also: ASCOL, ASROW, PERMUTE, IPERMUTE.
+% See also: ASCOL, ASROW, PERMUTE, IPERMUTE.
 %
-%   Inputs:
+% Inputs:
 %
-%   X                    Array of arbitrary size that shall be converted to a
-%       vector.
+%   X                   Array of arbitrary size that shall be converted to a
+%                       vector.
 %
-%   DIM                  Defines along which dimension the resulting vector
-%       should be created.
+%   DIM                 Defines along which dimension the resulting vector
+%                       should be created.
 %
-%   ORDER                Allows to specify the order of dimensions that ASVEC
-%       will run through.
+%   ORDER               Allows to specify the order of dimensions that ASVEC
+%                       will run through.
 %
-%   Outputs:
+% Outputs:
 %
-%   Y                    Vector with all elements of array X in specified order.
+%   Y                   Vector with all elements of array X in specified order.
+%
+% See also:
+%   ASCOL ASROW PERMUTE IPERMUTE
 
 
 
 %% File information
 % Author: Peter J. Acklam <pjacklam@online.no>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-12-03
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-12-03
 %       * Initial release
 

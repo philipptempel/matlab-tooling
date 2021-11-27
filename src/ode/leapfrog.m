@@ -1,17 +1,17 @@
 function varargout = leapfrog(odefun, tsp, x0, v0, options, varargin)%#codegen
-% LEAPFROG implements Leapfrog integration of ODEs
+%% LEAPFROG implements Leapfrog integration of ODEs
 %
-%   SOL = LEAPFROG(ODEFUN, TSPAN, X0, V0) performs Leapfrog integration of the
-%   ODE given in ODEFUN over the time span given in TSPAN with initial position
-%   states X0 and initial velocity states V0.
+% SOL = LEAPFROG(ODEFUN, TSPAN, X0, V0) performs Leapfrog integration of the ODE
+% given in ODEFUN over the time span given in TSPAN with initial position states
+% X0 and initial velocity states V0.
 %
-%   [T, XV] = LEAPFROG(...) returns the Kx1 time vector, the Kx2N position and
-%   velocity vector.
+% [T, XV] = LEAPFROG(...) returns the Kx1 time vector, the Kx2N position and
+% velocity vector.
 %
-%   [T, X, V] = LEAPFROG(...) returns the Kx1 time vector, the KxN position
-%   vector, and the KxN velocity vector.
+% [T, X, V] = LEAPFROG(...) returns the Kx1 time vector, the KxN position
+% vector, and the KxN velocity vector.
 %
-%   Inputs:
+% Inputs:
 %
 %   ODEFUN              Function handle to the ODE's right-hand side.
 %
@@ -25,7 +25,7 @@ function varargout = leapfrog(odefun, tsp, x0, v0, options, varargin)%#codegen
 %   OPTIONS             Structure array of options to be passed to the ODE
 %                       integrator obtained from ODESET.
 %
-%   Outputs:
+% Outputs:
 %
 %   T                   Kx1 vector of time stamps at which the ODE was
 %                       evaluated.
@@ -37,16 +37,17 @@ function varargout = leapfrog(odefun, tsp, x0, v0, options, varargin)%#codegen
 %   XV                  Kx2N vector of the solution position and velocity
 %                       states.
 %
-%   See also
-%
-%   ODESET
+% See also:
+%  ODESET
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-09-02
+% Date: 2021-11-27
 % Changelog:
+%   2021-11-27
+%       * Update H1 documentation
 %   2018-09-02
 %       * Add support for 'OutputFcn'
 %   2018-08-30

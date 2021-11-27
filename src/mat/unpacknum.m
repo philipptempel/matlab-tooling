@@ -2,29 +2,40 @@ function [fr, er, fi, ei] = unpacknum(x, base, n)
 %% UNPACKNUM Unpack number into fraction and exponent.
 %
 % [F, E] = UNPACKNUM(X, BASE) unpacks the real number X so that X = F * BASE^E,
-%  where 1 <= |F| < BASE and E is an integer.  BASE must be larger than one.
+% where 1 <= |F| < BASE and E is an integer.  BASE must be larger than one.
 %
-% [FR, ER, FI, EI] = UNPACKNUM(X, BASE) unpacks the complex number X so that X
-%  = FR * BASE^ER + i * FI * BASE^EI.
+% [FR, ER, FI, EI] = UNPACKNUM(X, BASE) unpacks the complex number X so that X =
+% FR * BASE^ER + i * FI * BASE^EI.
 %
 % [...] = UNPACKNUM(X, BASE, N) will make sure BASE is a multiple of N.  N
-%  must be a positive value.  In this case, 1 <= |F| < BASE*N.
+% must be a positive value.  In this case, 1 <= |F| < BASE*N.
 %
-% Example:  To display a number using "engineering notation", where the power
-%  of ten is always a multiple of three, use BASE = 10 and N = 3:
+% Example:  To display a number using "engineering notation", where the power of
+% ten is always a multiple of three, use BASE = 10 and N = 3:
 %
 %    x = 8.560372e-25;
 %    [f, e] = unpacknum(x, 10, 3);    % f = 856.0372 and e = -27
 %    fprintf('%.15ge%+.03d\n', f, e);  % displays `856.0372e-027'
 %
-%  See also LOG2.
+% See also
+%   LOG2
 
 
 
-%  Author:      Peter J. Acklam
-%  Time-stamp:  2003-11-04 11:10:00 +0100
-%  E-mail:      pjacklam@online.no
-%  URL:         http://home.online.no/~pjacklam
+%% File information
+% Author: Peter J. Acklam <pjacklam@online.no>
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% URL: http://home.online.no/~pjacklam
+% Date: 2021-11-17
+% Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
+%   2003-11-04
+%       * Initial release
+
+
+
+%% Algorithm
 
 % check number of input arguments
 narginchk(2, 3);

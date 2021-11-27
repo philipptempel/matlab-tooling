@@ -1,42 +1,45 @@
 function Y = asrow(X, varargin)%#codegen
-% ASROW ensures the vector is a row vector
+%% ASROW ensures the vector is a row vector
 % 
-%   ASROW(X) returns the elements of X as a row vector, running through the
-%   elements X in column major order.
+% ASROW(X) returns the elements of X as a row vector, running through the
+% elements X in column major order.
 %
-%   ASROW(X, ORDER) will run through the dimensions of X in the order specified
-%   in ORDER.  Unspecified dimensions will be run through in increasing order
-%   after the specified dimensions.  For instance, if X is 4-D, then ASROW(X, [2
-%   3]) = ASROW(X, [2 3 1 4]).
+% ASROW(X, ORDER) will run through the dimensions of X in the order specified in
+% ORDER. Unspecified dimensions will be run through in increasing order after
+% the specified dimensions. For instance, if X is 4-D, then ASROW(X, [2 3]) =
+% ASROW(X, [2 3 1 4]).
 %
-%   For example, if
+% For example, if
 %
 %      X = [4 6 8   then  ASROW(X)    = [4 5 6 7 8 9]
 %           5 7 9]        ASROW(X, 2) = [4 6 8 5 7 9]
 %
-%   where ASROW(X) = ASROW(X, 1) = ASROW(X, [1 2]) and
-%   ASROW(X, 2) = ASROW(X, [2 1]).
+% where ASROW(X) = ASROW(X, 1) = ASROW(X, [1 2]) and
+% ASROW(X, 2) = ASROW(X, [2 1]).
 %
-%   Inputs:
+% Inputs:
 % 
-%   X               An arbitrary array to be sorted as row vector Y.
+%   X                   An arbitrary array to be sorted as row vector Y.
 %
-%   ORDER           Specifies the order in which dimensions should be sorted
-%       into row vector Y.
+%   ORDER               Specifies the order in which dimensions should be sorted
+%                       into row vector Y.
 % 
-%   Outputs:
+% Outputs:
 % 
-%   ROW             Sorted row vector
+%   ROW                 Sorted row vector
 %
-%   See also: ASCOL, ASVEC, RESHAPE, PERMUTE.
+% See also:
+%   ASCOL ASVEC RESHAPE PERMUTE
 
 
 
 %% File information
 % Author: Peter J. Acklam <pjacklam@online.no>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-12-03
+% Date: 2021-11-17
 % Changelog:
+%   2021-11-17
+%       * Update H1 to correct format
 %   2016-12-03
 %       * After adding `asvec` make this function use that function
 %       * Add Peter J. Acklam as additional (first) author
