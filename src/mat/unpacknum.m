@@ -1,4 +1,4 @@
-function [fr, er, fi, ei] = unpacknum(x, base, n)
+function [fr, er, fi, ei] = unpacknum(x, base, n)%#codegen
 %% UNPACKNUM Unpack number into fraction and exponent.
 %
 % [F, E] = UNPACKNUM(X, BASE) unpacks the real number X so that X = F * BASE^E,
