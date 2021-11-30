@@ -1,4 +1,4 @@
-function funcnew(Name, varargin)
+function funcnew(fname, varargin)
 %% FUNCNEW creates a new function file based on a template
 %
 % FUNCNEW(NAME) creates function NAME into a new file at the specified target.
@@ -15,7 +15,9 @@ function funcnew(Name, varargin)
 %
 %   NAME                Name of the function. Can also be a fully qualified file
 %                       name from which the function name will then be
-%                       extracted.
+%                       extracted. Function name given will be converted to
+%                       valid MATLAB function names before being processed. See
+%                       MATLAB.LANG.MAKEVALIDNAME for more info.
 %
 %   ARGIN               Cell array of input variable names. If empty, function
 %                       will not take any arguments. Placeholder `varargin` can
@@ -47,13 +49,19 @@ function funcnew(Name, varargin)
 %   Template            Path to a template file that should be used instead of
 %                       the default found in this function's directory.
 %                       Default: 'functiontemplate.mtpl'
+%
+% See also:
+%   MATLAB.LANG.MAKEVALIDNAME
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-23
+% Date: 2021-11-30
 % Changelog:
+%   2021-11-30
+%       * Ensure function name given is always a valid name by uisng
+%       `MATLAB.LANG.MAKEVALIDNAME`
 %   2021-11-23
 %       * Fix H1 Documentation
 %       * Add Name/Value options `NArgin` and `NArgout`
@@ -175,7 +183,7 @@ try
     % FUNCNEW(...)
     nargoutchk(0, 0);
     
-    args = [{Name}, varargin];
+    args = [{fname}, varargin];
     
     parse(ip, args{:});
 catch me
@@ -186,7 +194,7 @@ end
 
 %% Parse results
 % Function name/path
-chName = ip.Results.Name;
+chName = matlab.lang.makeValidName(ip.Results.Name);
 % Get function path, file name, and extension
 [chFunction_Path, chFunction_Name, chFunction_Ext] = fileparts(chName);
 % Empty filepath?
