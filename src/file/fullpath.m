@@ -1,5 +1,5 @@
-function File = fullpath(File, Style)
-% FULLPATH - Get absolute canonical path of a file or folder
+function filepath = fullpath(filepath, style)
+%% FULLPATH - Get absolute canonical path of a file or folder
 %  
 % Absolute path names are safer than relative paths, when e.g. a GUI or TIMER
 % callback changes the current directory. Only canonical paths without "." and
@@ -7,47 +7,54 @@ function File = fullpath(File, Style)
 % Long path names (>259 characters) require a magic initial key "\\?\" to be
 % handled by Windows API functions, e.g. for Matlab's FOPEN, DIR and EXIST.
 %
-% FullName = GetFullPath(Name, Style)
-% INPUT:
-%   Name:  String or cell string, absolute or relative name of a file or
-%          folder. The path need not exist. Unicode strings, UNC paths and long
-%          names are supported.
-%   Style: Style of the output as string, optional, default: 'auto'.
-%          'auto': Add '\\?\' or '\\?\UNC\' for long names on demand.
-%          'lean': Magic string is not added.
-%          'fat':  Magic string is added for short names also.
-%          The Style is ignored when not running under Windows.
+% FILEPATH = FULLPATH(FILEPATH, STYLE)
 %
-% OUTPUT:
-%   FullName: Absolute canonical path name as string or cell string.
-%          For empty strings the current directory is replied.
-%          '\\?\' or '\\?\UNC' is added on demand.
+% Inputs:
 %
-% NOTE: The M- and the MEX-version create the same results, the faster MEX
-%   function works under Windows only.
-%   Some functions of the Windows-API still do not support long file names.
-%   E.g. the Recycler and the Windows Explorer fail even with the magic '\\?\'
-%   prefix. Some functions of Matlab accept 260 characters (value of MAX_PATH),
-%   some at 259 already. Don't blame me.
-%   The 'fat' style is useful e.g. when Matlab's DIR command is called for a
-%   folder with les than 260 characters, but together with the file name this
-%   limit is exceeded. Then "dir(GetFullPath([folder, '\*.*], 'fat'))" helps.
+%   FILEPATH            String or cell string, absolute or relative name of a
+%                       file or folder. The path need not exist. Unicode
+%                       strings, UNC paths and long names are supported.
 %
-% EXAMPLES:
-%   cd(tempdir);                    % Assumed as 'C:\Temp' here
-%   GetFullPath('File.Ext')         % 'C:\Temp\File.Ext'
-%   GetFullPath('..\File.Ext')      % 'C:\File.Ext'
-%   GetFullPath('..\..\File.Ext')   % 'C:\File.Ext'
-%   GetFullPath('.\File.Ext')       % 'C:\Temp\File.Ext'
-%   GetFullPath('*.txt')            % 'C:\Temp\*.txt'
-%   GetFullPath('..')               % 'C:\'
-%   GetFullPath('..\..\..')         % 'C:\'
-%   GetFullPath('Folder\')          % 'C:\Temp\Folder\'
-%   GetFullPath('D:\A\..\B')        % 'D:\B'
-%   GetFullPath('\\Server\Folder\Sub\..\File.ext')
-%                                   % '\\Server\Folder\File.ext'
-%   GetFullPath({'..', 'new'})      % {'C:\', 'C:\Temp\new'}
-%   GetFullPath('.', 'fat')         % '\\?\C:\Temp\File.Ext'
+%   STYLE               Style of the output as string, optional.
+%                       Default: 'auto'.
+%                         'auto':   Add '\\?\' or '\\?\UNC\' for long names on
+%                                   demand.
+%                         'lean':   Magic string is not added.
+%                         'fat':    Magic string is added for short names also.
+%                       The Style is ignored when not running under Windows.
+%
+% Outputs:
+%
+%   ABSPATH             Absolute canonical path name as string or cell string.
+%                       For empty strings the current directory is replied.
+%                       '\\?\' or '\\?\UNC' is added on demand.
+%
+% Note:
+% 
+% The M- and the MEX-version create the same results, the faster MEX function
+% works under Windows only. Some functions of the Windows-API still do not
+% support long file names. For example. the Recycler and the Windows Explorer
+% fail even with the magic '\\?\' prefix. Some functions of Matlab accept 260
+% characters (value of MAX_PATH), some at 259 already. Don't blame me. The 'fat'
+% style is useful e.g. when Matlab's DIR command is called for a folder with les
+% than 260 characters, but together with the file name this limit is exceeded.
+% Then "dir(FULLPATH([folder, '\*.*], 'fat'))" helps.
+%
+% Examples:
+%
+%   cd(tempdir);                                    % Assumed as 'C:\Temp' here
+%   FULLPATH('File.Ext')                            % 'C:\Temp\File.Ext'
+%   FULLPATH('..\File.Ext')                         % 'C:\File.Ext'
+%   FULLPATH('..\..\File.Ext')                      % 'C:\File.Ext'
+%   FULLPATH('.\File.Ext')                          % 'C:\Temp\File.Ext'
+%   FULLPATH('*.txt')                               % 'C:\Temp\*.txt'
+%   FULLPATH('..')                                  % 'C:\'
+%   FULLPATH('..\..\..')                            % 'C:\'
+%   FULLPATH('Folder\')                             % 'C:\Temp\Folder\'
+%   FULLPATH('D:\A\..\B')                           % 'D:\B'
+%   FULLPATH('\\Server\Folder\Sub\..\File.ext')     % '\\Server\Folder\File.ext'
+%   FULLPATH({'..', 'new'})                         % {'C:\', 'C:\Temp\new'}
+%   FULLPATH('.', 'fat')                            % '\\?\C:\Temp\File.Ext'
 %
 % COMPILE:
 %   Automatic: InstallMex GetFullPath.c uTest_GetFullPath
@@ -58,9 +65,42 @@ function File = fullpath(File, Style)
 % Tested: Matlab 6.5, 7.7, 7.8, 7.13, WinXP/32, Win7/64
 %         Compiler: LCC2.4/3.8, BCC5.5, OWC1.8, MSVC2008/2010
 % Assumed Compatibility: higher Matlab versions
-% Author: Jan Simon, Heidelberg, (C) 2009-2013 matlab.THISYEAR(a)nMINUSsimon.de
+% Author: 
 %
 % See also: CD, FULLFILE, FILEPARTS.
+
+
+
+%% File information
+% Author: Jan Simon <matlab.2013@n-simon.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-03
+% Changelog:
+%   2021-12-03
+%       * Update H1 documentation to my style of Philipp TEMPEL
+%       * Rename input variable names
+%   2013-01-12
+%       * Add styles `AUTO`, `LEAN`, and `FAT`
+%   2012-08-09
+%       * In MEX: Paths starting with "\\" can be non-UNC. The former version
+%       treated "\\?\C:\<longpath>\file" as UNC path and replied
+%       "\\?\UNC\?\C:\<longpath>\file".
+%   2011-12-10
+%       * Care for long names under Windows in M-version.
+%       * Improved the unittest function for Linux. Thanks to Paul Sexton.
+%   2011-10-18
+%       * Linux version created bad results. Thanks to Daniel.
+%   2011-03-31
+%       * Accept [] as input as in the Mex version. Thanks to Jiro Doke, who
+%       found this bug by running the test function for the M-version.
+%   2011-01-24
+%       * Cell strings, '~File' under linux.
+%      * Check of input types in the M-version.
+%   2010-04-20
+%       * Successor of `REL2ABSPATH`
+%   2008-07-27
+%       * Consider leading separator in M-version also
+
 
 % $JRev: R-G V:032 Sum:7Xd/JS0+yfax Date:15-Jan-2013 01:06:12 $
 % $License: BSD (use/copy/change/redistribute on own risk, mention the author) $
