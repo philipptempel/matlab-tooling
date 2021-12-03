@@ -137,15 +137,15 @@ function filepath = fullpath(filepath, style)
 
 % Magix prefix for long Windows names:
 if nargin < 2
-   Style = 'auto';
+   style = 'auto';
 end
 
 % Handle cell strings:
 % NOTE: It is faster to create a function @cell\GetFullPath.m under Linux, but
 % under Windows this would shadow the fast C-Mex.
-if isa(File, 'cell')
-   for iC = 1:numel(File)
-      File{iC} = fullpath(File{iC}, Style);
+if isa(filepath, 'cell')
+   for iC = 1:numel(filepath)
+      filepath{iC} = fullpath(filepath{iC}, style);
    end
    return;
 end
@@ -172,9 +172,9 @@ if isempty(hasDataRead)
    hasDataRead = ~isempty(which('dataread'));
 end
 
-if isempty(File)  % Accept empty matrix as input:
-   if ischar(File) || isnumeric(File)
-      File = cd;
+if isempty(filepath)  % Accept empty matrix as input:
+   if ischar(filepath) || isnumeric(filepath)
+      filepath = cd;
       return;
    else
       error(['JSimon:', mfilename, ':BadTypeInput1'], ...
@@ -182,30 +182,30 @@ if isempty(File)  % Accept empty matrix as input:
    end
 end
 
-if ischar(File) == 0  % Non-empty inputs must be strings
+if ischar(filepath) == 0  % Non-empty inputs must be strings
    error(['JSimon:', mfilename, ':BadTypeInput1'], ...
       ['*** ', mfilename, ': Input must be a string or cell string']);
 end
 
 if isWIN  % Windows: --------------------------------------------------------
    FSep = '\';
-   File = strrep(File, '/', FSep);
+   filepath = strrep(filepath, '/', FSep);
    
    % Remove the magic key on demand, it is appended finally again:
-   if strncmp(File, '\\?\', 4)
-      if strncmpi(File, '\\?\UNC\', 8)
-         File = ['\', File(7:length(File))];  % Two leading backslashes!
+   if strncmp(filepath, '\\?\', 4)
+      if strncmpi(filepath, '\\?\UNC\', 8)
+         filepath = ['\', filepath(7:length(filepath))];  % Two leading backslashes!
       else
-         File = File(5:length(File));
+         filepath = filepath(5:length(filepath));
       end
    end
    
-   isUNC   = strncmp(File, '\\', 2);
-   FileLen = length(File);
+   isUNC   = strncmp(filepath, '\\', 2);
+   FileLen = length(filepath);
    if isUNC == 0                        % File is not a UNC path
       % Leading file separator means relative to current drive or base folder:
       ThePath = cd;
-      if File(1) == FSep
+      if filepath(1) == FSep
          if strncmp(ThePath, '\\', 2)   % Current directory is a UNC path
             sepInd  = strfind(ThePath, '\');
             ThePath = ThePath(1:sepInd(4));
@@ -214,36 +214,36 @@ if isWIN  % Windows: --------------------------------------------------------
          end
       end
       
-      if FileLen < 2 || File(2) ~= ':'  % Does not start with drive letter
+      if FileLen < 2 || filepath(2) ~= ':'  % Does not start with drive letter
          if ThePath(length(ThePath)) ~= FSep
-            if File(1) ~= FSep
-               File = [ThePath, FSep, File];
+            if filepath(1) ~= FSep
+               filepath = [ThePath, FSep, filepath];
             else                        % File starts with separator:
-               File = [ThePath, File];
+               filepath = [ThePath, filepath];
             end
          else                           % Current path ends with separator:
-            if File(1) ~= FSep
-               File = [ThePath, File];
+            if filepath(1) ~= FSep
+               filepath = [ThePath, filepath];
             else                        % File starts with separator:
                ThePath(length(ThePath)) = [];
-               File = [ThePath, File];
+               filepath = [ThePath, filepath];
             end
          end
          
-      elseif FileLen == 2 && File(2) == ':'   % "C:" current directory on C!
+      elseif FileLen == 2 && filepath(2) == ':'   % "C:" current directory on C!
          % "C:" is the current directory on the C-disk, even if the current
          % directory is on another disk! This was ignored in Matlab 6.5, but
          % modern versions considers this strange behaviour.
-         if strncmpi(ThePath, File, 2)
-            File = ThePath;
+         if strncmpi(ThePath, filepath, 2)
+            filepath = ThePath;
          else
             try
-               File = cd(cd(File));
+               filepath = cd(cd(filepath));
             catch    % No MException to support Matlab6.5...
-               if exist(File, 'dir')  % No idea what could cause an error then!
+               if exist(filepath, 'dir')  % No idea what could cause an error then!
                   rethrow(lasterror);
                else  % Reply "K:\" for not existing disk:
-                  File = [File, FSep];
+                  filepath = [filepath, FSep];
                end
             end
          end
@@ -252,60 +252,60 @@ if isWIN  % Windows: --------------------------------------------------------
    
 else         % Linux, MacOS: ---------------------------------------------------
    FSep = '/';
-   File = strrep(File, '\', FSep);
+   filepath = strrep(filepath, '\', FSep);
    
-   if strcmp(File, '~') || strncmp(File, '~/', 2)  % Home directory:
+   if strcmp(filepath, '~') || strncmp(filepath, '~/', 2)  % Home directory:
       HomeDir = getenv('HOME');
       if ~isempty(HomeDir)
-         File(1) = [];
-         File    = [HomeDir, File];
+         filepath(1) = [];
+         filepath    = [HomeDir, filepath];
       end
       
-   elseif strncmpi(File, FSep, 1) == 0
+   elseif strncmpi(filepath, FSep, 1) == 0
       % Append relative path to current folder:
       ThePath = cd;
       if ThePath(length(ThePath)) == FSep
-         File = [ThePath, File];
+         filepath = [ThePath, filepath];
       else
-         File = [ThePath, FSep, File];
+         filepath = [ThePath, FSep, filepath];
       end
    end
 end
 
 % Care for "\." and "\.." - no efficient algorithm, but the fast Mex is
 % recommended at all!
-if ~isempty(strfind(File, [FSep, '.']))
+if ~isempty(strfind(filepath, [FSep, '.']))
    if isWIN
-      if strncmp(File, '\\', 2)  % UNC path
-         index = strfind(File, '\');
+      if strncmp(filepath, '\\', 2)  % UNC path
+         index = strfind(filepath, '\');
          if length(index) < 4    % UNC path without separator after the folder:
             return;
          end
-         Drive            = File(1:index(4));
-         File(1:index(4)) = [];
+         Drive            = filepath(1:index(4));
+         filepath(1:index(4)) = [];
       else
-         Drive     = File(1:3);
-         File(1:3) = [];
+         Drive     = filepath(1:3);
+         filepath(1:3) = [];
       end
    else  % Unix, MacOS:
       isUNC   = false;
       Drive   = FSep;
-      File(1) = [];
+      filepath(1) = [];
    end
    
-   hasTrailFSep = (File(length(File)) == FSep);
+   hasTrailFSep = (filepath(length(filepath)) == FSep);
    if hasTrailFSep
-      File(length(File)) = [];
+      filepath(length(filepath)) = [];
    end
    
    if hasDataRead
       if isWIN  % Need "\\" as separator:
-         C = dataread('string', File, '%s', 'delimiter', '\\');  %#ok<REMFF1>
+         C = dataread('string', filepath, '%s', 'delimiter', '\\');  %#ok<REMFF1>
       else
-         C = dataread('string', File, '%s', 'delimiter', FSep);  %#ok<REMFF1>
+         C = dataread('string', filepath, '%s', 'delimiter', FSep);  %#ok<REMFF1>
       end
    else  % Use the slower REGEXP, when DATAREAD is not available anymore:
-      C = regexp(File, FSep, 'split');
+      C = regexp(filepath, FSep, 'split');
    end
    
    % Remove '\.\' directly without side effects:
@@ -322,44 +322,44 @@ if ~isempty(strfind(File, [FSep, '.']))
    end
    
    if isempty(R)
-      File = Drive;
+      filepath = Drive;
       if isUNC && ~hasTrailFSep
-         File(length(File)) = [];
+         filepath(length(filepath)) = [];
       end
       
    elseif isWIN
       % If you have CStr2String, use the faster:
       %   File = CStr2String(C(R), FSep, hasTrailFSep);
-      File = sprintf('%s\\', C{R});
+      filepath = sprintf('%s\\', C{R});
       if hasTrailFSep
-         File = [Drive, File];
+         filepath = [Drive, filepath];
       else
-         File = [Drive, File(1:length(File) - 1)];
+         filepath = [Drive, filepath(1:length(filepath) - 1)];
       end
       
    else  % Unix:
-      File = [Drive, sprintf('%s/', C{R})];
+      filepath = [Drive, sprintf('%s/', C{R})];
       if ~hasTrailFSep
-         File(length(File)) = [];
+         filepath(length(filepath)) = [];
       end
    end
 end
 
 % "Very" long names under Windows:
 if isWIN
-   if ~ischar(Style)
+   if ~ischar(style)
       error(['JSimon:', mfilename, ':BadTypeInput2'], ...
          ['*** ', mfilename, ': Input must be a string or cell string']);
    end
    
-   if (strncmpi(Style, 'a', 1) && length(File) >= MAX_PATH) || ...
-         strncmpi(Style, 'f', 1)
+   if (strncmpi(style, 'a', 1) && length(filepath) >= MAX_PATH) || ...
+         strncmpi(style, 'f', 1)
       % Do not use [isUNC] here, because this concerns the input, which can
       % '.\File', while the current directory is an UNC path.
-      if strncmp(File, '\\', 2)  % UNC path
-         File = ['\\?\UNC', File(2:end)];
+      if strncmp(filepath, '\\', 2)  % UNC path
+         filepath = ['\\?\UNC', filepath(2:end)];
       else
-         File = ['\\?\', File];
+         filepath = ['\\?\', filepath];
       end
    end
 end
