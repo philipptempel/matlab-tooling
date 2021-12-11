@@ -1,34 +1,49 @@
-function q = quatunit()%#codegen
+function q = quatunit(n)%#codegen
 %% QUATUNIT Create a unit quaternion
 %
-%   Outputs:
+% Q = QUATUNIT() creates one unit quaternion.
 %
-%   Q                   4x1 unit quaternion [1.0, 0.0, 0.0, 0.0]
+% Q = QUATUNIT(N) creates N unit quaternions.
+%
+% Outputs:
+%
+%   Q                   4xN unit quaternion(s) where each column reads
+%                       Q(:,i) = [ 1.0 , 0.0 , 0.0 , 0.0 ].
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-12
+% Date: 2021-12-06
 % Changelog:
+%   2021-12-06
+%       * Update H1 documentation
+%       * Add parameter N
 %   2020-11-12
 %       * Initial release
 
 
 
-%% Do your code magic here
+%% Parse arguments
 
 % QUATUNIT()
-narginchk(0, 0);
+% QUATUNIT(N)
+narginchk(0, 1);
 
 % QUATUNIT()
 % Q = QUATUNIT()
 nargoutchk(0, 1);
 
+% ___ = QUATUNIT()
+if nargin < 1 || isempty(n)
+  n = 1;
+end
 
 
-%% Prepare
-q = [1.0; 0.0; 0.0; 0.0];
+
+%% Algorithm
+
+q = repmat([ 1.0 ; 0.0 ; 0.0 ; 0.0 ], 1, n);
 
 
 end
