@@ -29,7 +29,7 @@ function [t, y] = odespec(ode, tspan, y0, options)
 %
 % Options:
 %
-%   NNodes              Number of integration nodes to use.
+%   Nodes               Number of integration nodes to use.
 %                       Default: 25.
 %
 % Outputs:
