@@ -104,37 +104,31 @@ D = kron( ...
 );
 
 % Evaluate ODE at all nodes
+% A_ = YxYxN
+% B_ = YxN
 [A_, b_] = feval(f, tspan, y0);
+% Ensure B_ is YxN, if not, transpose it
+if size(b_, 1) == nn && size(b_, 2) == ny
+  b_ = permute(b_, [2, 1]);
+end
 
 % Index of initial state in global state vector
 idxY = 1:ny;
-%{
-I THINK THIS IS THE DEAL:
+idxX0 = idxY * nn;
 
-If we integrate on [a, b] with y(a) given, then the initial condition is
-reflected in the last entries of D because D is D([b,a]).
-
-Thus, if tdir > 0 must be idxY * nn and tdir < 0 must be (idxY-1) * nn + 1
-
-%}
-% if tdir > 0
-%   idxX0 = (idxY - 1) * nn + 1;
-% else
-  idxX0 = idxY * nn;
-% end
-
-% Build global A matrix which which is composed of node-wise entries of the ODE
+% Build global A matrix which is composed of node-wise entries of the ODE
 % system's Ai matrices
 A = zeros(ns, ns);
 b = zeros(ns, 1);
-idxOff = (idxY - 1) * nn;
+idxYN = (idxY - 1) * nn;
+
 % Looping over every node
-for it = 1:nn
+for in = 1:nn
   % Push the i-th node's constant A matrix values in
-  A(it + idxOff,it + idxOff) = A_(:,:,it);
+  A(in + idxYN,in + idxYN) = A_(:,:,in);
   
   % Push the i-th node's constant b vector values in
-  b(it + idxOff) = b_(1:ny,it);
+  b(in + idxYN) = b_(1:ny,in);
   
 end
 
@@ -148,8 +142,8 @@ Pt = transpose(P);
 
 % Apply transformation of initial condition onto ODE's matrices
 A = Pt * A * P;
-D = Pt * D * P;
 b = Pt * b;
+D = Pt * D * P;
 
 % New indices for quicker array indexing
 idxX0 = 1:ny;
@@ -160,13 +154,6 @@ b0 = ( D(:,idxX0) - A(:,idxX0) ) * y0;
 
 % Calculation of solution
 yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY) - b0(idxY) );
-
-% assignin('base', 'a', A);
-% assignin('base', 'b', b);
-% assignin('base', 'd', D);
-% assignin('base', 'p', P);
-% assignin('base', 'cl', b0);
-% assignin('base', 'res', yn);
 
 % Reshape solution of ODE to be TxY
 y = reshape(P * [ y0 ; yn ], nn, ny);
@@ -217,7 +204,10 @@ end
 t = tspan(1);
 nt = numel(tspan);
 y = y0;
-ny = numel(y);
+if isvector(y)
+  y = y(:);
+end
+ny = size(y, 1);
 
 % Evaluate function
 try
