@@ -11,6 +11,8 @@ function mkfun(fname, varargin)
 % specified target. The cell array ARGIN and ARGOUT define the argument input
 % and argument output names.
 %
+% MKFUN(___, Name, Value) allows passing additional inputs as Name/Value pairs.
+%
 % Inputs:
 %
 %   NAME                Name of the function. Can also be a fully qualified file
@@ -46,6 +48,10 @@ function mkfun(fname, varargin)
 %   NArgOut             Number of output arguments to use in `nargoutchk`.
 %                       Default: [] i.e., all arguments required.
 %
+%   Overwrite           Flag whether to overwrite the target function file if it
+%                       already exists.
+%                       Default: 'off'
+%
 %   Template            Path to a template file that should be used instead of
 %                       the default found in this function's directory.
 %                       Default: 'functiontemplate.mtpl'
@@ -65,6 +71,7 @@ function mkfun(fname, varargin)
 %       handling and printing
 %       * Use `FILEREAED` instead of `TEXTSCAN` to read template file
 %       * Update to use new signature of `PARSESWITCHARG`
+%       * Add parameter `Overwrite` to H1 documentation
 %   2021-11-30
 %       * Ensure function name given is always a valid name by uisng
 %       `MATLAB.LANG.MAKEVALIDNAME`

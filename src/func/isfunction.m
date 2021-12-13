@@ -1,11 +1,11 @@
 function [TF, ID] = isfunction(fcn)
-% ISFUNCTION - true for valid matlab functions
+%% ISFUNCTION - true for valid matlab functions
 %
-%   TF = ISFUNCTION(FUN) returns 1 if FUN is a valid matlab function, and 0
-%   otherwise. Matlab functions can be strings or function handles.
+% TF = ISFUNCTION(FUN) returns 1 if FUN is a valid matlab function, and 0
+% otherwise. Matlab functions can be strings or function handles.
 %
-%   [TF, ID] = ISFUNCTION(FUN) also returns an identier ID. ID can take the
-%   following values:
+% [TF, ID] = ISFUNCTION(FUN) also returns an identier ID. ID can take the
+% following values:
 %      1  : FUN is a function string
 %      2  : FUN is a function handle
 %      0  : FUN is not a function, but no further specification
@@ -14,16 +14,17 @@ function [TF, ID] = isfunction(fcn)
 %     -3  : FUN does not exist (as a function)
 %     -4  : FUN is not a function but something else (a variable)
 %
-%   FUN can also be a cell array, TF and ID will then be arrays.
+% FUN can also be a cell array, TF and ID will then be arrays.
 %
-%   Examples:
-%     tf = isfunction('lookfor') 
-%        % tf = 1
-%     [tf, id] = isfunction({@isfunction, 'sin','qrqtwrxxy',1:4, @clown.jpg})
-%        % -> tf = [ 1  1  0  0  0 ]
-%        %    id = [ 2  1 -2 -4 -3 ]
+% Examples:
+%   tf = isfunction('lookfor') 
+%   % tf = 1
+%   [tf, id] = isfunction({@isfunction, 'sin','qrqtwrxxy',1:4, @clown.jpg})
+%   % -> tf = [ 1  1  0  0  0 ]
+%   %    id = [ 2  1 -2 -4 -3 ]
 %
-%   See also FUNCTION, SCRIPT, EXIST, ISA, WHICH, NARGIN, FUNCTION_HANDLE
+% See also
+%   FUNCTION SCRIPT EXIST ISA WHICH NARGIN FUNCTION_HANDLE
 
 
 
@@ -31,14 +32,17 @@ function [TF, ID] = isfunction(fcn)
 % Author: Jos van der Geest <jos@jasen.nl>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
 % Url: http://mathworks.com/matlabcentral/fileexchange/45778-isfunction
-% Date: 2016-12-12
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Update H1 documentation
 %   2016-12-12
 %       * Initial release
 
 
 
-%% Do your code magic here
+%% Algorithm
+
 % We use cellfun, so convert to cells
 if ~iscell(fcn)
     fcn = {fcn};
