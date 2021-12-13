@@ -1,13 +1,13 @@
-function funcnew(fname, varargin)
-%% FUNCNEW creates a new function file based on a template
+function mkfun(fname, varargin)
+%% MKFUN creates a new function file based on a template
 %
-% FUNCNEW(NAME) creates function NAME into a new file at the specified target.
-% It will not have any input or return arguments pre-defined.
+% MKFUN(NAME) creates function NAME into a new file at the specified target. It
+% will not have any input or return arguments pre-defined.
 %
-% FUNCNEW(NAME, ARGIN) also adds the list of input arguments defined in ARGIN to
+% MKFUN(NAME, ARGIN) also adds the list of input arguments defined in ARGIN to
 % the function declaration.
 %
-% FUNCNEW(NAME, ARGIN, ARGOUT) creates function NAME into a new file at the
+% MKFUN(NAME, ARGIN, ARGOUT) creates function NAME into a new file at the
 % specified target. The cell array ARGIN and ARGOUT define the argument input
 % and argument output names.
 %
@@ -51,14 +51,16 @@ function funcnew(fname, varargin)
 %                       Default: 'functiontemplate.mtpl'
 %
 % See also:
-%   MATLAB.LANG.MAKEVALIDNAME
+%   MATLAB.LANG.MAKEVALIDNAME MVFUN CPFUN
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-30
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Rename to `MKFUN` to be more consistent with functions like `MKDIR`
 %   2021-11-30
 %       * Ensure function name given is always a valid name by uisng
 %       `MATLAB.LANG.MAKEVALIDNAME`
@@ -124,7 +126,7 @@ function funcnew(fname, varargin)
 
 
 %% Define the input parser
-ip = inputParser;
+ip = inputParser();
 
 % Require: Filename
 valFcn_Name = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Name');
@@ -174,13 +176,13 @@ ip.FunctionName = mfilename;
 
 % Parse the provided inputs
 try
-    % FUNCNEW(NAME)
-    % FUNCNEW(NAME, IN)
-    % FUNCNEW(NAME, IN, OUT)
-    % FUNCNEW(NAME, IN, OUT, 'Name', 'Value', ...)
+    % MKFUN(NAME)
+    % MKFUN(NAME, IN)
+    % MKFUN(NAME, IN, OUT)
+    % MKFUN(NAME, IN, OUT, 'Name', 'Value', ...)
     narginchk(1, Inf);
     
-    % FUNCNEW(...)
+    % MKFUN(...)
     nargoutchk(0, 0);
     
     args = [{fname}, varargin];
@@ -258,9 +260,9 @@ chFunction_FullFile = fullfile(chFunction_Path, sprintf('%s%s', chFunction_Name 
 
 %% Assert variables
 % Assert we have a valid function template filepath
-assert(2 == exist(chTemplateFilepath, 'file'), 'PHILIPPTEMPEL:MATLAB_TOOLING:FUNCNEW:functionTemplateNotFound', 'Function template cannot be found at %s.', chTemplateFilepath);
+assert(2 == exist(chTemplateFilepath, 'file'), 'PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:functionTemplateNotFound', 'Function template cannot be found at %s.', chTemplateFilepath);
 % Assert the target file does not exist yet
-assert(2 == exist(chFunction_FullFile, 'file') && strcmp(chOverwrite, 'on') || 0 == exist(chFunction_FullFile, 'file'), 'PHILIPPTEMPEL:FUNCNEW:functionExists', 'Function already exists. Will not overwrite unless forced to do so.');
+assert(2 == exist(chFunction_FullFile, 'file') && strcmp(chOverwrite, 'on') || 0 == exist(chFunction_FullFile, 'file'), 'PHILIPPTEMPEL:MKFUN:functionExists', 'Function already exists. Will not overwrite unless forced to do so.');
 
 
 
@@ -272,7 +274,7 @@ try
     fclose(fidSource);
 catch me
     if strcmp(me.identifier, 'MATLAB:FileIO:InvalidFid')
-        throwAsCaller(MException('PHILIPPTEMPEL:MATLAB_TOOLING:FUNCNEW:invalidTemplateFid', 'Could not open source file for reading.'));
+        throwAsCaller(MException('PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:invalidTemplateFid', 'Could not open source file for reading.'));
     end
     
     throwAsCaller(MException(me.identifier, me.message));
@@ -330,7 +332,7 @@ try
     assert(fcStatus == 0);
 catch me
     if strcmp(me.identifier, 'MATLAB:FileIO:InvalidFid')
-        throwAsCaller(MException('PHILIPPTEMPEL:MATLAB_TOOLING:FUNCNEW:invalidTargetFid', 'Could not open target file for writing.'));
+        throwAsCaller(MException('PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:invalidTargetFid', 'Could not open target file for writing.'));
     end
     
     throwAsCaller(MException(me.identifier, me.message));
