@@ -1,17 +1,18 @@
-function mvfun(Old, New, varargin)
+function mvfun(src, dst, varargin)
 %% MVFUN renames the function to a new name
 %
-% MVFUN(OLD, NEW) renames function OLD to NEW and changes its signature.
+% MVFUN(SOURCE, DESTINATION) renames function SOURCE to DESTINATION and changes
+% its signature.
 %
-% FUNCNREN(OLD, NEW, 'Name', 'Value', ...) allows setting optional inputs
+% FUNCNREN(SOURCE, DESTINATION, 'Name', 'Value', ...) allows setting optional inputs
 % using name/value pairs.
 %
 % Inputs:
 %
-%   OLD                 Old name of function. Must be the old name and not the
+%   SOURCE              Old name of function. Must be the old name and not the
 %                       file name of the function.
 %
-%   NEW                 New name of function. Must be the new name and not the
+%   DESTINATION         New name of function. Must be the new name and not the
 %                       file name of the function.
 %
 % Optional Inputs -- specified as parameter value pairs
@@ -41,6 +42,15 @@ function mvfun(Old, New, varargin)
 %       * Update H1
 %       * Internal code beautification and stream-lining, better exception
 %       handling and printing
+%       * Change signature and rename argument `OLD` to `SOURCE` and `NEW` to
+%       `DESTINATION`
+%       * Use `NEWLINE()` rather than hard-coded `\r\n` in creating new file's
+%       content
+%       * Make sure function calls such as `MFILENAME()` are written with
+%       parentheses.
+%       * Use `FILEREAED` instead of `TEXTSCAN` for file reading when replacing
+%       the function name
+%       * Update to use new signature of `PARSESWITCHARG`
 %   2018-03-03
 %       * Change parameter 'silent' to 'open' and change it's default value to
 %       'off'
@@ -70,34 +80,32 @@ function mvfun(Old, New, varargin)
 ip = inputParser();
 
 % Require: Filename
-valFcn_Old = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Old');
-addRequired(ip, 'Old', valFcn_Old);
+valFcn_Old = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Source');
+addRequired(ip, 'Source', valFcn_Old);
 
 % Allow custom input argument list
-valFcn_New = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'New');
-addRequired(ip, 'New', valFcn_New);
+valFcn_New = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Destination');
+addRequired(ip, 'Destination', valFcn_New);
 
 % Silent creation i.e., not opening file afterwards
-valFcn_Open = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no', 'please', 'never'}, mfilename, 'Open'));
+valFcn_Open = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no', 'please', 'never'}, mfilename(), 'Open'));
 addParameter(ip, 'Open', 'off', valFcn_Open);
 
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
-ip.FunctionName = mfilename;
+ip.FunctionName = mfilename();
 
 % Parse the provided inputs
 try
-    % MVFUN(OLD, NEW);
-    % MVFUN(OLD, NEW, 'Name', 'Value', ...);
+    % MVFUN(SOURCE, DESTINATION);
+    % MVFUN(SOURCE, DESTINATION, 'Name', 'Value', ...);
     narginchk(2, Inf);
     
-    % MVFUN(OLD, NEW);
+    % MVFUN(SOURCE, DESTINATION);
     nargoutchk(0, 0);
     
-    args = [{Old}, {New}, varargin];
-    
-    parse(ip, args{:});
+    parse(ip, src, dst, varargin{:});
 catch me
     throwAsCaller(me);
 end
@@ -106,40 +114,40 @@ end
 
 %% Parse results
 % Old function name
-chName_Old = ip.Results.Old;
+src = ip.Results.Source;
 % New function name
-chName_New = ip.Results.New;
+dst = ip.Results.Destination;
 % Open after rename
-chOpen = parseswitcharg(ip.Results.Open);
+lopen = parseswitcharg(ip.Results.Open);
 
 
 
 
 %% Rename file
 % Get the path to the specified function
-chOld_Filepath = which(chName_Old);
-assert(~isempty(chOld_Filepath), 'PHILIPPTEMPEL:MATLAB_TOOLING:MVFUN:InvalidFuncName', 'Could not find function %s anywhere in your path', chName_Old);
+src_which = which(src);
+assert(~isempty(src_which), 'PHILIPPTEMPEL:MATLAB_TOOLING:MVFUN:InvalidFuncName', 'Could not find function %s anywhere in your path', src);
 
 % Get the path parts of the old and new file
-[chOld_Path, chOld_Name, chOld_Ext] = fileparts(chOld_Filepath);
-[chNew_Path, chNew_Name, ~] = fileparts(chName_New);
+[src_path, src_name, src_ext] = fileparts(src_which);
+[dst_path, dst_name, dst_ext] = fileparts(dst);
 % Create path parts for the new file
-if isempty(chNew_Path)
-  chNew_Path = chOld_Path;
+if isempty(dst_path)
+  dst_path = src_path;
 end
-chNew_Ext = chOld_Ext;
+dst_ext = src_ext;
 
 % Find out if the old function is a packaged function, if so, check the new
 % function name if its packaged or not and adjust accordingly (fail if there is
 % no such new module)
 
 % Create path of new file
-chNew_Filepath = fullfile(chNew_Path, sprintf('%s%s', chNew_Name, chNew_Ext));
+dst_fullpath = fullfile(dst_path, [ dst_name , dst_ext ]);
 
 % Try copying the file
 try
-    [status, message, messageid] = movefile(chOld_Filepath, chNew_Filepath);
-    if status ~= 0
+    [status, message, messageid] = movefile(src_which, dst_fullpath);
+    if status ~= 1
       throw(MException(messageid, message));
     end
 catch me
@@ -148,41 +156,40 @@ end
 
 % Read the new file's content
 try
-    [fid, errmsg] = fopen(chNew_Filepath);
+    [fid, errmsg] = fopen(dst_fullpath);
     if fid < 0
       throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
     coClose = onCleanup(@() fclose(fid));
     
-    ceFunction_Contents = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', ''); ceFunction_Contents = ceFunction_Contents{1};
+    content = fileread(dst_fullpath);
     
 catch me
     throwAsCaller(me);
 end
 
 % Replace the function name
-ceReplacers = {
-    chOld_Name, chNew_Name;
-    upper(chOld_Name), upper(chNew_Name);
+substitutions = { ...
+    src_name        , dst_name        ; ...
+    upper(src_name) , upper(dst_name) ; ...
 };
+nsubstitutions = size(substitutions, 1);
 
-ss% Replace all placeholders with their respective content
-for iReplace = 1:size(ceReplacers, 1)
-    ceFunction_Contents = cellfun(@(str) strrep(str, sprintf('%s', ceReplacers{iReplace,1}), ceReplacers{iReplace,2}), ceFunction_Contents, 'Uniform', false);
+% Replace all placeholders with their respective content
+for isub = 1:nsubstitutions
+    content = strrep(content, substitutions{isub,1}, substitutions{isub,2});
 end
 
 % Save the changed function content
 try
-    [fid, errmsg] = fopen(chNew_Filepath, 'w+');
+    [fid, errmsg] = fopen(dst_fullpath, 'w+');
     if fid < 0
       throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
     
     coClose = onCleanup(@() fclose(fid));
     
-    for row = 1:numel(ceFunction_Contents)
-        fprintf(fid, '%s\r\n', ceFunction_Contents{row,:});
-    end
+    fprintf(fid, '%s%s', content, newline());
     
 catch me
     throwAsCaller(me);
@@ -193,8 +200,8 @@ end
 %% Assign output quantities
 
 % Open file afterwards?
-if strcmp('on', chOpen)
-    edit(chNew_Filepath);
+if lopen == matlab.lang.OnOffSwitchState.on
+    edit(dst_fullpath);
 end
 
 

@@ -63,6 +63,8 @@ function mkfun(fname, varargin)
 %       * Rename to `MKFUN` to be more consistent with functions like `MKDIR`
 %       * Internal code beautification and stream-lining, better exception
 %       handling and printing
+%       * Use `FILEREAED` instead of `TEXTSCAN` to read template file
+%       * Update to use new signature of `PARSESWITCHARG`
 %   2021-11-30
 %       * Ensure function name given is always a valid name by uisng
 %       `MATLAB.LANG.MAKEVALIDNAME`
@@ -196,65 +198,68 @@ end
 
 %% Parse results
 % Function name/path
-chName = matlab.lang.makeValidName(ip.Results.Name);
+fname = matlab.lang.makeValidName(ip.Results.Name);
 % Get function path, file name, and extension
-[chFunction_Path, chFunction_Name, chFunction_Ext] = fileparts(chName);
+[fun_path, fun_name, fun_ext] = fileparts(fname);
 % Empty filepath?
-if isempty(chFunction_Path)
+if isempty(fun_path)
     % Save in the current working directory
-    chFunction_Path = pwd();
+    fun_path = pwd();
 end
 % Empty file extension?
-if isempty(chFunction_Ext)
+if isempty(fun_ext)
     % Ensure we'll save as '.m' file
-    chFunction_Ext = '.m';
+    fun_ext = '.m';
 end
 % List of input arguments
-[ceArgIn, fVarArgIn] = parse_vararg('in', ip.Results.ArgIn);
+[arg_in, fVarArgIn] = parse_vararg('in', ip.Results.ArgIn);
 % List of output arguments
-[ceArgOut, fVarArgOut] = parse_vararg('out', ip.Results.ArgOut);
+[arg_out, fVarArgOut] = parse_vararg('out', ip.Results.ArgOut);
 % Description text
-chDescription = ip.Results.Description;
+description = ip.Results.Description;
 % Author name
-chAuthor = ip.Results.Author;
+author = ip.Results.Author;
 % Silent creation?
-chSilent = parseswitcharg(ip.Results.Silent);
+lsilent = parseswitcharg(ip.Results.Silent);
 % Overwrite existing?
-chOverwrite = parseswitcharg(ip.Results.Overwrite);
+loverwrite = parseswitcharg(ip.Results.Overwrite);
 % Path to template file
-chTemplate = ip.Results.Template;
+template = ip.Results.Template;
 % Package name
-chPackage = ip.Results.Package;
+package = ip.Results.Package;
 % Number of input/output arguments
-nArgI = ip.Results.NArgIn;
-nArgO = ip.Results.NArgOut;
+narg_in = ip.Results.NArgIn;
+narg_out = ip.Results.NArgOut;
 
 %%% Local variables
 % No templtae file given?
-if isempty(chTemplate)
+if isempty(template)
     % Check if a template for this function name exists
-    if 2 == exist(sprintf('%s.mtpl', chFunction_Name), 'file')
+    if 2 == exist(sprintf('%s.mtpl', fun_name), 'file')
         % Get the fully qualified file path to the function template name
-        chTemplateFilepath = which(sprintf('%s.mtpl', chFunction_Name));
+        template = which(sprintf('%s.mtpl', fun_name));
     else
         % Then use the default function template
-        chTemplateFilepath = fullfile(fileparts(mfilename('fullpath')), 'functiontemplate.mtpl');
+        template = fullfile(fileparts(mfilename('fullpath')), 'functiontemplate.mtpl');
     end
 end
+
 % Date of creation of the file
 chDate = datestr(now, 'yyyy-mm-dd');
-if ~isempty(chPackage)
+
+% Parse package name
+if ~isempty(package)
     % Split package name as string into package parts
-    cePackage = strsplit(chPackage, '.');
+    cePackage = strsplit(package, '.');
     % Merge package name components back into a string with '/+' as separator
-    chPackage = strjoin(cePackage, '/+');
+    package = strjoin(cePackage, '/+');
     % Prepend a last missing package indicator in front of the first package name
-    chPackage = ['+' , chPackage];
+    package = ['+' , package];
     % Append to file path
-    chFunction_Path = fullfile(chFunction_Path, chPackage);
+    fun_path = fullfile(fun_path, package);
 end
 % Lastly, add file name to file path
-chFunction_FullFile = fullfile(chFunction_Path, sprintf('%s%s', chFunction_Name , chFunction_Ext));
+fun_fullpath = fullfile(fun_path, [ fun_name , fun_ext ]);
 
 
 
@@ -263,7 +268,7 @@ chFunction_FullFile = fullfile(chFunction_Path, sprintf('%s%s', chFunction_Name 
 % % Assert we have a valid function template filepath
 % assert(2 == exist(chTemplateFilepath, 'file'), 'PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:functionTemplateNotFound', 'Function template cannot be found at %s.', chTemplateFilepath);
 % Assert the target file does not exist yet
-assert(2 == exist(chFunction_FullFile, 'file') && strcmp(chOverwrite, 'on') || 0 == exist(chFunction_FullFile, 'file'), 'PHILIPPTEMPEL:MKFUN:functionExists', 'Function already exists. Will not overwrite unless forced to do so.');
+assert(2 == exist(fun_fullpath, 'file') && loverwrite == matlab.lang.OnOffSwitchState.on || 0 == exist(fun_fullpath, 'file'), 'PHILIPPTEMPEL:MKFUN:functionExists', 'Function already exists. Will not overwrite unless forced to do so.');
 
 
 
@@ -271,76 +276,78 @@ assert(2 == exist(chFunction_FullFile, 'file') && strcmp(chOverwrite, 'on') || 0
 
 % Read the file template
 try
-    [fid, errmsg] = fopen(chTemplateFilepath);
+    [fid, errmsg] = fopen(template);
     if fid < 0
       throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
     coClose = onCleanup(@() fclose(fid));
-    
-    ceFunction_Contents = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', ''); ceFunction_Contents = ceFunction_Contents{1};
+    content = fileread(template);
+%     content = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', '');
+%     content = content{1};
+    ncontent = numel(content);
     
 catch me
     throwAsCaller(me);
 end
 
 % Join the input arguments
-chArgsIn = strjoin(cellfun(@(chArg) matlab.lang.makeValidName(chArg), ceArgIn, 'UniformOutput', false), ', ');
+signature_argin = strjoin(cellfun(@(chArg) matlab.lang.makeValidName(chArg), arg_in, 'UniformOutput', false), ', ');
 % Join the output arguments
-chArgsOut = strjoin(cellfun(@(chArg) matlab.lang.makeValidName(chArg), ceArgOut, 'UniformOutput', false), ', ');
+signature_argout = strjoin(cellfun(@(chArg) matlab.lang.makeValidName(chArg), arg_out, 'UniformOutput', false), ', ');
 % Wrap output argumets in square brackets if there are more than one
-if numel(ceArgOut) > 0
-    if numel(ceArgOut) > 1
-        chArgsOut = sprintf('[%s]', chArgsOut);
+if numel(arg_out) > 0
+    if numel(arg_out) > 1
+        signature_argout = [ '[' , signature_argout , ']' ];
     end
     
-    chArgsOut = sprintf('%s = ', chArgsOut);
+    signature_argout = [ signature_argout , ' = ' ];
 end
 
 % Input/output argument checking
-arginchk  = build_argchk('in', nArgI);
-argoutchk = build_argchk('out', nArgO);
+arginchk  = build_argchk('in', narg_in);
+argoutchk = build_argchk('out', narg_out);
 
 % Description string
-chDescription = in_createDescription(chDescription, ceArgIn, ceArgOut);
+description = in_createDescription(description, arg_in, arg_out);
 
 % Define the set of placeholders to replace here
-ceReplacers = {...
-    'FUNCTION', chFunction_Name; ...
-    'FUNCTION_UPPER', upper(chFunction_Name); ...
-    'ARGIN', chArgsIn; ...
-    'ARGOUT', chArgsOut; ...
-    'DESCRIPTION', chDescription; ...
-    'AUTHOR', chAuthor; ...
-    'DATE', chDate;
-    'ARGINCHK', arginchk ; ...
-    'ARGOUTCHK', argoutchk ; ...
+substitutions = {...
+    'FUNCTION'        , fun_name          ; ...
+    'FUNCTION_UPPER'  , upper(fun_name)   ; ...
+    'ARGIN'           , signature_argin   ; ...
+    'ARGOUT'          , signature_argout  ; ...
+    'DESCRIPTION'     , description       ; ...
+    'AUTHOR'          , author            ; ...
+    'DATE'            , chDate            ; ...
+    'ARGINCHK'        , arginchk          ; ...
+    'ARGOUTCHK'       , argoutchk         ; ...
 };
+nsubstitutions = size(substitutions, 1);
+
 % Replace all placeholders with their respective content
-for isub = 1:size(ceReplacers, 1)
-    ceFunction_Contents = cellfun(@(str) strrep(str, sprintf('{{%s}}', ceReplacers{isub,1}), ceReplacers{isub,2}), ceFunction_Contents, 'Uniform', false);
+for isub = 1:nsubstitutions
+    content = strrep(content, [ '{{' , substitutions{isub,1} , '}}' ], substitutions{isub,2});
 end
 
 
 % Save the file
 try
   % Make target directory
-    if 7 ~= exist(chFunction_Path, 'dir')
-        [status, errmsg, errid] = mkdir(chFunction_Path);
+    if 7 ~= exist(fun_path, 'dir')
+        [status, errmsg, errid] = mkdir(fun_path);
         if status ~= 1
             throw(MException(errid, errmsg));
         end
     end
     
-    [fid, errmsg] = fopen(chFunction_FullFile, 'w+');
+    [fid, errmsg] = fopen(fun_fullpath, 'w+');
     if fid < 0
         throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
     
     coClose = onCleanup(@() fclose(fid));
     
-    for row = 1:numel(ceFunction_Contents)
-        fprintf(fid, '%s\r\n', ceFunction_Contents{row,:});
-    end
+    fprintf(fid, '%s%s', content, newline());
     
 catch me
     throwAsCaller(me);
@@ -350,67 +357,80 @@ end
 
 %% Assign output quantities
 % Open file afterwards?
-if strcmp(chSilent, 'off')
-    open(chFunction_FullFile);
+if lsilent == matlab.lang.OnOffSwitchState.off
+    open(fun_fullpath);
 end
 
 
 end
 
 
-function chDesc = in_createDescription(chDescription, ceArgIn, ceArgOut)
+function description = in_createDescription(description, argsin, argsout)
 %% IN_CREATEDESCRIPTION
+%
+% DESCRIPTION = IN_CREATEDESCRIPTION(DESCRIPTION, ARGS_IN, ARGS_OUT)
 
 
 
 % Holds the formatted list entries of inargs and outargs
-ceArgIn_List = cell(numel(ceArgIn), min(numel(ceArgIn), 1));
-ceArgOut_List = cell(numel(ceArgOut), min(numel(ceArgOut), 1));
+argsin_list = cell(numel(argsin), min(numel(argsin), 1));
+argsout_list = cell(numel(argsout), min(numel(argsout), 1));
 
 % Determine longest argument name for input
-nCharsLongestArg_In = max(cellfun(@(x) length(x), ceArgIn));
-if isempty(nCharsLongestArg_In)
-    nCharsLongestArg_In = 0;
+argsin_length = max(cellfun(@(x) length(x), argsin));
+if isempty(argsin_length)
+    argsin_length = 0;
 end
 % and output
-nCharsLongestArg_Out = max(cellfun(@(x) length(x), ceArgOut));
-if isempty(nCharsLongestArg_Out)
-    nCharsLongestArg_Out = 0;
+argsout_length = max(cellfun(@(x) length(x), argsout));
+if isempty(argsout_length)
+    argsout_length = 0;
 end
 
 % Determine the longer argument names: input or output?
-nCharsLongestArg = max([nCharsLongestArg_In, nCharsLongestArg_Out]);
+args_length = max([argsin_length, argsout_length]);
 % Get the index of the next column (dividable by 4) but be at least at
-% column 21
-nNextColumn = max([21, 4*ceil((nCharsLongestArg + 1)/4) + 1]);
+% column 25
+ncol_spacer = max([25, 4*ceil((args_length + 1)/4) + 1]);
 
 % First, create a lits of in arguments
-if ~isempty(ceArgIn)
+if ~isempty(argsin)
     % Prepend comment char and whitespace before uppercased argument
     % name, append whitespace up to filling column and a placeholder at
     % the end
-    ceArgIn_List = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, nNextColumn - length(x) - 1), 'Description of argument', upper(x)), ceArgIn, 'Uniform', false);
+    argsin_list = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, ncol_spacer - length(x) - 1), 'Description of argument', upper(x)), argsin, 'Uniform', false);
 end
 
 % Second, create a lits of out arguments
-if ~isempty(ceArgOut)
+if ~isempty(argsout)
     % Prepend comment char and whitespace before uppercased argument
     % name, append whitespace up to filling column and a placeholder at
     % the end
-    ceArgOut_List = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, nNextColumn - length(x) - 1), 'Description of argument', upper(x)), ceArgOut, 'Uniform', false);
+    argsout_list = cellfun(@(x) sprintf('%%   %s%s%s %s', upper(x), repmat(' ', 1, ncol_spacer - length(x) - 1), 'Description of argument', upper(x)), argsout, 'Uniform', false);
 end
 
-% Create the description first from the text given by the user
-chDesc = sprintf('%s', chDescription);
-
 % Append list of input arguments?
-if ~isempty(ceArgIn_List)
-    chDesc = sprintf('%s\n%%\n%% Inputs:\n%%\n%s', chDesc, strjoin(ceArgIn_List, '\n%\n'));
+if ~isempty(argsin_list)
+    description = [ ...
+        description   , newline() ...
+      , '%'           , newline() ...
+      , '% Inputs:'   , newline() ...
+      , '%'           , newline() ...
+      , strjoin(argsin_list, [ newline() , '% ' , newline() ]) ...
+    ];
+%     description = sprintf('%s\n%%\n%% Inputs:\n%%\n%s', description, strjoin(argin_list, '\n%\n'));
 end
 
 % Append list of output arguments?
-if ~isempty(ceArgOut_List)
-    chDesc = sprintf('%s\n%%\n%% Outputs:\n%%\n%s', chDesc, strjoin(ceArgOut_List, '\n%\n'));
+if ~isempty(argsout_list)
+    description = [ ...
+        description   , newline() ...
+      , '%'           , newline() ...
+      , '% Outputs:'  , newline() ...
+      , '%'           , newline() ...
+      , strjoin(argsout_list, [ newline() , '% ' , newline() ]) ...
+    ];
+%     description = sprintf('%s\n%%\n%% Outputs:\n%%\n%s', description, strjoin(argout_list, '\n%\n'));
 end
 
 
