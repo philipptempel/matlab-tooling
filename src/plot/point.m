@@ -63,7 +63,7 @@ lOldHold = ishold(haTarget);
 % Make sure we don't overwrite anything
 hold(haTarget, 'on');
 % Also plot intersection lines?
-chPlotIntersections = inCharToValidArgument(ip.Results.Intersections);
+chPlotIntersections = parseswitcharg(ip.Results.Intersections);
 % Point Specs
 cePointSpec = ip.Results.PointSpec;
 % Line specs
@@ -90,7 +90,7 @@ hMarkers = plot(aPoints(:,1), aPoints(:,2), 'o');
 set(hMarkers(:), 'Marker', 'o');
 
 % Draw intersections only when requested
-if strcmp('on', chPlotIntersections)
+if chPlotIntersections == matlab.lang.OnOffSwitchState.on
     % Draw intersection with x-axis
     hIntersectionsX = plot([aPoints(:,1), aPoints(:,1)].', [aPoints(:,2), zeros(nPoints, 1)].');
     % Intersection with y-axis
@@ -107,16 +107,16 @@ if ~isempty(cePointSpec)
     set(hMarkers(:), cePointSpec{:});
 end
 % Set line specs for both intersection lines
-if ~isempty(ceIntersectSpec) && strcmp('on', chPlotIntersections)
+if ~isempty(ceIntersectSpec) && chPlotIntersections == matlab.lang.OnOffSwitchState.on
     set(hIntersectionsX(:), ceIntersectSpec{:});
     set(hIntersectionsY(:), ceIntersectSpec{:});
 end
 % Set line specs for x-intersection lines
-if ~isempty(ceIntersectXSpec) && strcmp('on', chPlotIntersections)
+if ~isempty(ceIntersectXSpec) && chPlotIntersections == matlab.lang.OnOffSwitchState.on
     set(hIntersectionsX(:), ceIntersectXSpec{:});
 end
 % Set line specs for y-intersection lines
-if ~isempty(ceIntersectYSpec) && strcmp('on', chPlotIntersections)
+if ~isempty(ceIntersectYSpec) && chPlotIntersections == matlab.lang.OnOffSwitchState.on
     set(hIntersectionsY(:), ceIntersectYSpec{:});
 end
 
@@ -128,18 +128,6 @@ end
 
 end
 
-function out = inCharToValidArgument(in)
-
-switch lower(in)
-    case {'on', 'yes', 'please'}
-        out = 'on';
-    case {'off', 'no', 'never'}
-        out = 'off';
-    otherwise
-        out = 'off';
-end
-
-end
 
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as

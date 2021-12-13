@@ -25,8 +25,10 @@ function fcname = funcname(plain)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-12-02
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2020-12-02
 %       * Update to make it codegen-compatible
 %   2017-12-01
@@ -41,18 +43,9 @@ nargoutchk(0, 1);
 
 if nargin < 1 || isempty(plain)
   plain = 'off';
-elseif nargin > 0 && islogical(plain)
-  if plain
-    plain = 'on';
-  else
-    plain = 'off';
-  end
 end
 
-validateattributes(plain, {'char', 'logical'}, {'nonempty'}, mfilename(), 'plain');
-
-% Convert the given switch argument into standard 'on'/'off' form
-chPlain = parseswitcharg(plain);
+plain = parseswitcharg(plain);
 
 
 
@@ -69,7 +62,7 @@ else
 end
 
 % Strip any class/package name?
-if strcmp(chPlain, 'on')
+if plain == matlab.lang.OnOffSwitchState.ons
   chName = last(strsplit(chName, '.'));
 end
 

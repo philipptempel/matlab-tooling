@@ -13,8 +13,10 @@ function plot_addPointPlaneIntersection(Point, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-08-02
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2016-08-02
 %       * Change to using gobjects for holding returned graphic handles
 %       * Change to using ```axescheck``` and ```newplot```
@@ -29,7 +31,7 @@ function plot_addPointPlaneIntersection(Point, varargin)
 
 
 %% Define the input parser
-ip = inputParser;
+ip = inputParser();
 
 % Optional first: AtPoint which will be the location of where the reference
 % frame will be plotted at
@@ -87,7 +89,7 @@ ceLineSpecX = ip.Results.LineSpecX;
 ceLineSpecY = ip.Results.LineSpecY;
 ceLineSpecZ = ip.Results.LineSpecZ;
 % Display point, too?
-chDisplayPoint = inCharToValidArgument(ip.Results.DisplayPoint);
+chDisplayPoint = parseswitcharg(ip.Results.DisplayPoint);
 
 
 % Determine whether we will be plotting into a 2D or 3D plot by looking at the
@@ -166,18 +168,6 @@ end
 
 end
 
-function out = inCharToValidArgument(in)
-
-switch lower(in)
-    case {'on', 'yes', 'please'}
-        out = 'on';
-    case {'off', 'no', 'never'}
-        out = 'off';
-    otherwise
-        out = 'off';
-end
-
-end
 
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as

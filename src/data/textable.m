@@ -13,28 +13,28 @@ classdef textable < handle ...
     properties ( Dependent )
         
         % Whether to use siunitx 
-        SIUnitX = 'off'
+        SIUnitX
         
         % File to save to
-        Filename = ''
+        Filename
         
         % Wrap tabular in table environment
-        TableEnv = 'off'
+        TableEnv
         
         % Whether to use rulers
-        Rulers = 'on'
+        Rulers        
         
         % Whether to use booktabs to set rulers or not
-        Booktabs = 'on'
+        Booktabs
         
         % Caption of the tabular table
-        Caption = ''
+        Caption
         
         % Label of the tabular table
-        Label = ''
+        Label
         
         % Center the cable
-        Centering = 'on'
+        Centering
         
     end
     
@@ -42,7 +42,7 @@ classdef textable < handle ...
     %% PROTECTED PROPERTIES
     properties ( Access = protected )
         
-        Table_@table
+        Table_ table
         
     end
     
@@ -113,7 +113,7 @@ classdef textable < handle ...
             
             % Validate argument
             try
-                six = parseswitcharg(validatestring(lower(six), {'on', 'off', 'yes', 'no', 'please'}, mfilename, 'SIUnitX'));
+                six = parseswitcharg(lower(six));
             catch me
                 throwAsCaller(me);
             end
@@ -147,7 +147,7 @@ classdef textable < handle ...
             
             % Validate argument
             try
-                te = parseswitcharg(validatestring(lower(te), {'on', 'off', 'yes', 'no', 'please'}, mfilename, 'TableEnv'));
+                te = parseswitcharg(lower(te));
             catch me
                 throwAsCaller(me);
             end
@@ -164,7 +164,7 @@ classdef textable < handle ...
             
             % Validate argument
             try
-                rls = parseswitcharg(validatestring(lower(rls), {'on', 'off', 'yes', 'no', 'please'}, mfilename, 'Rulers'));
+                rls = parseswitcharg(lower(rls));
             catch me
                 throwAsCaller(me);
             end
@@ -181,7 +181,7 @@ classdef textable < handle ...
             
             % Validate argument
             try
-                bkt = parseswitcharg(validatestring(lower(bkt), {'on', 'off', 'yes', 'no', 'please'}, mfilename, 'Booktabs'));
+                bkt = parseswitcharg(lower(bkt));
             catch me
                 throwAsCaller(me);
             end
@@ -232,7 +232,7 @@ classdef textable < handle ...
             
             % Validate argument
             try
-                ce = parseswitcharg(validatestring(lower(ce), {'on', 'off', 'yes', 'no', 'please'}, mfilename, 'Centering'));
+                ce = parseswitcharg(lower(ce));
             catch me
                 throwAsCaller(me);
             end
@@ -288,7 +288,7 @@ classdef textable < handle ...
             %% GET.SIUNITX returns flag if siunitx package should be used
             
             
-            flag = this.table_userdata('SIUnitX', 'off');
+            flag = this.table_userdata('SIUnitX', matlab.lang.OnOffSwitchState.off);
             
         end
         
@@ -306,7 +306,7 @@ classdef textable < handle ...
             %% GET.TABLEENV returns flag if the `tabular` should be wrapped in a `table` env
             
             
-            flag = this.table_userdata('TableEnv', 'off');
+            flag = this.table_userdata('TableEnv', matlab.lang.OnOffSwitchState.off);
             
         end
         
@@ -315,7 +315,7 @@ classdef textable < handle ...
             %% GET.RULERS returns flag if rulers should be typeset or not
             
             
-            flag = this.table_userdata('Rulers', 'off');
+            flag = this.table_userdata('Rulers', matlab.lang.OnOffSwitchState.off);
             
         end
         
@@ -324,7 +324,7 @@ classdef textable < handle ...
             %% GET.BOOKTABS returns flag if booktabs should be used for rules
             
             
-            flag = this.table_userdata('Booktabs', 'off');
+            flag = this.table_userdata('Booktabs', matlab.lang.OnOffSwitchState.off);
             
         end
         
@@ -351,7 +351,7 @@ classdef textable < handle ...
             %% GET.CENTERING returns flag if tabular should be centered or not
             
             
-            flag = this.table_userdata('Centering', 'off');
+            flag = this.table_userdata('Centering', matlab.lang.OnOffSwitchState.off);
             
         end
         
@@ -412,13 +412,13 @@ classdef textable < handle ...
                 coCleaner = onCleanup(@() fclose(hFid));
                 
                 % Table header
-                if strcmp('on', this.TableEnv)
+                if this.TableEnv == matlab.lang.OnOffSwitchState.on
                     % Open the table
                     textable.open_env(hFid, 'table');
                     fprintf(hFid, newline());
                     
                     % Center table?
-                    if strcmp('on', this.Centering)
+                    if this.Centering == matlab.lang.OnOffSwitchState.on
                         textable.write_macro(hFid, 'centering');
                         fprintf(hFid, newline());
                     end
@@ -472,7 +472,7 @@ classdef textable < handle ...
                             % With the siunitx package enabled, the column is
                             % parsed as an 'S'-alignment thus no math env is
                             % required
-                            if strcmp('on', this.SIUnitX)
+                            if this.SIUnitX == matlab.lang.OnOffSwitchState.on
                                 ceFormat{iData} = '%.12f';
                             % No SIUnitX => regular math number
                             else
@@ -482,7 +482,7 @@ classdef textable < handle ...
                             % With the siunitx package enabled, the column is
                             % parsed as an 'S'-alignment thus no math env is
                             % required
-                            if strcmp('on', this.SIUnitX)
+                            if this.SIUnitX == matlab.lang.OnOffSwitchState.on
                                 ceFormat{iData} = '%d';
                             % No SIUnitX => regular math number
                             else
@@ -501,7 +501,7 @@ classdef textable < handle ...
                 else
                     % With siunitx package, we have numeric columns aligned as
                     % 'S' and other data types aligned as 'l'
-                    if strcmp('on', this.SIUnitX)
+                    if this.SIUnitX == matlab.lang.OnOffSwitchState.on
                         ceAlignment = cell(1, nColumns);
                         [ceAlignment{strcmp(ceDatatypes, 'numeric')}] = deal('S');
                         [ceAlignment{strcmp(ceDatatypes, 'logical')}] = deal('S');
@@ -526,8 +526,8 @@ classdef textable < handle ...
                 ceHeader = this.Table_.Properties.VariableNames;
                 if ~isempty(ceHeader)
                     % Top rule or not
-                    if strcmp('on', this.Rulers)
-                        if strcmp('on', this.Booktabs)
+                    if this.Rulers == matlab.lang.OnOffSwitchState.on
+                        if this.Booktabs == matlab.lang.OnOffSwitchState.on
                             fprintf(hFid, '\\toprule');
                         else
                             fprintf(hFid, '\\hline');
@@ -549,8 +549,8 @@ classdef textable < handle ...
                     fprintf(hFid, '\\\\');
                     
                     % Mid rule or not
-                    if strcmp('on', this.Rulers)
-                        if strcmp('on', this.Booktabs)
+                    if this.Rulers == matlab.lang.OnOffSwitchState.on
+                        if this.Booktabs == matlab.lang.OnOffSwitchState.on
                             fprintf(hFid, ' \\midrule');
                         else
                             fprintf(hFid, ' \\hline');
@@ -599,8 +599,8 @@ classdef textable < handle ...
                 end
                 
                 % Bottom rule
-                if strcmp('on', this.Rulers)
-                    if strcmp('on', this.Booktabs)
+                if this.Rulers == matlab.lang.OnOffSwitchState.on
+                    if this.Booktabs == matlab.lang.OnOffSwitchState.on
                         fprintf(hFid, ' \\bottomrule');
                     else
                         fprintf(hFid, ' \\hline');
@@ -615,7 +615,7 @@ classdef textable < handle ...
                 fprintf(hFid, newline());
                 
                 % Close the table
-                if strcmp('on', this.TableEnv)
+                if this.TableEnv == matlab.lang.OnOffSwitchState.on
                     textable.close_env(hFid, 'table');
                     fprintf(hFid, newline());
                 end

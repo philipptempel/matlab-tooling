@@ -47,11 +47,13 @@ function success = pack_files_and_dependencies(Files, Target, varargin)
 %% File information
 % Author: Christoph Hinze <christoph.hinze@isw.uni-stuttgart.de>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-05-19
+% Date: 2021-12-13
 % Todo:
 %   * Scan source code of files for keywords like LOAD, TEXTREAD or FOPEN, this
 %   still has to be done manually.
 % Changelog:
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2018-05-19
 %       * Add `narginchk` and `nargoutchk`
 %   2017-08-31
@@ -155,7 +157,7 @@ chOverwrite = parseswitcharg(ip.Results.Overwrite);
 loTargetExists = exist(chTargetDir, 'dir') == 7;
 
 % If the target folder exists ask for permission to overwrite
-if loTargetExists && ~isempty(allfiles(chTargetDir)) && ~strcmp('on', chOverwrite)
+if loTargetExists && ~isempty(allfiles(chTargetDir)) && chOverwrite == matlab.lang.OnOffSwitchState.on
     chOverwrite = '';
     
     % As long as the user isn't deciding on 'no' for overwriting the files, ask
@@ -219,7 +221,7 @@ for iFile = 1:length(ceFiles)
 end
 
 % Create a list of dependencies?
-if strcmp('on', chCreateDependenciesList)
+if chCreateDependenciesList == matlab.lang.OnOffSwitchState.on
     chDependenciesFile_Path = fullpath(fullfile(chTargetDir, chDependenciesFile));
     % Open the dependecies file
     fidDependencies = fopen( chDependenciesFile_Path, 'w');

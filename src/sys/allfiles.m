@@ -46,8 +46,10 @@ function Files = allfiles(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-17
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2020-11-17
 %       * Change bug that would stop function from recursing into package
 %       directories
@@ -166,7 +168,7 @@ chRecurse = parseswitcharg(ip.Results.Recurse);
 stFiles = dir(chDir);
 
 % Build list of arguments for recursing
-if strcmp('on', chRecurse)
+if chRecurse == matlab.lang.OnOffSwitchState.on
     % Copy methods arguments results
     ip_results = ip.Results;
     % Remove arguments that are marked `required` or `optional`
@@ -187,7 +189,7 @@ if ~isempty(stFiles)
     stFiles(ismember({stFiles.name}, {'.', '..'})) = [];
     
     % Do we need to filter the system files like '.' and '..'?
-    if strcmpi('off', chIncludeHidden)
+    if chIncludeHidden == matlab.lang.OnOffSwitchState.off
         % Remove all directories from the found items
         stFiles(startsWith({stFiles.name}, '.')) = [];
     end
@@ -198,7 +200,7 @@ if ~isempty(stFiles)
     idxDirs = find(loDirs);
     
     % Recurse into subdirectories if requested
-    if strcmp('on', chRecurse)
+    if chRecurse == matlab.lang.OnOffSwitchState.on
         for iDir = 1:numel(idxDirs)
             % And merge with the files found in the subdirectory
             stFiles = vertcat(stFiles, allfiles(fullfile(chDir, stFiles(idxDirs(iDir)).name) ...
