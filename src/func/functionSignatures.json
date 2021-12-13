@@ -1,0 +1,19 @@
+{
+  "_schemaVersion": "1.0.0",
+  "mvfun":
+  {
+     "inputs":
+     [
+        {"name": "src", "kind": "required", "type": ["matlabpathfile=*.m"], "purpose": "Source file name"},
+        {"name": "dst", "kind": "required", "type": ["char"], "purpose": "Destination file name"}
+     ]
+  },
+  "cpfun":
+  {
+     "inputs":
+     [
+        {"name": "src", "kind": "required", "type": ["matlabpathfile=*.m"], "purpose": "Source file name"},
+        {"name": "dst", "kind": "required", "type": ["char"], "purpose": "Destination file name"}
+     ]
+  }
+}
