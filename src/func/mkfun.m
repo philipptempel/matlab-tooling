@@ -61,6 +61,8 @@ function mkfun(fname, varargin)
 % Changelog:
 %   2021-12-13
 %       * Rename to `MKFUN` to be more consistent with functions like `MKDIR`
+%       * Internal code beautification and stream-lining, better exception
+%       handling and printing
 %   2021-11-30
 %       * Ensure function name given is always a valid name by uisng
 %       `MATLAB.LANG.MAKEVALIDNAME`
@@ -185,11 +187,9 @@ try
     % MKFUN(...)
     nargoutchk(0, 0);
     
-    args = [{fname}, varargin];
-    
-    parse(ip, args{:});
+    parse(ip, fname, varargin{:});
 catch me
-    throwAsCaller(MException(me.identifier, me.message));
+    throwAsCaller(me);
 end
 
 
@@ -202,7 +202,7 @@ chName = matlab.lang.makeValidName(ip.Results.Name);
 % Empty filepath?
 if isempty(chFunction_Path)
     % Save in the current working directory
-    chFunction_Path = pwd;
+    chFunction_Path = pwd();
 end
 % Empty file extension?
 if isempty(chFunction_Ext)
@@ -259,25 +259,28 @@ chFunction_FullFile = fullfile(chFunction_Path, sprintf('%s%s', chFunction_Name 
 
 
 %% Assert variables
-% Assert we have a valid function template filepath
-assert(2 == exist(chTemplateFilepath, 'file'), 'PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:functionTemplateNotFound', 'Function template cannot be found at %s.', chTemplateFilepath);
+
+% % Assert we have a valid function template filepath
+% assert(2 == exist(chTemplateFilepath, 'file'), 'PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:functionTemplateNotFound', 'Function template cannot be found at %s.', chTemplateFilepath);
 % Assert the target file does not exist yet
 assert(2 == exist(chFunction_FullFile, 'file') && strcmp(chOverwrite, 'on') || 0 == exist(chFunction_FullFile, 'file'), 'PHILIPPTEMPEL:MKFUN:functionExists', 'Function already exists. Will not overwrite unless forced to do so.');
 
 
 
 %% Create the file contents
+
 % Read the file template
 try
-    fidSource = fopen(chTemplateFilepath);
-    ceFunction_Contents = textscan(fidSource, '%s', 'Delimiter', '\n', 'Whitespace', ''); ceFunction_Contents = ceFunction_Contents{1};
-    fclose(fidSource);
-catch me
-    if strcmp(me.identifier, 'MATLAB:FileIO:InvalidFid')
-        throwAsCaller(MException('PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:invalidTemplateFid', 'Could not open source file for reading.'));
+    [fid, errmsg] = fopen(chTemplateFilepath);
+    if fid < 0
+      throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
+    coClose = onCleanup(@() fclose(fid));
     
-    throwAsCaller(MException(me.identifier, me.message));
+    ceFunction_Contents = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', ''); ceFunction_Contents = ceFunction_Contents{1};
+    
+catch me
+    throwAsCaller(me);
 end
 
 % Join the input arguments
@@ -294,7 +297,7 @@ if numel(ceArgOut) > 0
 end
 
 % Input/output argument checking
-arginchk = build_argchk('in', nArgI);
+arginchk  = build_argchk('in', nArgI);
 argoutchk = build_argchk('out', nArgO);
 
 % Description string
@@ -313,8 +316,8 @@ ceReplacers = {...
     'ARGOUTCHK', argoutchk ; ...
 };
 % Replace all placeholders with their respective content
-for iReplace = 1:size(ceReplacers, 1)
-    ceFunction_Contents = cellfun(@(str) strrep(str, sprintf('{{%s}}', ceReplacers{iReplace,1}), ceReplacers{iReplace,2}), ceFunction_Contents, 'Uniform', false);
+for isub = 1:size(ceReplacers, 1)
+    ceFunction_Contents = cellfun(@(str) strrep(str, sprintf('{{%s}}', ceReplacers{isub,1}), ceReplacers{isub,2}), ceFunction_Contents, 'Uniform', false);
 end
 
 
@@ -322,20 +325,25 @@ end
 try
   % Make target directory
     if 7 ~= exist(chFunction_Path, 'dir')
-        mkdir(chFunction_Path);
-    end
-    fidTarget = fopen(chFunction_FullFile, 'w+');
-    for row = 1:numel(ceFunction_Contents)
-        fprintf(fidTarget, '%s\r\n', ceFunction_Contents{row,:});
-    end
-    fcStatus = fclose(fidTarget);
-    assert(fcStatus == 0);
-catch me
-    if strcmp(me.identifier, 'MATLAB:FileIO:InvalidFid')
-        throwAsCaller(MException('PHILIPPTEMPEL:MATLAB_TOOLING:MKFUN:invalidTargetFid', 'Could not open target file for writing.'));
+        [status, errmsg, errid] = mkdir(chFunction_Path);
+        if status ~= 1
+            throw(MException(errid, errmsg));
+        end
     end
     
-    throwAsCaller(MException(me.identifier, me.message));
+    [fid, errmsg] = fopen(chFunction_FullFile, 'w+');
+    if fid < 0
+        throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
+    end
+    
+    coClose = onCleanup(@() fclose(fid));
+    
+    for row = 1:numel(ceFunction_Contents)
+        fprintf(fid, '%s\r\n', ceFunction_Contents{row,:});
+    end
+    
+catch me
+    throwAsCaller(me);
 end
 
 
@@ -437,13 +445,18 @@ function a = build_argchk(t, n)
 
 if ~isempty(n)
   a = sprintf('narg%schk(%d, %d);', t, n(1), n(2));
+  
   if strcmpi(t, 'in')
     a = sprintf('\n%s\n', a);
+    
   elseif strcmpi(t, 'out')
     a = sprintf('%s\n\n', a);
+    
   end
+  
 else
   a = '';
+  
 end
 
 

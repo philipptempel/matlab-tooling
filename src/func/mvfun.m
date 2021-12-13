@@ -39,6 +39,8 @@ function mvfun(Old, New, varargin)
 %   2021-12-13
 %       * Rename to `MVFUN` to be more consistent with functions like `MKDIR`
 %       * Update H1
+%       * Internal code beautification and stream-lining, better exception
+%       handling and printing
 %   2018-03-03
 %       * Change parameter 'silent' to 'open' and change it's default value to
 %       'off'
@@ -120,9 +122,11 @@ assert(~isempty(chOld_Filepath), 'PHILIPPTEMPEL:MATLAB_TOOLING:MVFUN:InvalidFunc
 
 % Get the path parts of the old and new file
 [chOld_Path, chOld_Name, chOld_Ext] = fileparts(chOld_Filepath);
-[~, chNew_Name, ~] = fileparts(chName_New);
+[chNew_Path, chNew_Name, ~] = fileparts(chName_New);
 % Create path parts for the new file
-chNew_Path = chOld_Path;
+if isempty(chNew_Path)
+  chNew_Path = chOld_Path;
+end
 chNew_Ext = chOld_Ext;
 
 % Find out if the old function is a packaged function, if so, check the new
@@ -134,21 +138,26 @@ chNew_Filepath = fullfile(chNew_Path, sprintf('%s%s', chNew_Name, chNew_Ext));
 
 % Try copying the file
 try
-    movefile(chOld_Filepath, chNew_Filepath);
+    [status, message, messageid] = movefile(chOld_Filepath, chNew_Filepath);
+    if status ~= 0
+      throw(MException(messageid, message));
+    end
 catch me
-    throwAsCaller(MException(me.identifier, me.message));
+    throwAsCaller(me);
 end
 
 % Read the new file's content
 try
-    fidSource = fopen(chNew_Filepath);
-    ceFunction_Contents = textscan(fidSource, '%s', 'Delimiter', '\n', 'Whitespace', ''); ceFunction_Contents = ceFunction_Contents{1};
-    fclose(fidSource);
-catch me
-    if strcmp(me.identifier, 'MATLAB:FileIO:InvalidFid')
-        throw(MException('PHILIPPTEMPEL:MATLAB_TOOLING:MVFUN:InvalidFid', 'Could not open source file for reading.'));
+    [fid, errmsg] = fopen(chNew_Filepath);
+    if fid < 0
+      throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
-    throwAsCaller(MException(me.identifier, me.message));
+    coClose = onCleanup(@() fclose(fid));
+    
+    ceFunction_Contents = textscan(fid, '%s', 'Delimiter', '\n', 'Whitespace', ''); ceFunction_Contents = ceFunction_Contents{1};
+    
+catch me
+    throwAsCaller(me);
 end
 
 % Replace the function name
@@ -156,23 +165,27 @@ ceReplacers = {
     chOld_Name, chNew_Name;
     upper(chOld_Name), upper(chNew_Name);
 };
-% Replace all placeholders with their respective content
+
+ss% Replace all placeholders with their respective content
 for iReplace = 1:size(ceReplacers, 1)
     ceFunction_Contents = cellfun(@(str) strrep(str, sprintf('%s', ceReplacers{iReplace,1}), ceReplacers{iReplace,2}), ceFunction_Contents, 'Uniform', false);
 end
+
 % Save the changed function content
 try
-    fidTarget = fopen(chNew_Filepath, 'w+');
+    [fid, errmsg] = fopen(chNew_Filepath, 'w+');
+    if fid < 0
+      throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
+    end
+    
+    coClose = onCleanup(@() fclose(fid));
+    
     for row = 1:numel(ceFunction_Contents)
-        fprintf(fidTarget, '%s\r\n', ceFunction_Contents{row,:});
+        fprintf(fid, '%s\r\n', ceFunction_Contents{row,:});
     end
-    fcStatus = fclose(fidTarget);
-    assert(fcStatus == 0);
+    
 catch me
-    if strcmp(me.identifier, 'MATLAB:FileIO:InvalidFid')
-        throw(MException('PHILIPPTEMPEL:MATLAB_TOOLING:MVFUN:InvalidFid', 'Could not open target file for writing.'));
-    end
-    throwAsCaller(MException(me.identifier, me.message));
+    throwAsCaller(me);
 end
 
 

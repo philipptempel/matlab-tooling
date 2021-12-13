@@ -1,31 +1,36 @@
-function [res] = parseswitcharg(arg, add_on, add_off)%#codegen
-% PARSESWITCHARG parses the toggle arg to a valid and unified char.
+function res = parseswitcharg(arg, add_on, add_off)%#codegen
+%% PARSESWITCHARG parses the toggle arg to a valid and unified char.
 %
-%   RES = PARSESWITCHARG(ARG) parses toggle argument ARG to match a unified
-%   true/false value. The following mapping is used internally:
-%       'on'        'on'
-%       'yes'       'on'
-%       'please'    'on'
-%       'off'       'off'
-%       'no'        'off'
-%       'never'     'off'
-%   If ARG cannot be parsed, it defaults to 'off'.
+% RES = PARSESWITCHARG(ARG) parses toggle argument ARG to match a unified
+% true/false value. The following mapping is used internally:
+%       'on'      ->  'on'
+%       'yes'     ->  'on'
+%       'please'  ->  'on'
+%       'off'     ->  'off'
+%       'no'      ->  'off'
+%       'never'   ->  'off'
+% If ARG cannot be parsed, it defaults to 'off'.
 %
-%   Inputs:
+% Inputs:
 %
-%   ARG     Argument as given to the function call.
+%   ARG                 Argument as given to the function call.
 %
-%   Outputs:
+% Outputs:
 %
-%   RES     Resulting argument char representing a true value with 'on' and a
-%           false value with 'off'.
+%   RES                 Resulting MATLAB.LANG.ONOFFSWITCHSTATE object.
+%
+% See also:
+%   MATLAB.LANG.ONOFFSWITCHSTATE
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-17
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Return an object of type `MATLAB.LANG.ONOFFSWITCHSTATE` instead of
+%       returning a char array
 %   2020-11-17
 %       * Change author's email domain to `ls2n.fr`
 %   2017-08-31
@@ -38,42 +43,47 @@ function [res] = parseswitcharg(arg, add_on, add_off)%#codegen
 
 
 %% Default arguments
-if nargin < 2
+
+% PARSESWITCHARG(ARG)
+% PARSESWITCHARG(ARG, ADDON)
+% PARSESWITCHARG(ARG, ADDON, ADDOFF)
+narginchk(1, 3);
+
+% PARSESWITCHARG(___)
+% RES = PARSESWITCHARG(___)
+nargoutchk(0, 1);
+
+% PARSESWITCHARG(ARG)
+if nargin < 2 || isempty(add_on)
     add_on = {};
 end
 
-if nargin < 3
+% PARSESWITCHARG(ARG, ADDON)
+if nargin < 3 || isempty(add_off)
     add_off = {};
 end
 
 
 
 %% Assertion
+
 % Arg: char; non-empty
 assert(ischar(arg), 'PHILIPPTEMPEL:MATLAB_TOOLING:PARSESWITCHARG:InvalidArgumentType', 'Argument [arg] must be char.');
 % assert(~isempty(arg), 'PHILIPPTEMPEL:MATLAB_TOOLING:PARSESWITCHARG:EmptyArgument', 'Argument [arg] must not be empty.');
+
 % Add_on: Cell of chars; nonempty
 assert(iscell(add_on), 'PHILIPPTEMPEL:MATLAB_TOOLING:PARSESWITCHARG:InvalidArgumentType', 'Argument [add_on] must be cell.');
 assert(all(cellfun(@(x) ischar(x), add_on)), 'PHILIPPTEMPEL:MATLAB_TOOLING:PARSESWITCHARG:InvalidArgumentType', 'Argument [add_on] must be cell array of chars.');
+
 % Add_off: Cell of chars; nonempty
 assert(iscell(add_off), 'PHILIPPTEMPEL:MATLAB_TOOLING:PARSESWITCHARG:InvalidArgumentType', 'Argument [add_offs] must be cell.');
 assert(all(cellfun(@(x) ischar(x), add_off)), 'PHILIPPTEMPEL:MATLAB_TOOLING:PARSESWITCHARG:InvalidArgumentType', 'Argument [add_off] must be cell array of chars.');
 
 
 
-%% Do your code magic here
+%% Algorithm
 
-ceChar_On = [{'on'}, {'yes'}, {'please'}, add_on{:}];
-ceChar_Off = [{'off'}, {'no'}, {'never'}, add_off{:}];
-
-switch lower(arg)
-    case ceChar_On
-        res = 'on';
-    case ceChar_Off
-        res = 'off';
-    otherwise
-        res = 'off';
-end
+res = matlab.lang.OnOffSwitchState(any(strcmpi(arg, [ add_on , 'on' , 'yes' , 'please' ])));
 
 
 end
