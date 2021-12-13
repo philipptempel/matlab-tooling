@@ -87,19 +87,18 @@ lopen = parseswitcharg(ip.Results.Open);
 
 
 
-
 %% Copy the file
 
 % Get the path to the specified function
-src_which = which(src);
-assert(~isempty(src_which), 'PHILIPPTEMPEL:MATLAB_TOOLING:CPFUN:InvalidFuncName', 'Could not find function %s anywhere in your path', src);
+src_fullpath = which(src);
+assert(~isempty(src_fullpath), 'PHILIPPTEMPEL:MATLAB_TOOLING:CPFUN:InvalidFuncName', 'Could not find function %s anywhere in your path', src);
 
 % Get the path parts of the old and new file
-[src_path, src_name, src_ext] = fileparts(src_which);
-[dst_path, dst_name, dst_ext] = fileparts(dst);
+[~, src_name, src_ext] = fileparts(src_fullpath);
+[dst_path, dst_name, ~] = fileparts(dst);
 % Create path parts for the new file
 if isempty(dst_path)
-  dst_path = src_path;
+  dst_path = pwd();
 end
 dst_ext = src_ext;
 
@@ -110,27 +109,16 @@ dst_ext = src_ext;
 % Create path of new file
 dst_fullpath = fullfile(dst_path, [ dst_name , dst_ext ]);
 
-% Try copying the file
+% Read the original file's content
 try
-    [status, message, messageid] = copyfile(src_which, dst_fullpath);
-    
-    if status ~= 1
-        throw(MException(messageid, message));
-    end
-catch me
-    throwAsCaller(MException(me.identifier, me.message));
-end
-
-% Read the new file's content
-try
-    [fid, errmsg] = fopen(dst_fullpath);
+    [fid, errmsg] = fopen(src_fullpath);
     if fid < 0
       throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
     
     coClose = onCleanup(@() fclose(fid));
     
-    content = fileread(dst_fullpath);
+    content = fileread(src_fullpath);
     
 catch me
     throwAsCaller(me);
