@@ -24,7 +24,11 @@ function cpfun(src, dst, varargin)
 %                       'on', 'yes'     Open file in editor after renaming
 %                       'off', 'no',    Do not open file in editor after
 %                                       renaming
-%                       Defaults to 'off'.
+%                       Default: 'off'
+%
+%   Overwrite           Flag whether to overwrite the target function file if it
+%                       already exists.
+%                       Default: 'off'
 %
 % See also:
 %   MKFUN CPFUN
@@ -55,6 +59,10 @@ addRequired(ip, 'Destination', valFcn_New);
 valFcn_Open = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no', 'please', 'never'}, mfilename, 'Open'));
 addParameter(ip, 'Open', 'off', valFcn_Open);
 
+% Overwrite: Char. Matches {'on', 'off', 'yes', 'no'}. Defaults 'no';
+valFcn_Overwrite = @(x) any(validatestring(x, {'on', 'off', 'yes', 'no'}, mfilename(), 'Overwrite'));
+addParameter(ip, 'Overwrite', 'off', valFcn_Overwrite);
+
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
@@ -84,6 +92,8 @@ src = ip.Results.Source;
 dst = ip.Results.Destination;
 % Open after rename
 lopen = parseswitcharg(ip.Results.Open);
+% Overwrite if target exists?
+loverwrite = parseswitcharg(ip.Results.Overwrite);
 
 
 
