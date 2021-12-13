@@ -19,8 +19,10 @@ function y = runge(x, c)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-12-30
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Move into `math` directory
 %   2018-12-30
 %       * Initial release
 
