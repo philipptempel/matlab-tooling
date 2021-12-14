@@ -47,11 +47,10 @@ function success = pack_files_and_dependencies(Files, Target, varargin)
 %% File information
 % Author: Christoph Hinze <christoph.hinze@isw.uni-stuttgart.de>
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-12-13
-% Todo:
-%   * Scan source code of files for keywords like LOAD, TEXTREAD or FOPEN, this
-%   still has to be done manually.
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Move To Do section below Changelog
 %   2021-12-13
 %       * Update to new signature of `PARSESWITCHARG`
 %   2018-05-19
@@ -71,6 +70,9 @@ function success = pack_files_and_dependencies(Files, Target, varargin)
 %       * Add file footer
 %   2015-11-19
 %       * Initial release
+% Todo:
+%   * Scan source code of files for keywords like LOAD, TEXTREAD or FOPEN, this
+%   still has to be done manually.
 
 
 

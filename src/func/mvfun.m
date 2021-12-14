@@ -31,12 +31,10 @@ function mvfun(src, dst, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-12-13
-% TODO:
-%   * Need to be able to handle packaged function names. For the old function
-%   name it seems to work, but for the new function name it does (somehow
-%   magically, but not really) work.
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Move To Do section below Changelog
 %   2021-12-13
 %       * Rename to `MVFUN` to be more consistent with functions like `MKDIR`
 %       * Update H1
@@ -73,6 +71,10 @@ function mvfun(src, dst, varargin)
 %       afterwards
 %   2016-08-02
 %       * Initial release
+% TODO:
+%   * Need to be able to handle packaged function names. For the old function
+%   name it seems to work, but for the new function name it does (somehow
+%   magically, but not really) work.
 
 
 
