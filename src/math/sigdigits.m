@@ -20,10 +20,12 @@ function n = sigdigits(x)
 
 %% File information
 % Author: James Tursa
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % See: https://de.mathworks.com/matlabcentral/answers/142819-how-to-find-number-of-significant-figures-in-a-decimal-number
-% Date: 2021-11-17
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-11-17
 %       * Update H1 to correct format
 %   2018-11-08

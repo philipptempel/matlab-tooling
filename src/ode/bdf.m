@@ -34,9 +34,11 @@ function varargout = bdf(odefun, tspan, y0, options, varargin)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-09-02
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2018-09-02
 %       * Add support for 'OutputFcn'
 %   2018-08-31

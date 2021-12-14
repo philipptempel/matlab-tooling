@@ -46,10 +46,11 @@ function success = pack_files_and_dependencies(Files, Target, varargin)
 
 %% File information
 % Author: Christoph Hinze <christoph.hinze@isw.uni-stuttgart.de>
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % Date: 2021-12-14
 % Changelog:
 %   2021-12-14
+%       * Update email address of Philipp Tempel
 %       * Move To Do section below Changelog
 %   2021-12-13
 %       * Update to new signature of `PARSESWITCHARG`
@@ -281,7 +282,7 @@ function [f, d] = path2copyable(p)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % Date: 2018-05-19
 % Changelog:
 %   2018-05-19

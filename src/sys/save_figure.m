@@ -69,9 +69,11 @@ function save_figure(Filename, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-12-13
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-12-13
 %       * Update to new signature of `PARSESWITCHARG`
 %   2018-02-06

@@ -44,13 +44,15 @@ function A = allcomb(varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-05-25
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Tested in Matlab R2015a and up
 % version 4.2 (apr 2018)
 % (c) Jos van der Geest
 % email: samelinoa@gmail.com
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2018-05-25
 %       * Initial release
 

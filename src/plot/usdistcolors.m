@@ -13,9 +13,11 @@ function DistColors = usdistcolors(N)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-05-14
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2018-05-14
 %       * Change ordering of colors to match powerpoint color layout
 %   2017-02-24

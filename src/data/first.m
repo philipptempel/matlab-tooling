@@ -19,9 +19,11 @@ function f = first(mixed, off)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2020-11-20
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2020-11-20
 %     * Add support for an offset to retrieve (last - offset)-th item.
 %   2019-03-18

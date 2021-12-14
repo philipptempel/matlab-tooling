@@ -4,9 +4,11 @@ function create_contents(varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-07-24
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-07-24
 %       * Change behavior of function: Now accepts a list of directories in
 %       which to create the CONTENTS.M files

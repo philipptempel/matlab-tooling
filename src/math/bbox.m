@@ -30,9 +30,11 @@ function [bx, trav] = bbox(X, Y)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-17
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-11-17
 %       * Update H1 to correct format
 %   2021-03-12

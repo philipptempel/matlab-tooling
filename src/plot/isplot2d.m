@@ -17,9 +17,11 @@ function res = isplot2d(varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-09-09
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2017-09-09
 %       * Now fix error in function falsely identifying an empty plot as a 3D
 %       axes

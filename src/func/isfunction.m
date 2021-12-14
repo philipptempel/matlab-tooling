@@ -30,10 +30,12 @@ function [TF, ID] = isfunction(fcn)
 
 %% File information
 % Author: Jos van der Geest <jos@jasen.nl>
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % Url: http://mathworks.com/matlabcentral/fileexchange/45778-isfunction
-% Date: 2021-12-13
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-12-13
 %       * Update H1 documentation
 %   2016-12-12

@@ -17,9 +17,11 @@ function alpha = quat2acc(q_dot, q_ddot)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2017-08-05
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2017-08-05
 %       * Add input validation
 %       * Backwards incompatible change: allow for multiple quaternion rate

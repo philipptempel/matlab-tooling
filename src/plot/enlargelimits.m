@@ -57,9 +57,11 @@ function enlargelimits(varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-10
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2019-01-10
 %     * Fix default value of 'Extend' being `0.00`, rather than `0.05`
 %     * Rename to `enlargelimits`

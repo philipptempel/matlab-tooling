@@ -24,9 +24,11 @@ function l = limit(v, mi, ma)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-06-21
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-06-21
 %       * Add codegen support, remove try/catch block
 %   2018-02-06

@@ -23,10 +23,12 @@ function B = adjugate(A)
 
 %% File information
 % Author: Roger Stafford - 10/18/06 https://mathworks.com/matlabcentral/profile/authors/870327-roger-stafford
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % See: https://mathworks.com/matlabcentral/fileexchange/12692-adjugate-adjugate-of-a-square-matrix
-% Date: 2021-11-17
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-11-17
 %       * Update H1 to correct format
 %   2018-11-20

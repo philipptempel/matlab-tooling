@@ -13,9 +13,11 @@ function [name] = computername()
 
 %% File information
 % Author: mathworks.com/matlabcentral/fileexchange/16450-get-computer-name-hostname/content/getComputerName.m
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-11-14
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2016-11-14
 %       * Initial release
 

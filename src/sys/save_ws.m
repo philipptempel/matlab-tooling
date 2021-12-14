@@ -34,9 +34,11 @@ function save_ws(varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-12-10
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2016-12-10
 %       * Fix incorrect type checking in input parser (from 'cell' to 'char')
 %       * Rename to `save_ws`
