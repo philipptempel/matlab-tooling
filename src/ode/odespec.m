@@ -4,8 +4,8 @@ function [t, y] = odespec(ode, tspan, y0, options)
 % ODESPEC solves first-order linear ordinary differential equations using
 % spectral integration with Chebyshev differentation matrix and
 % Chebyshev-Lobatto points. A first-order linear ODE is given by the equation
-% $\dot{y} = A y + b$ over interval $t = [ t_{a} , t_{b} ]$ with initial
-% condition $y(t_{a}) = y_{a}$.
+% $\dot{y}(t) = A(t) y + b(t)$ over interval $t = [ t_{a} , t_{b} ]$ with
+% initial condition $y(t_{a}) = y_{a}$.
 %
 % [T, Y] = ODESPEC(ODEFUN, TSPAN, Y0) calculates the solution Y(T) for the
 % linear ODE defined in ODEFUN over integration interval TSPAN with initial
