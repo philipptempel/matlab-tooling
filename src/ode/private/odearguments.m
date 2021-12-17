@@ -32,7 +32,7 @@ else  % ode-file used   (ignored when solver == ODE15I)
   % Get default tspan and y0 from the function if none are specified.
   if isempty(tspan) || isempty(y0) 
     if exist(ode)==2 && ( nargout(ode)<3 && nargout(ode)~=-1 ) 
-      error(message('MATLAB:odearguments:NoDefaultParams', funstring( ode ), solver, funstring( ode )));      
+      error(message('MATLAB:odearguments:NoDefaultParams', funcstring( ode ), solver, funcstring( ode )));      
     end
     if strcmp(solver, 'leapfrog') % FEVAL(ODEFUN, T, X, V, ...)
       [def_tspan,def_y0,def_options] = feval(ode,[],[],[],'init',extras{:});
@@ -102,9 +102,9 @@ end
 f0 = feval(ode,t0,y0,args{:});   % ODE15I sets args{1} to yp0.
 [m,n] = size(f0);
 if n > 1
-  error(message('MATLAB:odearguments:FoMustReturnCol', funstring( ode )));
+  error(message('MATLAB:odearguments:FoMustReturnCol', funcstring( ode )));
 elseif m ~= neq
-  error(message('MATLAB:odearguments:SizeIC', funstring( ode ), m, neq, funstring( ode )));
+  error(message('MATLAB:odearguments:SizeIC', funcstring( ode ), m, neq, funcstring( ode )));
 end
 
 % Determine the dominant data type
@@ -153,7 +153,7 @@ if normcontrol
   normy = norm(y0);
 else
   if (length(atol) ~= 1) && (length(atol) ~= neq)
-    error(message('MATLAB:odearguments:SizeAbsTol', funstring( ode ), neq)); 
+    error(message('MATLAB:odearguments:SizeAbsTol', funcstring( ode ), neq)); 
   end
   atol = atol(:);
   normy = [];
