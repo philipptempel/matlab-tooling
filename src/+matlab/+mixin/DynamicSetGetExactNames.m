@@ -7,7 +7,7 @@ classdef DynamicSetGetExactNames < handle ...
   
   
   %% PUBLIC READ-ONLY DEPENDENT PROPERTIES
-  properties ( Dependent , SetAccess = protected )
+  properties ( Dependent , Hidden , SetAccess = protected )
     
     % Keys of all properties
     Keys
