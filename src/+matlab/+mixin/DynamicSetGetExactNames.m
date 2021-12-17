@@ -292,6 +292,7 @@ classdef DynamicSetGetExactNames < handle ...
       % SET(OBJ, S)
       % SET(OBJ, NAME, VALUE)
       % SET(OBJ, NAMEARRAY, VALUEARRAY)
+      % SET(OBJ, NAME1, VALUE1, NAME2, VALUE2, ..., NAMEN, VALUEN)
       if nargin > 1
         p = varargin{1};
         % SET(OBJ, S)
@@ -300,9 +301,10 @@ classdef DynamicSetGetExactNames < handle ...
           p = fieldnames(p);
           
         % SET(OBJ, NAME, VALUE)
+        % SET(OBJ, NAME1, VALUE1, NAME2, VALUE2, ..., NAMEN, VALUEN)
         elseif ischar(p)
-          narginchk(3, 3);
-          p = {p};
+          narginchk(3, Inf);
+          p = varargin(1:2:end);
           
         % SET(OBJ, NAMEARRAY, VALUEARRAY)
         elseif iscell(p)
