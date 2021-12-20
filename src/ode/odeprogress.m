@@ -22,9 +22,11 @@ function status = odeprogress(t, y, flag, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-10-25
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-10-25
 %       * Update to display figure name and text more consistently over the
 %       various call modes

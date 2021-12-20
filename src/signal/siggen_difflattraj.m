@@ -44,9 +44,11 @@ function [Trajectory, varargout] = siggen_difflattraj(Start, End, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-02-25
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2018-02-25
 %       .* Properly initialize variable list of output arguments and avoid having
 %       to use `%#ok<AGROW>`

@@ -42,9 +42,13 @@ function varargout = mat2tex(m, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-12-30
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2016-12-30
 %       * Add option 'Table'
 %       * Update help doc
@@ -191,7 +195,7 @@ end
 chTable = '';
 
 % Open the table environment
-if strcmp(chTableEnv, 'on')
+if chTableEnv == matlab.lang.OnOffSwitchState.on
     chTable = sprintf('%s\n', '\begin{table}');
     % Make the table centered
     chTable = [chTable, sprintf('  %s\n', '\centering')];
@@ -206,15 +210,15 @@ if ~isempty(chLabel)
 end
 
 % Open the tabular
-chTable = [chTable, repmat(' ', 1, 2*strcmp(chTableEnv, 'on')), sprintf('%s{%s}\n', '\begin{tabular}', strjoin(ceColumnAlignment, ' '))];
+chTable = [chTable, repmat(' ', 1, 2*(chTableEnv == matlab.lang.OnOffSwitchState.on)), sprintf('%s{%s}\n', '\begin{tabular}', strjoin(ceColumnAlignment, ' '))];
 
 % Plug in the tabular content
-chTable = [chTable, repmat(' ', 1, 2*(1 + strcmp(chTableEnv, 'on'))), sprintf('%s \\\\\n', strjoin(ceTabular, [' \\\\\n', repmat(' ', 1, 2*(1 + strcmp(chTableEnv, 'on')))]))];
+chTable = [chTable, repmat(' ', 1, 2*(1 + (chTableEnv == matlab.lang.OnOffSwitchState.on))), sprintf('%s \\\\\n', strjoin(ceTabular, [' \\\\\n', repmat(' ', 1, 2*(1 + (chTableEnv == matlab.lang.OnOffSwitchState.on)))]))];
 
 % Close the tabular
-chTable = [chTable, repmat(' ', 1, 2*strcmp(chTableEnv, 'on')), sprintf('%s\n', '\end{tabular}')];
+chTable = [chTable, repmat(' ', 1, 2*(chTableEnv == matlab.lang.OnOffSwitchState.on)), sprintf('%s\n', '\end{tabular}')];
 
-if strcmp(chTableEnv, 'on')
+if chTableEnv == matlab.lang.OnOffSwitchState.on
     % Close the table
     chTable = [chTable, sprintf('%s\n', '\end{table}')];
 end

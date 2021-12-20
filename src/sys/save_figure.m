@@ -69,9 +69,13 @@ function save_figure(Filename, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-02-06
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2018-02-06
 %       * Fix error when using this with a fully qualified filename i.e., with
 %       file extension would not work
@@ -113,7 +117,7 @@ end
 
 
 %% Input parser
-ip = inputParser;
+ip = inputParser();
 
 % Require: Filename without ending
 valFcn_Filename = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Filename');
@@ -270,7 +274,7 @@ function chTargetPath = in_createFilepath(chPath, chFolder, chFilename, chInDir)
 chTargetPath = fullfile(chPath);
 
 % Store inside directories?
-if strcmp('on', chInDir)
+if chInDir == matlab.lang.OnOffSwitchState.on
     % Ensure we have a directory
     mkdir(fullfile(chPath, chFolder));
     % Append this directory to the target path

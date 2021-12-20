@@ -50,9 +50,13 @@ function Files = allfiles(d, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-23
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2021-11-23
 %       * Update H1
 %       * Make `Prefix` and `Suffix` option more easy to use by using it as-is
@@ -187,7 +191,7 @@ if isempty(pat)
 end
 
 % Build list of arguments for recursing
-if strcmp('on', chRecurse)
+if chRecurse == matlab.lang.OnOffSwitchState.on
     % Copy methods arguments results
     ip_results = ip.Results;
     % Remove arguments that are marked `required` or `optional`
@@ -209,7 +213,7 @@ if ~isempty(stFiles)
     stFiles(ismember({stFiles.name}, {'.', '..'})) = [];
     
     % Do we need to filter the system files like '.' and '..'?
-    if strcmpi('off', chIncludeHidden)
+    if chIncludeHidden == matlab.lang.OnOffSwitchState.off
         % Remove all directories from the found items
         stFiles(startsWith({stFiles.name}, '.')) = [];
     end
@@ -220,7 +224,7 @@ if ~isempty(stFiles)
     idxDirs = find(loDirs);
     
     % Recurse into subdirectories if requested
-    if strcmp('on', chRecurse)
+    if chRecurse == matlab.lang.OnOffSwitchState.on
         for iDir = 1:numel(idxDirs)
             % And merge with the files found in the subdirectory
             stFiles = vertcat(stFiles, allfiles(fullfile(chDir, stFiles(idxDirs(iDir)).name) ...

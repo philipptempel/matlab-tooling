@@ -4,12 +4,15 @@ function [t, y] = odespec(ode, tspan, y0, options)
 % ODESPEC solves first-order linear ordinary differential equations using
 % spectral integration with Chebyshev differentation matrix and
 % Chebyshev-Lobatto points. A first-order linear ODE is given by the equation
-% $\dot{y} = A y + b$ over interval $t = [ t_{0} , t_{f} ]$ with initial
-% condition $y(t_{0}) = y_{0}$.
+% $\dot{y}(t) = A(t) y + b(t)$ over interval $t = [ t_{a} , t_{b} ]$ with
+% initial condition $y(t_{a}) = y_{a}$.
 %
-% [T, Y] = ODESPEC(ODE, TSPAN, Y0)
+% [T, Y] = ODESPEC(ODEFUN, TSPAN, Y0) calculates the solution Y(T) for the
+% linear ODE defined in ODEFUN over integration interval TSPAN with initial
+% condition Y0.
 %
-% [T, Y] = ODESPEC(ODE, TSPAN, Y0, OPTIONS)
+% [T, Y] = ODESPEC(ODEFUN, TSPAN, Y0, OPTIONS) allows passing additional options
+% as structure array to the spectral integration algorithm.
 %
 % Inputs:
 %
@@ -26,25 +29,32 @@ function [t, y] = odespec(ode, tspan, y0, options)
 %   Y0                  NYx1 vector defining the initial state
 %
 %   OPTIONS             Structure of options to use for spectral integration.
+%                       See below for available options.
 %
 % Options:
 %
-%   NNodes              Number of integration nodes to use.
-%                       Default: 25.
+%   Nodes               Number of integration nodes to use.
+%                       Default: 29.
 %
 % Outputs:
 %
 %   T                   NTx1 vector of Chebyshev-Lobatto points used as node
-%                       points in spectral integration.
+%                       points in spectral integration. This vector is always in
+%                       increasing order.
 %
-%   Y                   NTxNY vector of solutions of Y at node points.
+%   Y                   NTxNY vector of solutions of Y at node points. The
+%                       values in the i-th row Y(i,:) are the values at the i-th
+%                       node T(i).
 
 
 
 %% File information
-% * Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% * Date: 2021-11-23
+% Author: Philipp Tempel <philipp.tempel@ls2n.fr>
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Fix H1 documentation
+%       * Change default node count to 29 (the next prime number after 25)
 %   2021-11-23
 %       * Initial release
 
@@ -57,7 +67,7 @@ function [t, y] = odespec(ode, tspan, y0, options)
 narginchk(3, 4);
 % ODESPEC(___)
 % [T, Y] = ODESPEC(___)
-nargoutchk(2, 2);
+nargoutchk(0, 2);
 
 % ODESPEC(ODE, TSPAN, Y0)
 if nargin < 4 || isempty(options)
@@ -86,7 +96,7 @@ ab = tspan;
 % Direction of integration
 tdir = sign(tspan(2) - tspan(1));
 % Span vector of spectral nodes
-tspan = chebpts2(nn - 1, ab);
+nspan = chebpts2(nn - 1, ab);
 
 % Dimension of extended system
 ns = ny * nn;
@@ -95,7 +105,7 @@ ns = ny * nn;
 Dn = chebdiffmtx(nn - 1, ab);
 
 % Check ODE arguments and get the ODE function in a common format
-f = parse_ode(ode, tspan, y0);
+f = parse_ode(ode, nspan, y0);
 
 % Build differentiation matrix D for all of the ODE's degrees of freedom
 D = kron( ...
@@ -104,41 +114,35 @@ D = kron( ...
 );
 
 % Evaluate ODE at all nodes
-[A_, b_] = feval(f, tspan, y0);
+% A_ = YxYxN
+% B_ = YxN
+[A_, b_] = feval(f, nspan, y0);
+% Ensure B_ is YxN, if not, transpose it
+if size(b_, 1) == nn && size(b_, 2) == ny
+  b_ = permute(b_, [2, 1]);
+end
 
 % Index of initial state in global state vector
 idxY = 1:ny;
-%{
-I THINK THIS IS THE DEAL:
+idxX0 = idxY * nn;
 
-If we integrate on [a, b] with y(a) given, then the initial condition is
-reflected in the last entries of D because D is D([b,a]).
-
-Thus, if tdir > 0 must be idxY * nn and tdir < 0 must be (idxY-1) * nn + 1
-
-%}
-% if tdir > 0
-%   idxX0 = (idxY - 1) * nn + 1;
-% else
-  idxX0 = idxY * nn;
-% end
-
-% Build global A matrix which which is composed of node-wise entries of the ODE
+% Build global A matrix which is composed of node-wise entries of the ODE
 % system's Ai matrices
 A = zeros(ns, ns);
 b = zeros(ns, 1);
-idxOff = (idxY - 1) * nn;
+idxYN = (idxY - 1) * nn;
+
 % Looping over every node
-for it = 1:nn
+for in = 1:nn
   % Push the i-th node's constant A matrix values in
-  A(it + idxOff,it + idxOff) = A_(:,:,it);
+  A(in + idxYN,in + idxYN) = A_(:,:,in);
   
   % Push the i-th node's constant b vector values in
-  b(it + idxOff) = b_(1:ny,it);
+  b(in + idxYN) = b_(1:ny,in);
   
 end
 
-% Matrix to map intial values onto solution
+% Matrix to map each state into the right block-segment of its differential part
 P = eye(ns, ns);
 P(idxY,idxY) = 0;
 P(idxX0,idxX0) = 0;
@@ -148,8 +152,8 @@ Pt = transpose(P);
 
 % Apply transformation of initial condition onto ODE's matrices
 A = Pt * A * P;
-D = Pt * D * P;
 b = Pt * b;
+D = Pt * D * P;
 
 % New indices for quicker array indexing
 idxX0 = 1:ny;
@@ -161,18 +165,11 @@ b0 = ( D(:,idxX0) - A(:,idxX0) ) * y0;
 % Calculation of solution
 yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY) - b0(idxY) );
 
-% assignin('base', 'a', A);
-% assignin('base', 'b', b);
-% assignin('base', 'd', D);
-% assignin('base', 'p', P);
-% assignin('base', 'cl', b0);
-% assignin('base', 'res', yn);
-
 % Reshape solution of ODE to be TxY
 y = reshape(P * [ y0 ; yn ], nn, ny);
 
 % Turn node points into a column vector
-t = tspan(:);
+t = nspan(:);
 
 % If the interval ab was increasing i.e., a < b, then the nodes and values at
 % the nodes are in decreasing order since the Chebyshev-nodes are in decreasing
@@ -181,16 +178,17 @@ t = tspan(:);
 if tdir > 0
   t = flip(t, 1);
   y = flip(y, 1);
+  
 end
 
 
 end
 
 
-function f = parse_ode(ode, tspan, y0)
+function f = parse_ode(ode, nspan, y0)
 %% PARSE_ODE Parse ODE function and return it in a unified form
 %
-% PARSE_ODE(ODE, TSPAN, Y0)
+% PARSE_ODE(ODE, NSPAN, Y0)
 
 
 
@@ -214,10 +212,13 @@ if nargout(ode) ~= 2
 end
 
 % Values to test function
-t = tspan(1);
-nt = numel(tspan);
+t = nspan(1);
+nt = numel(nspan);
 y = y0;
-ny = numel(y);
+if isvector(y)
+  y = y(:);
+end
+ny = size(y, 1);
 
 % Evaluate function
 try

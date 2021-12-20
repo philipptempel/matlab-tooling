@@ -129,9 +129,13 @@ function [varargout] = anim3d(X, Y, Z, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-07
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2019-01-07
 %       * Initial release as copy of `anim2d`
 
@@ -549,7 +553,7 @@ try
   end
 
   % Mark the initial plot?
-  if strcmp('on', stUserData.MarkStart)
+  if stUserData.MarkStart == matlab.lang.OnOffSwitchState.on
       % Copy the plot objects quickly
       stUserData.InitialPlot = copyobj(ax.Children, ax);
       % Adjust all 'initial state' objects to be dashed lines

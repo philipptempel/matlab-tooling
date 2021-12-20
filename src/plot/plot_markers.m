@@ -60,12 +60,12 @@ function varargout = plot_markers(n, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-03-25
-% TODO:
-%   * If a legend can be found in the plot, we should extract the lines' legend
-%   entries from these values... somehow
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%       * Move To Do section below Changelog
 %   2018-03-25
 %       * Fix collection of child objects from the given axes to ensure that
 %       axes with two y-axis also work
@@ -96,6 +96,9 @@ function varargout = plot_markers(n, varargin)
 %       instead of plotting into the current one
 %   2016-04-01
 %       * Initial release
+% TODO:
+%   * If a legend can be found in the plot, we should extract the lines' legend
+%   entries from these values... somehow
 
 
 

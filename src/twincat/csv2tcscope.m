@@ -35,9 +35,13 @@ function tcs = csv2tcscope(File, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-02-06
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2019-02-06
 %     * Fix major bug resulting from unescaped strings in regular expressions,
 %     only being apparent when there are array names inside SymbolName. Symbol
@@ -375,7 +379,7 @@ end
 %% Collect signals
 
 % Collect signals by symbol name?
-if strcmp('on', chCollectSignals)
+if chCollectSignals == matlab.lang.OnOffSwitchState.on
   % Let's try to find signals that come from the same root variable i.e., are from
   % a TwinCat array. We do this by inspecting the SymbolName
 

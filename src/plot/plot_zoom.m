@@ -57,9 +57,13 @@ function [varargout] = plot_zoom(Region, Position, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2016-09-13
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2016-09-13
 %       * Fix bug with incorrect corner detection for option 'ZoomLines'
 %       * Rename option 'ZoomAxesSpec' to 'ZoomSpec'
@@ -136,7 +140,7 @@ ceZoomLinesSpec = cycliccell(ip.Results.ZoomLineSpec, 2);
 chZoomLines = parseswitcharg(ip.Results.ZoomLines);
 % If the zoom lines are not requested, then the maximum number of output
 % arguments is two (zoomed axes handle and annotation box handle)
-if strcmp(chZoomLines, 'off')
+if chZoomLines == matlab.lang.OnOffSwitchState.off
     nargoutchk(0, 2);
 end
 % Zoom factor scaling vRange
@@ -286,7 +290,7 @@ axes(haTarget);
 haLines = gobjects(2);
 
 % % Need draw zoom lines?
-if strcmp(chZoomLines, 'on')
+if chZoomLines == matlab.lang.OnOffSwitchState.on
     % Get the connection lines between target box corners and source box corners
     aCornerLines = vCor_Target_Data - vCor_Source_Data;
     % Determine slope of all these lines
@@ -365,7 +369,7 @@ if nargout > 1
 end
 
 % Third optional output
-if nargout > 2 && strcmp(chZoomLines, 'on')
+if nargout > 2 && chZoomLines == matlab.lang.OnOffSwitchState.on
     % Handle to the zoom lines
     varargout{3} = haLines;
 end

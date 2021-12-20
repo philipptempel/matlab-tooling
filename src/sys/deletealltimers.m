@@ -10,9 +10,13 @@ function deletealltimers(all)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-16
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2021-11-16
 %       * Initial release
 
@@ -32,7 +36,7 @@ if nargin < 1 || isempty(all)
 end
 
 if ischar(all)
-  all = strcmp('on', parseswitcharg(all));
+  all = parseswitcharg(all)
 end
 
 
@@ -45,7 +49,7 @@ tmrs = timerfindall();
 % Loop over each timer and delete it if it's stopped
 for iT = 1:numel(tmrs)
   % If timer is not running or we should delete all timers
-  if strcmp(tmrs(iT).Running, 'off') || all
+  if strcmp(tmrs(iT).Running, 'off') || all == matlab.lang.OnOffSwitchState.on
     try
       % Stop timer
       stop(tmrs(iT));

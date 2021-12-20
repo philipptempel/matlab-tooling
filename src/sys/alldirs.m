@@ -34,8 +34,10 @@ function D = alldirs(Dir, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-12-22
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2020-12-22
 %       * Add option `Recurse`
 %   2020-11-16
@@ -107,7 +109,7 @@ chIncludeSystem = ip.Results.IncludeSystem;
 chRecurse = ip.Results.Recurse;
 
 % Build list of arguments for recursing
-if strcmp('on', chRecurse)
+if chRecurse == matlab.lang.OnOffSwitchState.on
     % Copy methods arguments results
     ip_results = ip.Results;
     % Remove arguments that are marked `required` or `optional`
@@ -123,9 +125,6 @@ if strcmp('on', chRecurse)
       ceArgsRecurse{end + 1} = fnames{ifield};
       ceArgsRecurse{end + 1} = ip_results.(fnames{ifield});
     end
-%     ceArgsRecurse(1:2:end) = arguments;
-%     ceArgsRecurse(2:2:end) = struct2cell(ip_results);
-%     ceArgsRecurse(cellfun(@isempty, ceArgsRecurse)) = '';
 else
     ceArgsRecurse = {};
 end
@@ -150,7 +149,7 @@ if ~isempty(stDirs)
     stDirs = stDirs([stDirs.isdir]);
     
     % Recurse into subdirectories if requested
-    if strcmp('on', chRecurse)
+    if chRecurse == matlab.lang.OnOffSwitchState.on
         for iDir = 1:numel(stDirs)
             % And merge with the files found in the subdirectory
             stDirs = vertcat(stDirs, alldirs(fullfile(chDir, stDirs(iDir).name) ...

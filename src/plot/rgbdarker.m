@@ -22,8 +22,10 @@ function darker = rgbdarker(rgb, factor, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-16
+% Date: 2021-12-13
 % Changelog:
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2020-11-16
 %       * Copy from my old MATLAB package
 %       * Change email domain to `ls2n.fr`
@@ -86,7 +88,7 @@ chAsInteger = parseswitcharg(ip.Results.AsInteger);
 darker = aRgb.*(1 - dFactor);
 
 % Turn floats into integers as requested by the user
-if strcmp(chAsInteger, 'on')
+if chAsInteger == matlab.lang.OnOffSwitchState.on
     darker = round(darker.*255);
 end
 

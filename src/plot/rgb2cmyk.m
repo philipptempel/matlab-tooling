@@ -12,10 +12,12 @@ function c = rgb2cmyk(r)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % See: http://mooring.ucsd.edu/software/matlab/doc/toolbox/graphics/color/rgb2cmyk.html
-% Date: 2020-06-23
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2020-06-23
 %       * Rename argument RGB to R to not collide with method `rgb`
 %   2018-11-23

@@ -130,15 +130,14 @@ function [varargout] = anim2d(X, Y, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-01-07
-% TODO:
-%   * Line-specific plot-functions like 'plot' for 1:3, and 'stem' for 4:6'
-%   * Resample time vector such that it explictly matches the FPS value. Right
-%   now, if there are animation values for e.g., t in [0, 2.3, 5]s, then the
-%   animation (and timer title) will "freeze" during 0s and 2.3s as there is no
-%   data drawn => Title should at least update
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%       * Move To Do section below Changelog
+%   2021-12-13
+%       * Update to new signature of `PARSESWITCHARG`
 %   2019-01-07
 %       * Fix incorrect property name in validation function of Y.
 %       * Fix typos in help section.
@@ -255,6 +254,12 @@ function [varargout] = anim2d(X, Y, varargin)
 %       (ax,idx,plt) to (ax,plt,idx)
 %   2016-09-17
 %       * Initial release
+% TODO:
+%   * Line-specific plot-functions like 'plot' for 1:3, and 'stem' for 4:6'
+%   * Resample time vector such that it explictly matches the FPS value. Right
+%   now, if there are animation values for e.g., t in [0, 2.3, 5]s, then the
+%   animation (and timer title) will "freeze" during 0s and 2.3s as there is no
+%   data drawn => Title should at least update
 
 
 
@@ -653,7 +658,7 @@ try
   end
 
   % Force even x-axis limits?
-  if strcmp('on', ax.UserData.EvenX)
+  if ax.UserData.EvenX == matlab.lang.OnOffSwitchState.on
       vXLim = max(abs(vXLim)).*[-1, 1];
   end
   
@@ -666,7 +671,7 @@ try
   end
 
   % Mark the initial plot?
-  if strcmp('on', stUserData.MarkStart)
+  if stUserData.MarkStart == matlab.lang.OnOffSwitchState.on
       % Copy the plot objects quickly
       stUserData.InitialPlot = copyobj(ax.Children, ax);
       % Adjust all 'initial state' objects to be dashed lines

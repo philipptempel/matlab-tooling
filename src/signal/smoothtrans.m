@@ -21,9 +21,11 @@ function y = smoothtrans(x, in)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2018-12-30
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2018-12-30
 %       * Update interval of method to be on [-1, 1] by default.
 %   2018-12-16
@@ -84,7 +86,7 @@ function h_ = h(x)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
+% Author: Philipp Tempel <matlab@philipptempel.me>
 % Date: 2018-11-27
 % Changelog:
 %   2018-11-27

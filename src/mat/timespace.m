@@ -24,9 +24,15 @@ function ts = timspace(t0, tf, h)%#codegen
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-11-17
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
+%   2021-11-30
+%       * Fix bug that caused this function to not properly set the time
+%       stepsize. `TIMESPACE` now uses the colon operator and ensures the final
+%       is definitely included by appending it if it's not already included.
 %   2021-11-17
 %       * Rename to `timespace` to be more verbose in function name
 %   2021-10-25
@@ -52,11 +58,10 @@ end
 %% Perform creation of TS
 
 % Simply pass the properly formatted values to linspace
-ts = linspace( ...
-    t0 ...
-  , tf...
-  , round( ( tf - t0 ) / h + 1 ) ...
-);
+ts = t0:h:tf;
+if ~isclose(ts(end), tf)
+  ts = [ ts , tf ];
+end
 
 
 end

@@ -24,9 +24,11 @@ function varargout = plot_colbox(colors, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2019-11-25
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2019-11-25
 %       * Update implementation such that it plots colored boxes with row-major,
 %       which is more intuitive

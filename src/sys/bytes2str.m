@@ -13,9 +13,11 @@ function s = bytes2str(b, varargin)
 
 
 %% File information
-% Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-02-11
+% Author: Philipp Tempel <matlab@philipptempel.me>
+% Date: 2021-12-14
 % Changelog:
+%   2021-12-14
+%       * Update email address of Philipp Tempel
 %   2021-02-11
 %     * Update return value to return a single char array if a single value of
 %     bytes was passed
