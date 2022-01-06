@@ -9,8 +9,11 @@ function p = mtl_projpath()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-07-01
+% Date: 2021-12-22
 % Changelog:
+%   2021-12-22
+%       * Ensure that all paths returned by this function are normalized and
+%       absolute canonical names
 %   2021-07-01
 %       * Rename file to `mtl_projpath`
 %   2021-02-11
@@ -29,7 +32,11 @@ function p = mtl_projpath()
 
 
 
-%% Do your code magic here
+%% Parse arguments
+
+
+
+%% Algorithm
 
 chPath = fullfile(fileparts(mfilename('fullpath')), '..');
 
@@ -42,6 +49,11 @@ p = { ...
   , fullfile(chPath, 'solarized-matlab') ...
   , fullfile(chPath) ...
 };
+
+addpath(p{5});
+coPath = onCleanup(@() rmpath(p{5}));
+
+p = cellfun(@(ip) fullpath(strip(ip, 'both', pathsep())), p, 'UniformOutput', false);
 
 
 end
