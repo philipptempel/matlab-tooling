@@ -1,4 +1,4 @@
-function [t, y] = odespec(ode, tspan, y0, options)
+function varargout = odespec(ode, tspan, y0, options, varargin)
 %% ODESPEC Spectral integration of first-order linear ODEs
 %
 % ODESPEC solves first-order linear ordinary differential equations using
@@ -54,6 +54,8 @@ function [t, y] = odespec(ode, tspan, y0, options)
 % Date: 2022-01-18
 % Changelog:
 %   2022-01-18
+%       * Add support for returning a `DEVAL`-compatible result structure from
+%       `ODESPEC`
 %       * Require function `ODE` to only take one argument, independent variable
 %       `T`, rather than two arguments. This renders `ODESPEC` to only be
 %       suitable for the case of linear, time-(in)variant ODEs
@@ -71,8 +73,12 @@ function [t, y] = odespec(ode, tspan, y0, options)
 % ODESPEC(ODE, TSPAN, Y0, OPTIONS)
 narginchk(3, 4);
 % ODESPEC(___)
+% SOL = ODESPEC(___)
 % [T, Y] = ODESPEC(___)
 nargoutchk(0, 2);
+
+% SOL = ODESPEC(___)
+output_sol = nargout == 1;
 
 % ODESPEC(ODE, TSPAN, Y0)
 if nargin < 4 || isempty(options)
@@ -94,23 +100,33 @@ ny = numel(y0);
 nyEye = eye(ny, ny);
 
 % Number of nodes
-nn = options.Nodes;
+nout = options.Nodes;
 
 % Get interval of integration
 ab = tspan;
-% Direction of integration
-tdir = sign(tspan(2) - tspan(1));
+% % Direction of integration
+% tdir = sign(tspan(2) - tspan(1));
 % Span vector of spectral nodes
-nspan = chebpts2(nn - 1, ab);
+tout = chebpts2(nout - 1, ab);
 
 % Dimension of extended system
-ns = ny * nn;
+ns = ny * nout;
 
 % Chebyshev differentation matrix on TSPAN's interval
-Dn = chebdiffmtx(nn - 1, ab);
+Dn = chebdiffmtx(nout - 1, ab);
 
 % Check ODE arguments and get the ODE function in a common format
-f = parse_ode(ode, nspan, y0);
+f = parse_ode(ode, tout, y0);
+
+sol = [];
+if output_sol
+  sol = struct();
+  sol.solver = 'odespec';
+  sol.extdata.odefun = ode;
+  sol.extdata.options = options;
+  sol.extdata.varargin = varargin;
+
+end
 
 % Build differentiation matrix D for all of the ODE's degrees of freedom
 D = kron( ...
@@ -123,22 +139,22 @@ D = kron( ...
 % B_ = YxN
 [A_, b_] = feval(f, tout);%, y0);
 % Ensure B_ is YxN, if not, transpose it
-if size(b_, 1) == nn && size(b_, 2) == ny
+if size(b_, 1) == nout && size(b_, 2) == ny
   b_ = permute(b_, [2, 1]);
 end
 
 % Index of initial state in global state vector
 idxY = 1:ny;
-idxX0 = idxY * nn;
+idxX0 = idxY * nout;
 
 % Build global A matrix which is composed of node-wise entries of the ODE
 % system's Ai matrices
 A = zeros(ns, ns);
 b = zeros(ns, 1);
-idxYN = (idxY - 1) * nn;
+idxYN = (idxY - 1) * nout;
 
 % Looping over every node
-for in = 1:nn
+for in = 1:nout
   % Push the i-th node's constant A matrix values in
   A(in + idxYN,in + idxYN) = A_(:,:,in);
   
@@ -148,7 +164,7 @@ for in = 1:nn
 end
 
 % Matrix to map each state into the right block-segment of its differential part
-P = eye(ns, ns);
+P = sparse(eye(ns, ns));
 P(idxY,idxY) = 0;
 P(idxX0,idxX0) = 0;
 P(idxY,idxX0) = nyEye;
@@ -171,19 +187,14 @@ b0 = ( D(:,idxX0) - A(:,idxX0) ) * y0;
 yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY) - b0(idxY) );
 
 % Reshape solution of ODE to be TxY
-y = reshape(P * [ y0 ; yn ], nn, ny);
+yout = reshape(P * [ y0 ; yn ], nout, ny);
 
-% Turn node points into a column vector
-t = nspan(:);
+% Finalize result
+solver_output = odespec_finalize(nout, tout, yout, sol);
 
-% If the interval ab was increasing i.e., a < b, then the nodes and values at
-% the nodes are in decreasing order since the Chebyshev-nodes are in decreasing
-% order. Thus, we need to sort T and Y in reverse row order; in other words
-% flip row 1 and N, row 2 and N-1, etc.
-if tdir > 0
-  t = flip(t, 1);
-  y = flip(y, 1);
-  
+% Assign outputs
+if nargout > 0
+  varargout = solver_output;
 end
 
 
@@ -327,6 +338,68 @@ end
 
 % Merge defaults structure with options given
 oopts = mergestruct(defaults, iopts);
+
+
+end
+
+
+function solver_output = odespec_finalize(nout, tout, yout, sol)
+%% ODESPEC_FINALIZE
+%
+% OUT = ODESPEC_FINALIZE(T, Y, SOL)
+%
+% Inputs:
+%
+%   T
+%
+%   Y
+%
+%   SOL
+%
+% Outputs:
+%
+%   OUT
+
+
+
+% Initialize output
+solver_output = {};
+
+% Direction of integration
+tdir = sign(tout(end) - tout(1));
+
+idxout = 1:nout;
+
+% Extract only necessary data points
+tout = tout(idxout);
+yout = yout(idxout,:);
+
+% If the interval ab was increasing i.e., a < b, then the nodes and values at
+% the nodes are in decreasing order since the Chebyshev-nodes are in decreasing
+% order. Thus, we need to sort T and Y in reverse row order; in other words
+% flip row 1 and N, row 2 and N-1, etc.
+if tdir < 0
+  tout = flip(tout, 2);
+  yout = flip(yout, 1);
+
+end
+
+% SOL = ODESPEC(...)
+if ~isempty(sol)
+  sol.x = tout;
+  sol.y = transpose(yout);
+  
+  solver_output = {sol};
+
+% [T, Y] = ODESPEC(...)
+else
+  % Turn data into column-major
+  tout = transpose(tout);
+  
+  solver_output{1} = tout;
+  solver_output{2} = yout;
+  
+end
 
 
 end
