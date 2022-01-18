@@ -6,9 +6,9 @@ function vq = laginterp(x, v, xq)
 %
 % Inputs:
 %
-%   X                   Nx1 vector of data points.
+%   X                   Nx1 vector of sample points
 %
-%   V                   NxK vector of N data points 
+%   V                   NxK vector of N data points i.e., values.
 %
 %   XQ                  Tx1 vector of query points.
 %
@@ -20,8 +20,10 @@ function vq = laginterp(x, v, xq)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-26
+% Date: 2022-01-18
 % Changelog:
+%   2022-01-18
+%       * Fix incorrect handling of NxK value arrays.
 %   2021-11-26
 %       * Initial release
 
@@ -39,31 +41,39 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-% Turn all data into column vectors
-xq = xq(:);
-x = x(:);
+% Turn sample points vectors into column vectors
+xq_c = xq(:);
+x_c = x(:);
+
+% Get size of values
+size_v = size(v, [1,2]);
 
 % Make sure v is a column vector if it's a vector
-if isvector(v)
+if any(size_v == 1)
   v = v(:);
 end
 
 % Number of value points and of query points
-nx = numel(x);
-nxq = numel(xq);
+nx = numel(x_c);
+nxq = numel(xq_c);
+
+% Ensure that V is NxK not KxN
+if size(v, 2) == nx
+  v = transpose(v);
+end
 
 % Pre-alloc eye matrix
 eyeN = eye(nx, nx);
 
 % Denominator
-d = repmat(permute( ( x - permute(x, [2, 1]) ) + eyeN, [3, 1, 2] ), nxq, 1, 1);
+d = repmat(permute( ( x_c - permute(x_c, [2, 1]) ) + eyeN, [3, 1, 2] ), nxq, 1, 1);
 
 % Numerator
-n = repmat(xq - permute(x, [2, 3, 1]), 1, nx, 1);
+n = repmat(xq_c - permute(x_c, [2, 3, 1]), 1, nx, 1);
 n = n - repmat(permute(eyeN, [3, 2, 1]), nxq, 1, 1) .* ( n - 1);
 
 % Interpolate function
-vq = prod(n ./ d, 3) * v(:);
+vq = prod(n ./ d, 3) * v;
 
 
 end
