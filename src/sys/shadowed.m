@@ -99,6 +99,7 @@ function f = backtrace_function()
 %% BACKTRACE_FUNCTION
 
 
+
 % Get callback stack but skip the first two entries (the call to `DBSTACK` in
 % `BACKTRACE_FUNCTION` and the call to `BACKTRACE_FUNCTION` in `SHADOWED`)
 st = dbstack(2, '-completenames');
