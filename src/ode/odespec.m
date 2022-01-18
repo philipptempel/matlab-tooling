@@ -17,7 +17,8 @@ function [t, y] = odespec(ode, tspan, y0, options)
 % Inputs:
 %
 %   ODE                 Function handle to the ODE's linear right-hand side.
-%                       `ODE` must return two arguments, matrix A and vector B.
+%                       `ODE` must take one argument, independent variable `T`,
+%                       and return two arguments, matrix `A` and vector `B`.
 %                       `ODE` can be written in vectorized form, then A must be
 %                       an NxNxK array and B must be a NxK vector where K is the
 %                       number of knots and N the number of states of the ODE.
@@ -50,8 +51,12 @@ function [t, y] = odespec(ode, tspan, y0, options)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-12-13
+% Date: 2022-01-18
 % Changelog:
+%   2022-01-18
+%       * Require function `ODE` to only take one argument, independent variable
+%       `T`, rather than two arguments. This renders `ODESPEC` to only be
+%       suitable for the case of linear, time-(in)variant ODEs
 %   2021-12-13
 %       * Fix H1 documentation
 %       * Change default node count to 29 (the next prime number after 25)
@@ -116,7 +121,7 @@ D = kron( ...
 % Evaluate ODE at all nodes
 % A_ = YxYxN
 % B_ = YxN
-[A_, b_] = feval(f, nspan, y0);
+[A_, b_] = feval(f, tout);%, y0);
 % Ensure B_ is YxN, if not, transpose it
 if size(b_, 1) == nn && size(b_, 2) == ny
   b_ = permute(b_, [2, 1]);
@@ -185,10 +190,10 @@ end
 end
 
 
-function f = parse_ode(ode, nspan, y0)
+function f = parse_ode(ode, tout, y0)
 %% PARSE_ODE Parse ODE function and return it in a unified form
 %
-% PARSE_ODE(ODE, NSPAN, Y0)
+% PARSE_ODE(ODE, TOUT, Y0)
 
 
 
@@ -202,18 +207,18 @@ if ~fhUsed && any(exist(ode, 'file') == [2, 3])
   throwAsCaller(MException('COSSEROOTS:ODESPEC:ODENotFound', 'ODE function with name %s not found.', funcstring(ode)));
 end
 
-% First, check if ODE takes two arguments (t, y)
-if nargin(ode) ~= 2
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgin', 'Invalid number of input arguments to ODE function. Must take 2 (t, y), but takes %d.', nargin(ode)));
+% First, check if ODE takes one argument (t)
+if nargin(ode) ~= 1
+  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgin', 'Invalid number of input arguments to ODE function. Must take 1 (t), but takes %d.', nargin(ode)));
 end
 % Next, check if ODE returns two arguments (A, b)
-if nargout(ode) ~= 2
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgout', 'Invalid number of output arguments to ODE function. Must return 2 (A, B), but takes %d.', nargout(ode)));
+if ~any(nargout(ode) == [-1, 2])
+  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgout', 'Invalid number of output arguments to ODE function. Must return 2 (A, B), but returns %d.', nargout(ode)));
 end
 
 % Values to test function
-t = nspan(1);
-nt = numel(nspan);
+t = tout(1);
+nt = numel(tout);
 y = y0;
 if isvector(y)
   y = y(:);
@@ -222,7 +227,7 @@ ny = size(y, 1);
 
 % Evaluate function
 try
-  [A, b] = feval(ode, t, y);
+  [A, b] = feval(ode, t);
 catch me
   throwAsCaller(addCause(MException('COSSEROOTS:ODESPEC:ErrorEvaluatingODE', 'Error evaluating ODE function at initial step.'), me));
 end
@@ -240,10 +245,10 @@ end
 % Lastly, check if function allows for vectorized input
 f = ode;
 try
-  [~, ~] = feval(ode, [t, t], [y, y]);
+  [~, ~] = feval(ode, [t, t]);
   
 catch
-  f = @(t, y) ode_vectorized(ode, ny, nt, t, y);
+  f = @(t) ode_vectorized(ode, ny, nt, t);
   
 end
 
@@ -251,11 +256,11 @@ end
 end
 
 
-function [A, b] = ode_vectorized(ode, ny, nt, t, y)
+function [A, b] = ode_vectorized(ode, ny, nt, t)
 %% ODE_VECTORIZED creates a vectorized version of the ODE function
 %
-% [A, B] = ODE_VECTORIZED(ODEF, NY, NT, T, Y) vectorizes ODE function ODEF to
-% allow T and Y to be XxN vectors and return A and B of appropriate size.
+% [A, B] = ODE_VECTORIZED(ODEF, NY, NT, T) vectorizes ODE function ODEF to allow
+% T and Y to be XxN vectors and return A and B of appropriate size.
 %
 % Inputs:
 %
@@ -272,8 +277,6 @@ function [A, b] = ode_vectorized(ode, ny, nt, t, y)
 % 
 %   T                   1xNT vector of node values.
 %
-%   Y                   NYxNT array of states at each node.
-%
 % Outputs:
 %
 %   A                   NYxNYxNT array of constant terms at each node NT.
@@ -288,7 +291,7 @@ b = zeros(ny, nt);
 
 % Loop over each time step and evaluate ODE
 for it = 1:nt
-  [ A(:,:,it) , b(:,it) ] = feval(ode, t(it), y(:,it));
+  [ A(:,:,it) , b(:,it) ] = feval(ode, t(it));
 end
 
 
