@@ -1,14 +1,19 @@
-function varargout = eltimstat(elt)
+function varargout = eltimstat(elt, names)
 %% ELTIMSTAT Calculate statistics of elapsed times
 %
 % ELTIMSTAT(ELT) calculates the statistics MIN, MAX, MEAN, and MEDIAN of all
 % columns of ELT and displays the output as a formatted table.
+%
+% ELTIMSTAT(ELT, TRIALNAMES) uses trial names TRIALNAMES as table headings
+% instead of generic `Trial x` text.
 %
 % T = ELTIMSTAT(___) returns the table object instead.
 %
 % Inputs:
 %
 %   ELT                 NxM array of N time samples and M trials.
+%
+%   TRIALNAMES          1xM cell array of trial names.
 %
 % See also:
 %   TABLE MIN MAX MEDIAN MEAN
@@ -17,8 +22,10 @@ function varargout = eltimstat(elt)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-24
+% Date: 2022-01-20
 % Changelog:
+%   2022-01-20
+%       * Add option `TRIALNAMES`.
 %   2021-11-24
 %       * Initial release
 
@@ -27,7 +34,13 @@ function varargout = eltimstat(elt)
 %% Parse arguments
 
 % ELTIMSTAT(ELT)
-narginchk(1, 1);
+% ELTIMSTAT(ELT, NAMES)
+narginchk(1, 2);
+
+% ELTIMSTAT(ELT)
+if nargin < 2 || isempty(names)
+  names = arrayfun(@(idx) sprintf('Trial %d', idx), 1:size(elt, 2), 'UniformOutput', false);
+end
 
 % ELTIMSTAT(___)
 % T = ELTIMSTAT(___)
@@ -48,7 +61,7 @@ t = array2table( ...
     , 'Format', '%.3f' ...
   ) ...
   , 'RowNames', {'min', 'median', 'mean', 'max'} ...
-  , 'VariableNames', arrayfun(@(idx) sprintf('Trial %d', idx), 1:size(elt, 2), 'UniformOutput', false) ...
+  , 'VariableNames', names ...
 );
 
 
