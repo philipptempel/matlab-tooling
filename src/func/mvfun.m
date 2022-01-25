@@ -4,8 +4,8 @@ function mvfun(src, dst, varargin)
 % MVFUN(SOURCE, DESTINATION) renames function SOURCE to DESTINATION and changes
 % its signature.
 %
-% FUNCNREN(SOURCE, DESTINATION, 'Name', 'Value', ...) allows setting optional inputs
-% using name/value pairs.
+% MVFUN(SOURCE, DESTINATION, 'Name', 'Value', ...) allows setting optional
+% inputs using name/value pairs.
 %
 % Inputs:
 %
@@ -31,8 +31,10 @@ function mvfun(src, dst, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-01-25
 % Changelog:
+%   2022-01-25
+%       * Fix H1 documentation
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %       * Move To Do section below Changelog

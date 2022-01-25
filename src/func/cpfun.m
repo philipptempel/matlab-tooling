@@ -4,7 +4,7 @@ function cpfun(src, dst, varargin)
 % CPFUN(SOURCE, DESTINATION) copies function SOURCE to TARGET and changes its
 % signature.
 %
-% FUNCNREN(SOURCE, DESTINATION, 'Name', 'Value', ...) allows setting optional
+% CPFUN(SOURCE, DESTINATION, 'Name', 'Value', ...) allows setting optional
 % inputs using name/value pairs.
 %
 % Inputs:
@@ -37,8 +37,10 @@ function cpfun(src, dst, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-01-25
 % Changelog:
+%   2022-01-25
+%       * Fix H1 documentation
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-12-13
