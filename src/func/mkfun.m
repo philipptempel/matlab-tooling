@@ -63,8 +63,12 @@ function mkfun(fname, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-01-26
 % Changelog:
+%   2022-01-26
+%       * Fix bug adding double newlines at the end of each file
+%       * Add support to add a newline at the end of the created function only
+%       if there is no newline already
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-12-13
@@ -354,9 +358,16 @@ try
         throw(MException('MATLAB:FileIO:InvalidFid', errmsg));
     end
     
+    % Ensure file is closed on any error
     coClose = onCleanup(@() fclose(fid));
     
-    fprintf(fid, '%s%s', content, newline());
+    % Write content
+    fprintf(fid, '%s', content);
+    
+    % Ensure a EOF-newline
+    if ~strcmp(content(end), newline())
+      fprintf(fid, '%s', newline());
+    end
     
 catch me
     throwAsCaller(me);
