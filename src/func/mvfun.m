@@ -31,8 +31,11 @@ function mvfun(src, dst, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-01-25
+% Date: 2022-01-27
 % Changelog:
+%   2022-01-27
+%       * Update to use renamed `onoffstate` function instead of
+%       `parseswitcharg`
 %   2022-01-25
 %       * Fix H1 documentation
 %   2021-12-14
@@ -123,7 +126,7 @@ src = ip.Results.Source;
 % New function name
 dst = ip.Results.Destination;
 % Open after rename
-lopen = parseswitcharg(ip.Results.Open);
+lopen = onoffstate(ip.Results.Open);
 
 
 

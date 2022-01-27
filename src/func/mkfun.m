@@ -63,8 +63,11 @@ function mkfun(fname, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-01-26
+% Date: 2022-01-27
 % Changelog:
+%   2022-01-27
+%       * Update to use renamed `onoffstate` function instead of
+%       `parseswitcharg`
 %   2022-01-26
 %       * Fix bug adding double newlines at the end of each file
 %       * Add support to add a newline at the end of the created function only
@@ -233,9 +236,9 @@ description = ip.Results.Description;
 % Author name
 author = ip.Results.Author;
 % Silent creation?
-lsilent = parseswitcharg(ip.Results.Silent);
+lsilent = onoffstate(ip.Results.Silent);
 % Overwrite existing?
-loverwrite = parseswitcharg(ip.Results.Overwrite);
+loverwrite = onoffstate(ip.Results.Overwrite);
 % Path to template file
 template = ip.Results.Template;
 % Package name

@@ -25,8 +25,13 @@ function fcname = funcname(plain)%#codegen
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-01-27
 % Changelog:
+%   2022-01-27
+%       * Update to use renamed `onoffstate` function instead of
+%       `parseswitcharg`
+%       * Update dbstack to use `-completenames` argument
+%       * Update inline documentation
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-12-13
@@ -40,19 +45,27 @@ function fcname = funcname(plain)%#codegen
 
 %% Check arguments
 
+% FUNCNAME()
+% FUNCNAME(PLAIN)
 narginchk(0, 1);
+
+% FUNCNAME(___)
+% FN = FUNCNAME(___)
 nargoutchk(0, 1);
 
+% FUNCNAME()
 if nargin < 1 || isempty(plain)
   plain = 'off';
 end
 
-plain = parseswitcharg(plain);
+% Convert given text of plain into a `matlab.lang.OnOffSwitchState.on` object
+plain = onoffstate(plain);
 
 
 
-%% Do your code magic here
-stStack = dbstack(1);
+%% Algorithm
+% Get callstack
+stStack = dbstack(1, '-completenames');
 
 % If stack is not empty and has field 'name' ...
 if ~isempty(stStack) && isfield(stStack, 'name')
@@ -64,7 +77,7 @@ else
 end
 
 % Strip any class/package name?
-if plain == matlab.lang.OnOffSwitchState.ons
+if plain == matlab.lang.OnOffSwitchState.on
   chName = last(strsplit(chName, '.'));
 end
 

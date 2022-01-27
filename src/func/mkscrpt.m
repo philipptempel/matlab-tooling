@@ -40,8 +40,11 @@ function mkscrpt(sname, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-01-25
+% Date: 2022-01-27
 % Changelog:
+%   2022-01-27
+%       * Update to use renamed `onoffstate` function instead of
+%       `parseswitcharg`
 %   2022-01-25
 %       * Initial release as copy from `MKFUN`
 
@@ -118,9 +121,9 @@ description = ip.Results.Description;
 % Author name
 author = ip.Results.Author;
 % Silent creation?
-lsilent = parseswitcharg(ip.Results.Silent);
+lsilent = onoffstate(ip.Results.Silent);
 % Overwrite existing?
-loverwrite = parseswitcharg(ip.Results.Overwrite);
+loverwrite = onoffstate(ip.Results.Overwrite);
 % Path to template file
 template = ip.Results.Template;
 % Package name
