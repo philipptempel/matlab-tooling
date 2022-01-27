@@ -1,12 +1,12 @@
-function ts = timspace(t0, tf, h)%#codegen
-% TIMSPACE creates a properly and evenly spaced vector
+function ts = timespace(t0, tf, h)%#codegen
+%% TIMESPACE creates a properly and evenly spaced vector
 %
-%   TS = TIMSPACE(T0, TF) creates a properly and evenly spaced vector between T0
-%   and TF using a step size of 1e-2.
+% TS = TIMESPACE(T0, TF) creates a properly and evenly spaced vector between T0
+% and TF using a step size of 1e-2.
 %
-%   TS = TIMSPACE(T0, TF, H) uses step size H to span the range from T0 to TF.
+% TS = TIMESPACE(T0, TF, H) uses step size H to span the range from T0 to TF.
 %
-%   Inputs:
+% Inputs:
 %
 %   T0                  Scalar value as the start of the time vector.
 %
@@ -14,19 +14,22 @@ function ts = timspace(t0, tf, h)%#codegen
 %
 %   H                   Step size. Defaults to 1e-2.
 %
-%   Outputs:
+% Outputs:
 %
 %   TS                  Nx1 vector of evenly spaced time values.
 %
-%   See also:
+% See also:
 %   LINSPACE COLON
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-01-27
 % Changelog:
+%   2022-01-27
+%       * Fix wrong function name in H1 documentation
+%       * Fix H1 documentation layout
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-11-30
@@ -49,7 +52,16 @@ function ts = timspace(t0, tf, h)%#codegen
 
 %% Parse arguments
 
-if nargin < 3 || isempty(h) || 0 == exist('h', 'var')
+% TIMESPACE(T0, TF)
+% TIMESPACE(T0, TF, H)
+narginchk(2, 3);
+
+% TIMESPACE(___)
+% T = TIMESPACE(___)
+nargoutchk(0, 1);
+
+% TIMESPACE(T0, TF)
+if nargin < 3 || isempty(h)
   h = 1e-2;
 end
 
@@ -61,6 +73,7 @@ end
 ts = t0:h:tf;
 if ~isclose(ts(end), tf)
   ts = [ ts , tf ];
+  
 end
 
 
