@@ -1,7 +1,9 @@
 function p = mtl_projpath()
-% MTL_PROJPATH returns the path definiton for this project
+%% MTL_PROJPATH returns the path definiton for this project
 %
-%   Outputs:
+% P = MTL_PROJPATH()
+%
+% Outputs:
 %
 %   P                   Cell array of paths to automatically load
 
@@ -9,8 +11,10 @@ function p = mtl_projpath()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-12-22
+% Date: 2022-01-31
 % Changelog:
+%   2022-01-31
+%       * Fix post-processing of generated paths
 %   2021-12-22
 %       * Ensure that all paths returned by this function are normalized and
 %       absolute canonical names
@@ -38,8 +42,13 @@ function p = mtl_projpath()
 
 %% Algorithm
 
-chPath = fullfile(fileparts(mfilename('fullpath')), '..');
+% Base directory
+b = fullfile(fileparts(mfilename('fullpath')), '..');
 
+% Parsed base directory
+chPath = char(java.io.File(b).getCanonicalPath());
+
+% All paths to add
 p = { ...
     fullfile(chPath, 'exportfig') ...
   , fullfile(chPath, 'jsonlab') ...
@@ -50,10 +59,8 @@ p = { ...
   , fullfile(chPath) ...
 };
 
-addpath(p{5});
-coPath = onCleanup(@() rmpath(p{5}));
-
-p = cellfun(@(ip) fullpath(strip(ip, 'both', pathsep())), p, 'UniformOutput', false);
+% Porcess all paths to be absolute, fully qualified paths
+p = normalizepath(p{:});
 
 
 end
