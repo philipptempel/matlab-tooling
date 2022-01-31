@@ -35,7 +35,7 @@ evalin('base', sprintf('save(''%s'');', fullfile(chWorkspacePath, sprintf('ws_%s
 % Get path's to add to MATLAB's search path
 p = mtl_projpath();
 % and remove the paths in reverse order
-rmpath(strjoin(cellfun(@(c) strjoin(fliplr(strsplit(c, pathsep())), pathsep()), p, 'UniformOutput', false), pathsep()));
+rmpath(p{end:-1:1});
 
 
 end
