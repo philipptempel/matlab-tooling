@@ -5,8 +5,10 @@ function finish()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2021-12-22
+% Date: 2022-01-31
 % Changelog:
+%   2022-01-31
+%       * Fix removing of paths in incorrect order
 %   2021-12-22
 %       * Fix order in which paths are removed to from-back-to-front
 %   2021-05-11
@@ -33,7 +35,7 @@ evalin('base', sprintf('save(''%s'');', fullfile(chWorkspacePath, sprintf('ws_%s
 % Get path's to add to MATLAB's search path
 p = mtl_projpath();
 % and remove the paths in reverse order
-rmpath(strjoin(p, pathsep()));
+rmpath(strjoin(cellfun(@(c) strjoin(fliplr(strsplit(c, pathsep())), pathsep()), p, 'UniformOutput', false), pathsep()));
 
 
 end
