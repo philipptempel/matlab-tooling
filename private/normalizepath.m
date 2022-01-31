@@ -37,6 +37,10 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
+% Remove empty paths
+varargin(cellfun(@isempty, varargin)) = [];
+
+% Process paths
 p = cellfun( ...
     @(ip) strjoin( ...
         cellfun( ...
