@@ -63,8 +63,11 @@ function mkfun(fname, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-01-27
+% Date: 2022-02-01
 % Changelog:
+%   2022-02-01
+%       * Fix bug introduced earlier which didn't allow for creating function
+%       files in (sub)directories
 %   2022-01-27
 %       * Update to use renamed `onoffstate` function instead of
 %       `parseswitcharg`
@@ -214,19 +217,24 @@ end
 
 %% Parse results
 % Function name/path
-fname = matlab.lang.makeValidName(ip.Results.Name);
+fname = ip.Results.Name;
 % Get function path, file name, and extension
 [fun_path, fun_name, fun_ext] = fileparts(fname);
-% Empty filepath?
+% Empty file path?
 if isempty(fun_path)
     % Save in the current working directory
     fun_path = pwd();
+
+% Turn path into absolute path
+else
+  fun_path = fullpath(fun_path);
 end
 % Empty file extension?
 if isempty(fun_ext)
     % Ensure we'll save as '.m' file
     fun_ext = '.m';
 end
+fun_name = matlab.lang.makeValidName(fun_name);
 % List of input arguments
 [arg_in, fVarArgIn] = parse_vararg('in', ip.Results.ArgIn);
 % List of output arguments
