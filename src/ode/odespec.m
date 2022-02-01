@@ -104,8 +104,6 @@ nout = options.Nodes;
 
 % Get interval of integration
 ab = tspan;
-% % Direction of integration
-% tdir = sign(tspan(2) - tspan(1));
 % Span vector of spectral nodes
 tout = chebpts2(nout - 1, ab);
 
@@ -190,7 +188,7 @@ yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY) - b0(idxY) );
 yout = reshape(P * [ y0 ; yn ], nout, ny);
 
 % Finalize result
-solver_output = odespec_finalize(nout, tout, yout, sol);
+solver_output = odespec_finalize(tout, yout, sol);
 
 % Assign outputs
 if nargout > 0
@@ -341,69 +339,6 @@ oopts = mergestruct(defaults, iopts);
 
 
 end
-
-
-function solver_output = odespec_finalize(nout, tout, yout, sol)
-%% ODESPEC_FINALIZE
-%
-% OUT = ODESPEC_FINALIZE(T, Y, SOL)
-%
-% Inputs:
-%
-%   T
-%
-%   Y
-%
-%   SOL
-%
-% Outputs:
-%
-%   OUT
-
-
-
-% Initialize output
-solver_output = {};
-
-% Direction of integration
-tdir = sign(tout(end) - tout(1));
-
-idxout = 1:nout;
-
-% Extract only necessary data points
-tout = tout(idxout);
-yout = yout(idxout,:);
-
-% If the interval ab was increasing i.e., a < b, then the nodes and values at
-% the nodes are in decreasing order since the Chebyshev-nodes are in decreasing
-% order. Thus, we need to sort T and Y in reverse row order; in other words
-% flip row 1 and N, row 2 and N-1, etc.
-if tdir < 0
-  tout = flip(tout, 2);
-  yout = flip(yout, 1);
-
-end
-
-% SOL = ODESPEC(...)
-if ~isempty(sol)
-  sol.x = tout;
-  sol.y = transpose(yout);
-  
-  solver_output = {sol};
-
-% [T, Y] = ODESPEC(...)
-else
-  % Turn data into column-major
-  tout = transpose(tout);
-  
-  solver_output{1} = tout;
-  solver_output{2} = yout;
-  
-end
-
-
-end
-
 
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as
