@@ -49,7 +49,7 @@ found = false;
 
 % While prime not found
 while ~found
-  % Incresaase counter
+  % Increase counter
   n_ = n_ + 1;
   
   % Evaluate prime number
