@@ -65,17 +65,19 @@ function filepath = fullpath(filepath, style)
 % Tested: Matlab 6.5, 7.7, 7.8, 7.13, WinXP/32, Win7/64
 %         Compiler: LCC2.4/3.8, BCC5.5, OWC1.8, MSVC2008/2010
 % Assumed Compatibility: higher Matlab versions
-% Author: 
 %
-% See also: CD, FULLFILE, FILEPARTS.
+% See also
+%   CD FULLFILE FILEPARTS
 
 
 
 %% File information
 % Author: Jan Simon <matlab.2013@n-simon.de>
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-03
+% Date: 2022-02-01
 % Changelog:
+%   2022-02-01
+%       * Replace `isempty(strfind(___))` with `contains(___)`
 %   2021-12-03
 %       * Update H1 documentation to my style of Philipp TEMPEL
 %       * Rename input variable names
@@ -274,7 +276,7 @@ end
 
 % Care for "\." and "\.." - no efficient algorithm, but the fast Mex is
 % recommended at all!
-if ~isempty(strfind(filepath, [FSep, '.']))
+if contains(filepath, [FSep, '.'])
    if isWIN
       if strncmp(filepath, '\\', 2)  % UNC path
          index = strfind(filepath, '\');
@@ -364,4 +366,4 @@ if isWIN
    end
 end
 
-% return;
+end
