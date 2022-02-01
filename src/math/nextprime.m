@@ -15,8 +15,11 @@ function p = nextprime(n)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-17
+% Date: 2022-02-01
 % Changelog:
+%   2022-02-01
+%       * Update inline documentation
+%       * Fix logic so that P will always be larger than N
 %   2021-11-17
 %       * Update H1 to correct format
 %   2021-07-15
@@ -26,7 +29,11 @@ function p = nextprime(n)%#codegen
 
 %% Parse arguments
 
+% NEXTPRIME(N)
 narginchk(1, 1);
+
+% NEXTPRIME(___)
+% P = NEXTPRIME(___)
 nargoutchk(0, 1);
 
 
@@ -34,13 +41,22 @@ nargoutchk(0, 1);
 %% Algorithm
 
 
+% Initialize counter
 n_ = n;
 
-p = [];
+% Set flag for `while` loop
+found = false;
 
-while isempty(p) || p < n
-  p = max(primes(n_));
+% While prime not found
+while ~found
+  % Incresaase counter
   n_ = n_ + 1;
+  
+  % Evaluate prime number
+  p = max(primes(n_));
+  
+  % And flag if found or not
+  found = p > n;
   
 end
 
