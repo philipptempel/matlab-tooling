@@ -138,7 +138,7 @@ classdef MatlabProject < handle
       
       
       
-      rwd = java.io.File(fullpath(pwd())).getCanonicalPath();
+      rwd = java.io.File(fullpath(pwd()));
       froots = rwd.listRoots();
       stop = false;
       
