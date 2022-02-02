@@ -51,8 +51,12 @@ function varargout = odespec(ode, tspan, y0, options, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-01-18
+% Date: 2022-02-02
 % Changelog:
+%   2022-02-02
+%       * Fix major error in how output node points are calculated and how the
+%       spectral integration is performed. This reduces the number of flips and
+%       transposes respectively puts them in a more central place
 %   2022-01-18
 %       * Add support for returning a `DEVAL`-compatible result structure from
 %       `ODESPEC`
@@ -104,8 +108,11 @@ nout = options.Nodes;
 
 % Get interval of integration
 ab = tspan;
-% Span vector of spectral nodes
-tout = chebpts2(nout - 1, ab);
+% Span vector of spectral nodes, must be flipped along the columns as the
+% Chebyshev-Lobatto points are on the interval [+1, -1] for an interval. Thus,
+% without flip, for an increasing interval [a,b] with a < b, tout would be on
+% [b, a] thus decreasing
+tout = flip(chebpts2(nout - 1, ab), 2);
 
 % Dimension of extended system
 ns = ny * nout;
@@ -135,11 +142,7 @@ D = kron( ...
 % Evaluate ODE at all nodes
 % A_ = YxYxN
 % B_ = YxN
-[A_, b_] = feval(f, tout);%, y0);
-% Ensure B_ is YxN, if not, transpose it
-if size(b_, 1) == nout && size(b_, 2) == ny
-  b_ = permute(b_, [2, 1]);
-end
+[A_, b_] = feval(f, tout);
 
 % Index of initial state in global state vector
 idxY = 1:ny;
@@ -239,6 +242,7 @@ try
   [A, b] = feval(ode, t);
 catch me
   throwAsCaller(addCause(MException('COSSEROOTS:ODESPEC:ErrorEvaluatingODE', 'Error evaluating ODE function at initial step.'), me));
+  
 end
 
 % Check size of matrix A is correct
@@ -261,6 +265,42 @@ catch
   
 end
 
+f = @(t) flip_wrapper(f, t);
+
+
+end
+
+
+function [A, b] = flip_wrapper(f, t)
+%% FLIP_WRAPPER
+%
+% [A, B] = FLIP_WRAPPER(FUN, T) wraps function FUN such that its returned
+% arguments A and B are correctly flipped along their last dimension
+%
+% Inputs:
+%
+%   FUN                 ODE function callback
+%
+%   T                   1xN array of node point(s)
+%
+% Outputs:
+%
+%   A                   YxYxN array of constant terms at each node T.
+%
+%   B                   YxN array of of constant terms at each node T.
+
+
+
+% Evaluate ODE function
+[A, b] = feval(f, t);
+% Ensure B is YxN, if not, transpose it
+if size(b, 1) == size(A, 3) && size(b, 2) == size(A, 1)
+  b = permute(b, [2, 1]);
+end
+% Flip columns i.e., node points
+A = flip(A, 3);
+b = flip(b, 2);
+
 
 end
 
@@ -273,9 +313,9 @@ function [A, b] = ode_vectorized(ode, ny, nt, t)
 %
 % Inputs:
 %
-%   ODEF                ODE function callback that takes two arguments (T, Y)
-%                       and returns matrix A and vector B at a given spectral
-%                       node T.
+%   ODEF                ODE function callback that takes one argument (T) and
+%                       returns matrix A and vector B at a given spectral node
+%                       T.
 %
 %   NY                  Number of states of the ODE system. Value only needed
 %                       for quickly allocating A and B of right size.
@@ -284,13 +324,13 @@ function [A, b] = ode_vectorized(ode, ny, nt, t)
 %                       being performed. Value only needed for quickly
 %                       allocating A and B of right size.
 % 
-%   T                   1xNT vector of node values.
+%   T                   1xN vector of node values.
 %
 % Outputs:
 %
-%   A                   NYxNYxNT array of constant terms at each node NT.
+%   A                   YxYxN array of constant terms at each node T.
 %
-%   B                   NYxNT array of of constant terms at each node NT.
+%   B                   YxT array of of constant terms at each node T.
 
 
 

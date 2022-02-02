@@ -22,8 +22,12 @@ function solver_output = odespec_finalize(tout, yout, sol)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-01
+% Date: 2022-02-02
 % Changelog:
+%   2022-02-02
+%       * Fix major error in how output node points are calculated and how the
+%       spectral integration is performed. This reduces the number of flips and
+%       transposes respectively puts them in a more central place
 %   2022-02-01
 %       * Initial release
 
@@ -47,14 +51,18 @@ solver_output = {};
 % Direction of integration
 tdir = sign(tout(end) - tout(1));
 
-% If the interval ab was increasing i.e., a < b, then the nodes and values at
-% the nodes are in decreasing order since the Chebyshev-nodes are in decreasing
-% order. Thus, we need to sort T and Y in reverse row order; in other words
-% flip row 1 and N, row 2 and N-1, etc.
+% If the interval [a,b] was increasing i.e., a < b, then the Chebyshev points
+% are sorted on a decreasing interval from [+1,-1]. Thus, we need to reverse the
+% order of values in this case
+if tdir > 0
+  yout = flip(yout, 1);
+end
+
+% If the interval [b,a] was decreasing i.e., b > a, then the Chebyshev points
+% are in the reverse order to the integration interval. Thus, we need to change
+% the order of the node points
 if tdir < 0
   tout = flip(tout, 2);
-  yout = flip(yout, 1);
-
 end
 
 % SOL = ODESPEC_FINALIZE(...)
