@@ -309,8 +309,34 @@ classdef KWArgs < handle ...
       %% GET.ARGS
       
       
-      v = [obj.Keys ; obj.Values];
-      v = v(:).';
+      
+      v = reshape([obj.Keys ; obj.Values], 1, []);
+      
+    end
+    
+  end
+  
+  
+  
+  %% SETTERS
+  methods
+    
+    function set.Keys(obj, v)
+      %% SET.KEYS
+      
+      
+      
+      obj.Keys = reshape(v, 1, []);
+      
+    end
+    
+    
+    function set.Values(obj, v)
+      %% SET.VALUES
+      
+      
+      
+      obj.Values = reshape(v, 1, []);
       
     end
     
