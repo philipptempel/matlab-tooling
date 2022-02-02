@@ -48,22 +48,9 @@ nargoutchk(0, 1);
 % Initialize output
 solver_output = {};
 
-% Direction of integration
-tdir = sign(tout(end) - tout(1));
-
-% If the interval [a,b] was increasing i.e., a < b, then the Chebyshev points
-% are sorted on a decreasing interval from [+1,-1]. Thus, we need to reverse the
-% order of values in this case
-if tdir > 0
-  yout = flip(yout, 1);
-end
-
-% If the interval [b,a] was decreasing i.e., b > a, then the Chebyshev points
-% are in the reverse order to the integration interval. Thus, we need to change
-% the order of the node points
-if tdir < 0
-  tout = flip(tout, 2);
-end
+% Flip direction of state vector as it is always calculated on the interval [b,
+% a] rather than [a, b]
+yout = flip(yout, 1);
 
 % SOL = ODESPEC_FINALIZE(...)
 if ~isempty(sol)
