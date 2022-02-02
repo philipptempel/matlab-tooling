@@ -20,11 +20,15 @@ function varargout = unbundle(b, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-12-17
+% Date: 2022-02-01
 % Changelog:
+%   2022-02-01
+%       * Add support to extract data even if the bundle vector B is too small.
+%       These arrays will then be of size (0,1) i.e., a 0x1 empty double column
+%       vector
 %   2021-12-17
 %       * Add support for negative values in `DIMAn` argument so that the user
-%       can also split a bundle into arrays of fixed length and variable length.
+%       can also split a bundle into arrays of fixed length and variable length
 %   2021-11-18
 %       * Rename from `UNPACK` to `UNBUNDLE`
 %   2021-11-09
@@ -72,12 +76,22 @@ while ~done
     
   % Extract only a subset of data
   else
-    v = b(idxoff + (1:vnum));
+    % If the bundle vector is still large enough
+    if idxoff + vnum <= numel(b) 
+      % Extract the data
+      v = b(idxoff + (1:vnum));
+      
+    % Bundle vector is not large enough anymore
+    else
+      % "Extract" an empty array
+      v = zeros(0, vnum);
+      
+    end
     
   end
   
-  % Reshape into matrix
-  if numel(vdim) > 1
+  % Reshape into matrix if data exists
+  if numel(vdim) > 1 && ~isempty(vdim)
     v = reshape(v, vdim);
   end
   
