@@ -28,7 +28,7 @@ narginchk(1, 1);
 % Q = ROTM2QUAT(R);
 nargoutchk(0, 1);
 
-validateattributes(R, {'numeric'}, {'nonempty', 'real', '3d', 'size', [3, 3, NaN], 'finite', 'nonnan', 'nonsparse', '<=', 1 + 10 * eps(class(R)), '>=', -1 - 10 * eps(class(R))}, 'rotm2quat', 'R');
+validateattributes(R, {'numeric'}, {'nonempty', 'real', '3d', 'size', [3, 3, NaN], 'finite', 'nonnan', 'nonsparse', '<=', +1 + 100 * eps(class(R)), '>=', -1 - 100 * eps(class(R))}, 'rotm2quat', 'R');
 
 
 
