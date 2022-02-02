@@ -219,28 +219,31 @@ if ~fhUsed && any(exist(ode, 'file') == [2, 3])
   throwAsCaller(MException('COSSEROOTS:ODESPEC:ODENotFound', 'ODE function with name %s not found.', funcstring(ode)));
 end
 
-% First, check if ODE takes one argument (t)
-if nargin(ode) ~= 1
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgin', 'Invalid number of input arguments to ODE function. Must take 1 (t), but takes %d.', nargin(ode)));
-end
-% Next, check if ODE returns two arguments (A, b)
-if ~any(nargout(ode) == [-1, 2])
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgout', 'Invalid number of output arguments to ODE function. Must return 2 (A, B), but returns %d.', nargout(ode)));
-end
-
-% Values to test function
+% Values to test-evaluate function at
 t = tout(1);
 nt = numel(tout);
 y = y0;
 if isvector(y)
   y = y(:);
 end
+% Number of states of the system
 ny = size(y, 1);
 
 % Evaluate function
 try
   [A, b] = feval(ode, t);
 catch me
+  % Wrong number of input arguments
+  if strcmp(me.identifier, 'MATLAB:TooManyInputs')
+    throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgin', 'Invalid number of input arguments to ODE function. Must take 1 (t), but takes %d.', nargin(ode)));
+    
+  % Wrong number of output arguments
+  elseif strcmp(me.identifier, 'MATLAB:TooManyOutputs')
+    throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgout', 'Invalid number of output arguments to ODE function. Must return 2 (A, B), but returns %d.', nargout(ode)));
+    
+  end
+  
+  % Any other case
   throwAsCaller(addCause(MException('COSSEROOTS:ODESPEC:ErrorEvaluatingODE', 'Error evaluating ODE function at initial step.'), me));
   
 end
