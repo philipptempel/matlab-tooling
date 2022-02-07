@@ -1,8 +1,10 @@
-function [M, I] = mmax(A)
+function M = mmax(A, nanflag)%#codegen
 %% MMAX behaves similar to MAX except that it automatically shrinks down to
 % dimension 1
 %
 % M = MMAX(A) returns the maximum value of A over all dimensions of A.
+%
+% M = MMAX(A, NANFLAG) specifies how NaN (Not-A-Number) values are treated.
 %
 % Inputs:
 %
@@ -12,14 +14,19 @@ function [M, I] = mmax(A)
 %
 %   M                   Maximum value found in A.
 %
-%   I                   Linear index of maximum M in A.
+% See also:
+%   MAX MMIN
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-02-07
 % Changelog:
+%   2022-02-07
+%       * Add codegen directive
+%       * Remove output argument `I` as it makes no sense in this function
+%       * Add input argument `NANFLAG`
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-11-17
@@ -29,25 +36,31 @@ function [M, I] = mmax(A)
 
 
 
-%% Do your code magic here
+%% Parse arguments
 
-% Get the first maximum
-aMaxs = max(A);
+% MMAX(A)
+% MMAX(A, NANFLAG)
+narginchk(1, 2);
 
-% While M is not a scalar, we will get the maximum value of it
-while ~isscalar(aMaxs)
-    aMaxs = max(aMaxs);
+% MMAX(___) 
+% M = MMAX(___) 
+nargoutchk(0, 1);
+
+% MMAX(A)
+if nargin < 2 || isempty(nanflag)
+  nanflag = 'omitnan';
 end
 
 
 
-%% Assign output quantities
-% First output is the maximum value found
-M = aMaxs;
+%% Algorithm
 
-% Secound output is the index of the maximum value
-if nargout > 1
-    I = find(A == aMaxs, 1, 'first');
+% Get the first maximum
+M = max(A, nanflag);
+
+% While M is not a scalar, we will get the maximum value of it
+while ~isscalar(M)
+  M = max(M, nanflag);
 end
 
 

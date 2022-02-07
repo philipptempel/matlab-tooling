@@ -1,8 +1,10 @@
-function [M, I] = mmin(A)
+function M = mmin(A, nanflag)%#codegen
 %% MMIN behaves similar to MIN except that it automatically shrinks down to
 % dimension 1
 %
-% M = MMIN(A) returns the maximum value of A over all dimensions of A.
+% M = MMIN(A) returns the minimum value of A over all dimensions of A.
+%
+% M = MMIN(A, NANFLAG) specifies how NaN (Not-A-Number) values are treated.
 %
 % Inputs:
 %
@@ -12,14 +14,19 @@ function [M, I] = mmin(A)
 %
 %   M                   Minimum value found in A.
 %
-%   I                   Linear index of minimum M in A.
+% See also:
+%   MIN MMAX
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-02-07
 % Changelog:
+%   2022-02-07
+%       * Add codegen directive
+%       * Remove output argument `I` as it makes no sense in this function
+%       * Add input argument `NANFLAG`
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-11-17
@@ -29,25 +36,31 @@ function [M, I] = mmin(A)
 
 
 
-%% Do your code magic here
+%% Parse arguments
 
-% Get the first maximum
-aMins = min(A);
+% MMIN(A)
+% MMIN(A, NANFLAG)
+narginchk(1, 2);
 
-% While M is not a scalar, we will get the maximum value of it
-while ~isscalar(aMins)
-    aMins = min(aMins);
+% MMIN(___) 
+% M = MMIN(___) 
+nargoutchk(0, 1);
+
+% MMIN(A)
+if nargin < 2 || isempty(nanflag)
+  nanflag = 'omitnan';
 end
 
 
 
-%% Assign output quantities
-% First output is the maximum value found
-M = aMins;
+%% Algorithm
 
-% Secound output is the index of the maximum value
-if nargout > 1
-    I = find(A == aMins, 1, 'first');
+% Get the first minimum
+M = min(A, nanflag);
+
+% While M is not a scalar, we will get the minimum value of it
+while ~isscalar(M)
+  M = min(M, nanflag);
 end
 
 
