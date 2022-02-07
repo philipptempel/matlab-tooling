@@ -1,22 +1,19 @@
-function flag = issize(A, r, c)
+function f = issize(A, s)%#codegen
 %% ISSIZE - Check whether the given matrix is of provided size/dimensions
 % 
-% F = ISSIZE(A, r, c) checks matrix A is of dimensions RxC
+% F = ISSIZE(A, S) checks if array A has size S
 %
 % 
 % Inputs:
 % 
-%   A                   Matrix to check size of
-%   
-%   R                   Rows matrix A has to have. Can be empty to just check
-%                       for the columns couunt to match.
-%   
-%   C                   Number of columns matrix A has to have. Can be empty to
-%                       just check for the rows count to match
+%   A                   Matrix to check size of.
+%
+%   S                   Array of sizes per dimension to check. To skip a
+%                       dimensions, set it to Inf.
 % 
 % Outputs:
 % 
-%   F                   Evaluates to true if A is of size RxC, otherwise false.
+%   F                   Evaluates to true if A is of size S, otherwise false.
 % 
 
 
@@ -26,6 +23,9 @@ function flag = issize(A, r, c)
 % Date: 2022-02-07
 % Changelog:
 %   2022-02-07
+%       * Add `codegen` directive
+%       * Update algorithm to actually match its name i.e., check for arbitrary
+%       sizes
 %       * Update H1 documentation format
 %   2021-12-14
 %       * Update email address of Philipp Tempel
@@ -47,7 +47,7 @@ function flag = issize(A, r, c)
 
 %% Assert arguments
 
-% ISSIZE(A, R, C)
+% ISSIZE(A, S)
 narginchk(2, 2);
 % ISSIZE(___)
 % F = ISSIZE(___)
@@ -57,19 +57,14 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-% If no row and no column was given to check against...
-if isempty(r) && isempty(c)
-  flag = ismatrix(A) && isequal(size(A, 2), c);
+% Get size of A for all requested dimensions
+sz = size(A, 1:numel(s));
 
-% Just check for a row count
-elseif ~isempty(r) && isempty(c)
-  flag = ismatrix(A) && isequal(size(A, 1), r);
+% Get only non-inf dimensions
+sel = ~isinf(s);
 
-% Check for both row and column count
-else
-  flag = ismatrix(A) && isequaln(size(A, 1), [r, c]);
-
-end
+% And check
+f = all(sz(sel) == sz(sel));
 
 
 end
