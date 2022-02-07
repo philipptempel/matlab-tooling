@@ -1,4 +1,4 @@
-function varargout = quat2dirn(q)
+function varargout = quat2dirn(q)%#codegen
 %% QUAT2DIRN Turn quaternion into directors
 %
 % DM = QUAT2DIRN(Q)
@@ -25,8 +25,12 @@ function varargout = quat2dirn(q)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-12-01
+% Date: 2022-02-07
 % Changelog:
+%   2022-02-07
+%       * Add `codegen` directive
+%       * Simplify code and use `QUAT2ROTM` internally to calculate the rotation
+%       matrix, then populate outputs from that
 %   2020-12-01
 %       * Initial release
 
@@ -36,6 +40,7 @@ function varargout = quat2dirn(q)
 
 % QUAT2DIRN(Q)
 narginchk(1, 1)
+
 % QUAT2DIRN(Q)
 % DM = QUAT2DIRN(Q)
 % [D1, D2, D3] = QUAT2DIRN(Q)
@@ -46,55 +51,20 @@ qv = quatvalid(q, 'quat2dirn');
 
 
 
-%% Calculate directors
+%% Algorithm
 
-nq = size(qv, 2);
+% Calculate rotation matrix from quaternion(s)
+R = quat2rotm(qv);
 
-% Reshape the quaternions in the depth dimension
-qq = reshape(qv, [4, 1, nq]);
-
-% Access individual quaternion entries
-q1 = qq(1,1,:);
-q2 = qq(2,1,:);
-q3 = qq(3,1,:);
-q4 = qq(4,1,:);
-
-% Pre-calculate common products
-q1q1 = q1 .^ 2;
-q2q2 = q2 .^ 2;
-q3q3 = q3 .^ 2;
-q4q4 = q4 .^ 2;
-q1q2 = q1 .* q2;
-q1q3 = q1 .* q3;
-q2q3 = q2 .* q3;
-q1q4 = q1 .* q4;
-q2q4 = q2 .* q4;
-q3q4 = q3 .* q4;
-
-% Explicitly define concatenation dimension for codegen
-tempR = cat(1 ...
-  , q1q1 + q2q2 - q3q3 - q4q4,  2 * ( q2q3 - q1q4 ),       2 * ( q2q4 + q1q3 )...
-  , 2 * ( q2q3 + q1q4 ),       q1q1 - q2q2 + q3q3 - q4q4,  2 * ( q3q4 - q1q2 ) ...
-  , 2 * ( q2q4 - q1q3 ),       2 * ( q3q4 + q1q2 ),       q1q1 - q2q2 - q3q3 + q4q4...
-);
-
-% Reshape to 3x3xN and then transpose each page  (due to MATLAB's column major)
-dm = permute(reshape(tempR, [3, 3, nq]), [2, 1, 3]);
-
-% Vanish singular values
-singular = abs(dm) < 10 * eps(class(qv)) & dm ~= 0;
-dm(singular) = 0;
-
-% [D1, D2, D3] = QUAT2DIRN(Q)
+% [D1, D2, D3] = QUAT2DIRN(___)
 if nargout > 1
-  dm = permute(dm, [1, 3, 2]);
-  varargout{1} = dm(:,:,1);
-  varargout{2} = dm(:,:,2);
-  varargout{3} = dm(:,:,3);
-% QUAT2DIRN(Q)
-% DM = QUAT2DIRN(Q)
+  R = permute(R, [1, 3, 2]);
+  varargout = { R(:,:,1) , R(:,:,2) , R(:,:,3) };
+
+% DM = QUAT2DIRN(___)
 else
-  varargout{1} = dm;
+  varargout = {R};
+
 end
 
 
