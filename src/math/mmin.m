@@ -56,11 +56,11 @@ end
 %% Algorithm
 
 % Get the first minimum
-M = min(A, nanflag);
+M = min(A, [], nanflag);
 
 % While M is not a scalar, we will get the minimum value of it
 while ~isscalar(M)
-  M = min(M, nanflag);
+  M = min(M, [], nanflag);
 end
 
 
