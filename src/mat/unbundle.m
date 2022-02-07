@@ -20,8 +20,10 @@ function varargout = unbundle(b, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-01
+% Date: 2022-02-07
 % Changelog:
+%   2022-02-07
+%       * Fix bug in reshaping an 0xN or Nx0 (empty double) matrix
 %   2022-02-01
 %       * Add support to extract data even if the bundle vector B is too small.
 %       These arrays will then be of size (0,1) i.e., a 0x1 empty double column
@@ -84,14 +86,14 @@ while ~done
     % Bundle vector is not large enough anymore
     else
       % "Extract" an empty array
-      v = zeros(0, vnum);
+      v = zeros(vnum, 0);
       
     end
     
   end
   
   % Reshape into matrix if data exists
-  if numel(vdim) > 1 && ~isempty(vdim)
+  if numel(vdim) > 1 && ~isempty(v)
     v = reshape(v, vdim);
   end
   
