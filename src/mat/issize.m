@@ -1,30 +1,32 @@
 function flag = issize(A, r, c)
-% ISSIZE - Check whether the given matrix is of provided size/dimensions
+%% ISSIZE - Check whether the given matrix is of provided size/dimensions
 % 
-%   FLAG = ISSIZE(A, r, c) checks matrix A is of dimensions r x c
+% F = ISSIZE(A, r, c) checks matrix A is of dimensions RxC
 %
 % 
-%   Inputs:
+% Inputs:
 % 
-%   A: matrix to check for squareness
+%   A                   Matrix to check size of
 %   
-%   R: rows matrix A has to have. Can be empty to just check for the columns
-%   couunt to match
+%   R                   Rows matrix A has to have. Can be empty to just check
+%                       for the columns couunt to match.
 %   
-%   C: number of columns matrix A has to have. Can be empty to just check for
-%   the rows count to match
+%   C                   Number of columns matrix A has to have. Can be empty to
+%                       just check for the rows count to match
 % 
-%   Outputs:
+% Outputs:
 % 
-%   FLAG: evaluates to true if A is of size r x c, otherwise false
+%   F                   Evaluates to true if A is of size RxC, otherwise false.
 % 
 
 
 
 %% File Information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-02-07
 % Changelog:
+%   2022-02-07
+%       * Update H1 documentation format
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2016-12-23
@@ -44,21 +46,29 @@ function flag = issize(A, r, c)
 
 
 %% Assert arguments
+
+% ISSIZE(A, R, C)
 narginchk(2, 2);
+% ISSIZE(___)
+% F = ISSIZE(___)
 nargoutchk(0, 1);
 
 
 
-%% Checking
+%% Algorithm
+
 % If no row and no column was given to check against...
 if isempty(r) && isempty(c)
-    flag = ismatrix(A) && isequal(size(A, 2), c);
+  flag = ismatrix(A) && isequal(size(A, 2), c);
+
 % Just check for a row count
 elseif ~isempty(r) && isempty(c)
-    flag = ismatrix(A) && isequal(size(A, 1), r);
+  flag = ismatrix(A) && isequal(size(A, 1), r);
+
 % Check for both row and column count
 else
-    flag = ismatrix(A) && isequaln(size(A, 1), [r, c]);
+  flag = ismatrix(A) && isequaln(size(A, 1), [r, c]);
+
 end
 
 
