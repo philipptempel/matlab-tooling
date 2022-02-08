@@ -37,6 +37,7 @@ function varargout = quat2dirndiff(q)
 
 % QUAT2DIRNDIFF(Q)
 narginchk(1, 1)
+
 % QUAT2DIRNDIFF(Q)
 % DMD = QUAT2DIRNDIFF(Q)
 % [D1D, D2D, D3D] = QUAT2DIRNDIFF(Q)
