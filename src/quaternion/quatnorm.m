@@ -29,21 +29,19 @@ function qn = quatnorm(q)%#codegen
 
 %% Parse arguments
 
-% QUATNORM(Q);
+% QUATNORM(Q)
 narginchk(1, 1);
 
 % QUATNORM(Q)
-% QN = QUATNORM(Q);
+% QN = QUATNORM(Q)
 nargoutchk(0, 1);
-
-% Parse quaternions
-qv = quatvalid(q, 'quatnorm');
 
 
 
 %% Algorithm
 
-qn = sqrt(sum(qv .^ 2, 1));
+% Calculate norm
+qn = sqrt(sum(quatvalid(q, 'quatnorm', true) .^ 2, 1));
 
 
 

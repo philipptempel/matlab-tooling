@@ -1,4 +1,4 @@
-function [qv, nq] = quatvalid(q, caller)%#codegen
+function [qv, nq] = quatvalid(q, caller, fast)%#codegen
 %% QUATVALID Validate a quaternion
 %
 % [QV, NQ] = QUATVALID(Q, CALLER) validates quaternion Q and returns
@@ -23,6 +23,7 @@ function [qv, nq] = quatvalid(q, caller)%#codegen
 % Date: 2022-02-08
 % Changelog:
 %   2022-02-08
+%     * Add input argument option `FAST` to avoid normalization
 %     * Add output argument NQ
 %     * Remove option to pass a row vector quaternion
 %     * Add normalization of quaternion into function
@@ -37,12 +38,18 @@ function [qv, nq] = quatvalid(q, caller)%#codegen
 %% Parse arguments
 
 % QUATVALID(Q, CALLER)
-narginchk(2, 2);
+% QUATVALID(Q, CALLER, FAST)
+narginchk(2, 3);
 
 % QUATVALID(___)
 % QV = QUATVALID(___)
 % [QV, NQ] = QUATVALID(___)
 nargoutchk(0, 2);
+
+% QUATVALID(Q, CALLER)
+if nargin < 3 || isempty(fast)
+  fast = false;
+end
 
 
 
@@ -51,8 +58,17 @@ nargoutchk(0, 2);
 % Validate...
 validateattributes(q, {'numeric'}, {'nonempty', '2d', 'nrows', 4}, caller, 'q');
 
-% Normalize quaternions along the columns.
-qv = quatnormalized(q);
+% QUATNORM(Q, TRUE)
+if fast
+  % In fast mode, don't normalize the quaternions
+  qv = q;
+
+% QUATNORM(Q, FALSE)
+else
+  % In "slow" mode, normalize the quaternions
+  qv = quatnormalized(q);
+  
+end
 
 % Counter of quaternions
 nq = size(qv, 2);

@@ -16,6 +16,7 @@ function qn = quatnormalized(q)%#codegen
 % Date: 2022-02-08
 % Changelog:
 %   2022-02-08
+%     * Split dependency on `QUATNORM` to avoid too depp recursion
 %     * Code syntax updates
 %   2020-11-24
 %     * Updates to support code generation
@@ -26,20 +27,22 @@ function qn = quatnormalized(q)%#codegen
 
 %% Parse arguments
 
-% QUATNORMALIZED(Q);
-narginchk(1, 1);
 % QUATNORMALIZED(Q)
-% QN = QUATNORMALIZED(Q);
+narginchk(1, 1);
+
+% QUATNORMALIZED(Q)
+% QN = QUATNORMALIZED(Q)
 nargoutchk(0, 1);
 
-% Parse quaternion
-qv = quatvalid(q, 'quatnormalized');
+% Parse quaternions
+qv = quatvalid(q, 'quatnormalized', true);
 
 
 
 %% Algorithm
 
-qn = qv ./ repmat(quatnorm(qv), [4, 1]);
+% Normalize quaternions
+qn = qv ./ repmat(sqrt(sum(qv .^ 2, 1)), [4, 1]);
 
 
 
