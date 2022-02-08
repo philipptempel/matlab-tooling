@@ -13,8 +13,10 @@ function qn = quatnorm(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-24
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Code syntax updates
 %   2020-11-24
 %     * Updates to support code generation
 %   2020-11-19
@@ -29,15 +31,17 @@ function qn = quatnorm(q)%#codegen
 
 % QUATNORM(Q);
 narginchk(1, 1);
+
 % QUATNORM(Q)
 % QN = QUATNORM(Q);
 nargoutchk(0, 1);
 
+% Parse quaternions
 qv = quatvalid(q, 'quatnorm');
 
 
 
-%% Calculate norm
+%% Algorithm
 
 qn = sqrt(sum(qv .^ 2, 1));
 

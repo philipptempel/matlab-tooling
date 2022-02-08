@@ -18,8 +18,10 @@ function dR = quat2rotmdiff(q, dq)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-24
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2020-11-24
 %       * Initial release
 
@@ -41,15 +43,12 @@ if nargin < 2 || isempty(dq)
 end
 
 % Parse quaternions
-qv = quatvalid(q, 'quat2rotmdiff');
+[qv, nq] = quatvalid(q, 'quat2rotmdiff');
 dqv = quatvalid(dq, 'quat2rotmdiff');
 
 
 
-%% Determine rotation matrix derivative
-
-% How many quaterions
-nq = size(qv, 2);
+%% Algorithm
 
 % Reshape the quaternions in the depth dimension
 qq = reshape(qv, [4, 1, nq]);

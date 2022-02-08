@@ -21,8 +21,10 @@ function R = quat2rotm(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-07
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2022-02-07
 %     * Change code back from Euler-Rodrigues formula to explicit formula so
 %     that it is compatible with `QUAT2ROTMJAC`
@@ -59,13 +61,12 @@ narginchk(1, 1);
 % R = QUAT2ROTM(Q)
 nargoutchk(0, 1);
 
-qv = quatvalid(q, 'quat2rotm');
+% Parse quaternions
+[qv, nq] = quatvalid(q, 'quat2rotm');
 
 
 
-%% Calculate rotation matrix
-
-nq = size(qv, 2);
+%% Algorithm
 
 % Reshape the quaternions in the depth dimension
 qq = reshape(qv, [4, 1, nq]);

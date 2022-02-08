@@ -13,8 +13,10 @@ function qn = quatnormalized(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-24
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Code syntax updates
 %   2020-11-24
 %     * Updates to support code generation
 %   2020-11-19
@@ -30,11 +32,12 @@ narginchk(1, 1);
 % QN = QUATNORMALIZED(Q);
 nargoutchk(0, 1);
 
+% Parse quaternion
 qv = quatvalid(q, 'quatnormalized');
 
 
 
-%% Calculate norm
+%% Algorithm
 
 qn = qv ./ repmat(quatnorm(qv), [4, 1]);
 

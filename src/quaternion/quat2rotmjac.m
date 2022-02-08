@@ -17,8 +17,10 @@ function jR = quat2rotmjac(q)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-07
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2022-02-07
 %       * Initial release as copy of `quat2rotmdiff`
 % Todo:
@@ -37,14 +39,11 @@ narginchk(1, 1)
 nargoutchk(0, 3);
 
 % Parse quaternions
-qv = quatvalid(q, 'quat2rotmjac');
+[qv, nq] = quatvalid(q, 'quat2rotmjac');
 
 
 
 %% Algorithm
-
-% Count quaternions for correct reshaping
-nq = size(qv, 2);
 
 % Reshape the quaternions in the depth dimension
 qq = reshape(qv, [4, 1, 1, nq]);

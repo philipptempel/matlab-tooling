@@ -13,8 +13,10 @@ function qa = quatconj(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-05
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Code syntax updates
 %   2021-11-05
 %     * Rename to `quatconj`
 %   2020-11-24
@@ -34,11 +36,13 @@ narginchk(1, 1);
 % QP = QUATCONJ(Q);
 nargoutchk(0, 1);
 
+% Parse quaternions
 qv = quatvalid(q, 'quatconj');
 
 
 
-%% Do your code magic here
+%% Algorithm
+
 qa = [ ...
     qv(1,:) ...
   ; -qv([2,3,4],:) ...

@@ -13,8 +13,10 @@ function qi = quatinv(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-10
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Code syntax updates
 %   2021-11-10
 %     * Initial release
 
@@ -28,11 +30,12 @@ narginchk(1, 1);
 % QP = QUATINV(Q);
 nargoutchk(0, 1);
 
+% Parse quaternions
 qv = quatvalid(q, 'quatinv');
 
 
 
-%% Do your code magic here
+%% Algorithm
 
 % Quaternion norm
 qn = repmat(quatnorm(qv), 4, 1);

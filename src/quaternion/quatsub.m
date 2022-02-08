@@ -17,8 +17,10 @@ function qsp = quatsub(q, p)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-25
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2020-11-25
 %     * Initial release
 
@@ -32,29 +34,30 @@ narginchk(2, 2);
 % QSP = QUATSUB(Q, P);
 nargoutchk(0, 1);
 
-qv = quatvalid(q, 'quatsub');
-pv = quatvalid(p, 'quatsub');
+% Parse quaternions
+[qv, nq] = quatvalid(q, 'quatsub');
+[pv, np] = quatvalid(p, 'quatsub');
 
-% Ensure qv and pv have same column count or either of them is a vector
-mq = size(qv, 2);
-mp = size(pv, 2);
+
+
+%% Algorithm
 
 % If either q or p are matrices, make the other one of the same size
-if mq == 1 && mp  > 1
-  qvn = repmat(qv, [1, mp]);
+if nq == 1 && np  > 1
+  qvn = repmat(qv, [1, np]);
   pvn = pv;
-elseif mp == 1 && mq > 1
+
+elseif np == 1 && nq > 1
   qvn = qv;
-  pvn = repmat(pv, [1, mq]);
+  pvn = repmat(pv, [1, nq]);
+
 else
   qvn = qv;
   pvn = pv;
+
 end
 
-
-
-%% Calculate quaternion difference
-
+% Difference in quaternions
 qsp = qvn - pvn;
 
 

@@ -19,8 +19,10 @@ function qdp = quatdiv(q, p)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-12
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2021-11-12
 %     * Fix code
 %   2020-11-25
@@ -40,21 +42,22 @@ narginchk(2, 2);
 % QP = QUATDIV(Q, P);
 nargoutchk(0, 1);
 
-qv = quatvalid(q, 'quatdiv');
-pv = quatvalid(p, 'quatdiv');
+% Parse quaternions
+[qv, nq] = quatvalid(q, 'quatdiv');
+[pv, np] = quatvalid(p, 'quatdiv');
 
-% Ensure qv and pv have same column count or either of them is a vector
-mq = size(qv, 2);
-mp = size(pv, 2);
+
+
+%% Algorithm
 
 % If either q or p are matrices, make the other one of the same size
-if mq == 1 && mp  > 1
-  qvn = repmat(qv, [1, mp]);
+if nq == 1 && np  > 1
+  qvn = repmat(qv, [1, np]);
   pvn = pv;
   
-elseif mp == 1 && mq > 1
+elseif np == 1 && nq > 1
   qvn = qv;
-  pvn = repmat(pv, [1, mq]);
+  pvn = repmat(pv, [1, nq]);
   
 else
   qvn = qv;
@@ -62,17 +65,13 @@ else
   
 end
 
-
-
-%% Calculate quaternion division
-
 % Obtain scalar and vector part from both quaternions
 qvec = qvn([2,3,4],:);
 qsca = qvn(1,:);
 pvec = pvn([2,3,4],:);
 psca = pvn(1,:);
 
-% And compute quaternion product
+% And compute quaternion division
 qdp = [ ...
     qsca .* psca + dot(qvec, pvec, 1) ...
   ; repmat(-qsca, [3, 1]) .* pvec + repmat(+psca, [3, 1]) .* qvec - cross(qvec, pvec, 1) ...

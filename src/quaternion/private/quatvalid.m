@@ -1,18 +1,20 @@
-function qv = quatvalid(q, caller)%#codegen
+function [qv, nq] = quatvalid(q, caller)%#codegen
 %% QUATVALID Validate a quaternion
 %
-% QV = QUATVALID(Q, CALLER) validates quaternion Q and returns
+% [QV, NQ] = QUATVALID(Q, CALLER) validates quaternion Q and returns
 % validated/normalized form Q with column major.
 %
 % Inputs:
 %
 %   Q                   4xN array of quaternions.
 %
-%   CALLERss              Name of function calling this private function.
+%   CALLER              Name of function calling this private function.
 %
 % Outputs:
 %
 %   QV                  4xN array of validated i.e., normalized quaternions.
+%
+%   NQ                  Number of quaternions N.
 
 
 
@@ -21,6 +23,7 @@ function qv = quatvalid(q, caller)%#codegen
 % Date: 2022-02-08
 % Changelog:
 %   2022-02-08
+%     * Add output argument NQ
 %     * Remove option to pass a row vector quaternion
 %     * Add normalization of quaternion into function
 %     * Update H1 documentation
@@ -38,7 +41,8 @@ narginchk(2, 2);
 
 % QUATVALID(___)
 % QV = QUATVALID(___)
-nargoutchk(0, 1);
+% [QV, NQ] = QUATVALID(___)
+nargoutchk(0, 2);
 
 
 
@@ -49,6 +53,9 @@ validateattributes(q, {'numeric'}, {'nonempty', '2d', 'nrows', 4}, caller, 'q');
 
 % Normalize quaternions along the columns.
 qv = quatnormalized(q);
+
+% Counter of quaternions
+nq = size(qv, 2);
 
 
 end

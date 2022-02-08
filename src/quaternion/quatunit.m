@@ -14,8 +14,10 @@ function q = quatunit(n)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-12-06
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Inliune code fixes
 %   2021-12-06
 %       * Update H1 documentation
 %       * Add parameter N
@@ -34,7 +36,7 @@ narginchk(0, 1);
 % Q = QUATUNIT()
 nargoutchk(0, 1);
 
-% ___ = QUATUNIT()
+% QUATUNIT()
 if nargin < 1 || isempty(n)
   n = 1;
 end

@@ -24,8 +24,10 @@ function varargout = quat2dirndiff(q)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-12-01
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2020-12-01
 %       * Initial release
 
@@ -41,13 +43,11 @@ narginchk(1, 1)
 nargoutchk(0, 3);
 
 % Parse quaternions
-qv = quatvalid(q, 'quat2dirndiff');
+[qv, nq] = quatvalid(q, 'quat2dirndiff');
 
 
 
-%% Do your code magic here
-
-nq = size(qv, 2);
+%% Algorithm
 
 % Reshape the quaternions in the depth dimension
 qq = reshape(qv, [4, 1, 1, nq]);

@@ -15,8 +15,10 @@ function [Q, Qc] = quatmat(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-12
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2021-11-12
 %     * Correct signs in quaternion matrix and conjugate quaternion matrix
 %   2021-10-21
@@ -37,23 +39,24 @@ function [Q, Qc] = quatmat(q)%#codegen
 
 % QUATMAT(Q);
 narginchk(1, 1);
+
 % QUATMAT(Q)
 % QM = QUATMAT(Q);
 % [QM, QCM] = QUATMAT(Q);
 nargoutchk(0, 2);
 
-qv = quatvalid(q, 'quatmat');
+% Parse quaternions
+[qv, nq] = quatvalid(q, 'quatmat');
 
 
 
-%% Calculate matrices
+%% Algorithm
 
+% Skew symmetric matrices of quaternion vector part
 qskm = vec2skew(qv([2,3,4],:));
 
 % Shift number of quaternions into third dimensions
 qv = permute(qv, [1, 3, 2]);
-% Number of quaternions
-nq = size(qv, 3);
 
 % Split scalar and vector part from quaternions
 qsca = qv(1,:,:);

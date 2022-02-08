@@ -47,6 +47,7 @@ validateattributes(q, {'numeric'}, {'2d', 'nonempty', 'ncols', 4, 'nrows', nQuat
 
 
 %% Magic
+
 % The formula is quite simple: 2*W(q)*Dq
 % To perform really quick calculations, we will do some magic with permute and
 % bsxfun

@@ -1,4 +1,4 @@
-function q = quatrand(n)
+function q = quatrand(n)%#codegen
 %% QUATRAND Create a set of random quaternions
 %
 % QUATRAD() creates one random quaternion.
@@ -17,8 +17,11 @@ function q = quatrand(n)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-19
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Add `codegen` directive
+%     * Remove validation of argument `N`
 %   2020-11-19
 %     * Use `quatnormalized` instead of `quatnorm`
 %   2020-11-15
@@ -35,11 +38,11 @@ narginchk(0, 1);
 % Q = QUATRAND(...)
 nargoutchk(0, 1);
 
+% QUATRAND()
 if nargin < 1 || isempty(n)
   n = 1;
 end
 
-validateattributes(n, {'numeric'}, {'nonempty', 'scalar', 'positive', 'finite', 'nonnan', 'nonsparse'}, 'quatrand', 'n');
 
 
 %% Create random quaternions

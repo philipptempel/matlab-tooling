@@ -18,8 +18,10 @@ function alpha = quat2acc(q_dot, q_ddot)%#codegen
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2017-08-05
@@ -47,7 +49,7 @@ validateattributes(q, {'numeric'}, {'2d', 'nonempty', 'ncols', 4, 'nrows', nQuat
 
 %% Calculation
 
-alpha = 2*sum(bsxfun(@times, permute(quat2ratem(q_dot), [3, 1, 2]), permute(q_ddot, [1, 3, 2])), 3);
+alpha = 2 * sum(bsxfun(@times, permute(quat2ratem(q_dot), [3, 1, 2]), permute(q_ddot, [1, 3, 2])), 3);
 
 
 end

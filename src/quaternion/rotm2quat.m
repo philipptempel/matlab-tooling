@@ -13,8 +13,10 @@ function q = rotm2quat(R)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-11-11
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Syntax updates
 %   2020-11-11
 %     * Initial release
 
@@ -24,6 +26,7 @@ function q = rotm2quat(R)%#codegen
 
 % ROTM2QUAT(R)
 narginchk(1, 1);
+
 % ROTM2QUAT(R)
 % Q = ROTM2QUAT(R);
 nargoutchk(0, 1);
@@ -32,10 +35,12 @@ validateattributes(R, {'numeric'}, {'nonempty', 'real', '3d', 'size', [3, 3, NaN
 
 
 
-%% Determine quaternion
+%% Algorithm
 
+% Count number of rotation matrices equal the number of resulting quaternions
 nq = size(R, 3);
 
+% Initialize quaternions
 q = zeros(4, nq);
 
 % Calculate all elements of symmetric K matrix

@@ -19,8 +19,10 @@ function qmp = quatmul(q, p)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-12
+% Date: 2022-02-08
 % Changelog:
+%   2022-02-08
+%     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2021-11-12
 %     * Fix code
 %     * Update H1 documentation
@@ -42,16 +44,18 @@ function qmp = quatmul(q, p)%#codegen
 
 % QUATMUL(Q, P);
 narginchk(2, 2);
+
 % QUATMUL(Q, P);
 % QP = QUATMUL(Q, P);
 nargoutchk(0, 1);
 
-qv = quatvalid(q, 'quatmul');
-pv = quatvalid(p, 'quatmul');
+% Parse quaternions
+[qv, mq] = quatvalid(q, 'quatmul');
+[pv, mp] = quatvalid(p, 'quatmul');
 
-% Ensure qv and pv have same column count or either of them is a vector
-mq = size(qv, 2);
-mp = size(pv, 2);
+
+
+%% Algorithm
 
 % If either q or p are matrices, make the other one of the same size
 if mq == 1 && mp  > 1
@@ -67,10 +71,6 @@ else
   pvn = pv;
   
 end
-
-
-
-%% Calculate quaternion product
 
 % Obtain scalar and vector part from both quaternions
 qvec = qvn([2,3,4],:);
