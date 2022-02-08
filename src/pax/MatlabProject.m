@@ -133,13 +133,45 @@ classdef MatlabProject < handle
   %% STATIC METHODS
   methods ( Static )
     
-    function mp = current()
-      %% CURRENT
+    function mp = this()
+      %% THIS
       
       
       
-      rwd = java.io.File(fullpath(pwd()));
+      % Initialize empty project
+      mp = [];
+      
+      % First, check in the caller's directory tree
+      caller = dbstack(1, '-completenames');
+      if ~isempty(caller)
+        mp = MatlabProject.from(fileparts(caller(1).file));
+      end
+      
+      % Then, check in the current working directory's tree
+      if isempty(mp)
+        mp = MatlabProject.from(pwd());
+        
+      end
+      
+    end
+    
+  end
+  
+  
+  
+  %% PROTECTED STATIC METHODS
+  methods ( Static , Access = protected )
+    
+    function mp = from(rwd)
+      %% FROM
+      
+      
+      
+      % Convert path into a JAVA file object
+      rwd = java.io.File(fullpath(rwd));
       froots = rwd.listRoots();
+      
+      % Loop indicator
       stop = false;
       
       % Loop up one directory at a time
@@ -163,15 +195,9 @@ classdef MatlabProject < handle
       
       % Return a project object if we found a `.MLPROJECT` file and if it's not
       % the root directory
-      if ~isempty(rwd)
-        if any(arrayfun(@(r) strcmp(r, rwd), froots))
-          warning('Stopping at file system boundary.');
-          
-        else
+      if ~( isempty(rwd) || any(arrayfun(@(r) strcmp(r, rwd), froots)) )
           mp = MatlabProject(fullfile(char(rwd)));
           
-        end
-        
       % Nothing found
       else
         mp = [];
