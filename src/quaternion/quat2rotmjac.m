@@ -17,8 +17,11 @@ function jR = quat2rotmjac(q)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-09
 % Changelog:
+%   2022-02-09
+%     * Fix algorithm to work for 4xN arrays (missed pages dimension in permute
+%     call)
 %   2022-02-08
 %     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2022-02-07
@@ -76,7 +79,7 @@ d3 = 2 * [ ...
 ];
 
 % Build rotation matrix Jacobian
-jR = permute(cat(3, d1, d2, d3), [1, 3, 2]);
+jR = permute(cat(3, d1, d2, d3), [1, 3, 2, 4]);
 
 % Vanish singular values
 jR(issingular(jR)) = 0;
