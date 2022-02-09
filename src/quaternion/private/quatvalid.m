@@ -20,8 +20,11 @@ function [qv, nq] = quatvalid(q, caller, fast)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-09
 % Changelog:
+%   2022-02-09
+%     * Remove call to `QUATNORMALIZED` as this messes with code using finite
+%     differences on quaternion
 %   2022-02-08
 %     * Add input argument option `FAST` to avoid normalization
 %     * Add output argument NQ
@@ -58,17 +61,8 @@ end
 % Validate...
 validateattributes(q, {'numeric'}, {'nonempty', '2d', 'nrows', 4}, caller, 'q');
 
-% QUATNORM(Q, TRUE)
-if fast
-  % In fast mode, don't normalize the quaternions
-  qv = q;
-
-% QUATNORM(Q, FALSE)
-else
-  % In "slow" mode, normalize the quaternions
-  qv = quatnormalized(q);
-  
-end
+% Push quaternions into output
+qv = q;
 
 % Counter of quaternions
 nq = size(qv, 2);
