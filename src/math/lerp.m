@@ -23,8 +23,13 @@ function l = lerp(a, b, t)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-01-21
+% Date: 2022-02-10
 % Changelog:
+%   2022-02-10
+%       * Fix incorrect use of limiting values to boundaries by possibly
+%       assigning the boundaries to an empty array. Now, the code first limits
+%       `T` to be within the boundaries of the interval [0, 1], and then
+%       performs all calculation
 %   2022-01-21
 %       * Enforce extrapolation of values is bound by values of A and B for T <
 %       0 and T > 1, respectively
@@ -50,6 +55,9 @@ nargoutchk(0, 1);
 % Check if `A` is a singleton i.e., scalar or vector
 asingleton = isvector(a);
 
+% Limit T to lie within [0, 1];
+t = limit(t, 0.00, 1.00);
+
 % Reshape T such that it adds pages to the size of A
 if asingleton
   tn = reshape(t, [], numel(t));
@@ -59,10 +67,6 @@ end
 
 % Interpolate linearly
 l = (1 - tn) .* a + tn .* b;
-
-% Limit values to boundaries
-l(1 < tn) = b;
-l(tn < 0) = a;
 
 
 end
