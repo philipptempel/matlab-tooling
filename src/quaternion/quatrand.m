@@ -17,8 +17,10 @@ function q = quatrand(n)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-13
 % Changelog:
+%   2022-02-13
+%     * Enforce quaternion scalar components positive.
 %   2022-02-08
 %     * Add `codegen` directive
 %     * Remove validation of argument `N`
@@ -50,6 +52,8 @@ end
 % We will first create random vectors in the range from [-1, 1] and then
 % normalize all these
 q = quatnormalized(2 * (rand(4, n) - 0.5));
+% Per convention, always keep scalar quaternion elements positive
+q(:,q(1,:) < 0) = -q(:,q(1,:) < 0);
 
 
 end
