@@ -24,8 +24,10 @@ function varargout = quat2dirndiff(q)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-13
 % Changelog:
+%   2022-02-13
+%     * Add some inline comments
 %   2022-02-08
 %     * Use new syntax of `quatvalid` also returning number of quaternions N
 %   2020-12-01
@@ -59,24 +61,28 @@ q2 = qq(2,1,1,:);
 q3 = qq(3,1,1,:);
 q4 = qq(4,1,1,:);
 
+% % Deriative of first director R(:,1)
 d1 = 2 * [ ...
    q1,  q2, -q3, -q4 ; ...
    q4,  q3,  q2,  q1 ; ...
   -q3,  q4, -q1,  q2 ; ...
 ];
 
+% % Deriative of first director R(:,2)
 d2 = 2 * [ ...
   -q4,  q3,  q2, -q1 ; ...
    q1, -q2,  q3, -q4 ; ...
    q2,  q1,  q4,  q3 ; ...
 ];
 
+% % Deriative of first director R(:,3)
 d3 = 2 * [ ...
    q3,  q4,  q1,  q2 ; ...
   -q2, -q1,  q4,  q3 ; ...
    q1, -q2, -q3,  q4 ; ...
 ];
 
+% Stack along pages
 dmd = cat(3, d1, d2, d3);
 
 % Vanish singular values
