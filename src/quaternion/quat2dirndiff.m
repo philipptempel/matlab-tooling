@@ -1,4 +1,4 @@
-function varargout = quat2dirndiff(q)
+function varargout = quat2dirndiff(q)%#codegen
 %% QUAT2DIRNDIFF Calculate director derivative matrix for a given quaternion
 %
 % DMD = quat2dirndiff(Q)
@@ -27,6 +27,7 @@ function varargout = quat2dirndiff(q)
 % Date: 2022-02-13
 % Changelog:
 %   2022-02-13
+%     * Add codegen directive
 %     * Add some inline comments
 %   2022-02-08
 %     * Use new syntax of `quatvalid` also returning number of quaternions N

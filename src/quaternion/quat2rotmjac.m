@@ -1,4 +1,4 @@
-function jR = quat2rotmjac(q)
+function jR = quat2rotmjac(q)%#codegen
 %% QUAT2ROTMJAC Calculate Jacobian of rotation matrix wrt quaternions
 %
 % JR = quat2rotmjac(Q)
@@ -20,6 +20,7 @@ function jR = quat2rotmjac(q)
 % Date: 2022-02-13
 % Changelog:
 %   2022-02-13
+%     * Add codegen directive
 %     * Change algorithm to directly calculate the derivative of the rotation
 %     matrices WRT each quaternion coordinate rather than first calculating
 %     first the derivatives of each director WRT the quaternions and then
