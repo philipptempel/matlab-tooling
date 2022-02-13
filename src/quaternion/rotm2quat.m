@@ -13,8 +13,10 @@ function q = rotm2quat(R)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-13
 % Changelog:
+%   2022-02-13
+%     * Updates to inline comments
 %   2022-02-08
 %     * Syntax updates
 %   2020-11-11
@@ -60,11 +62,11 @@ K44 = R(1,1,:) + R(2,2,:) + R(3,3,:);
 
 % Construct K matrix according to paper
 K = [...
-    K11,    K12,    K13,    K14;
-    K12,    K22,    K23,    K24;
-    K13,    K23,    K33,    K34;
-    K14,    K24,    K34,    K44];
-
+    K11 , K12 , K13 , K14 ; ...
+    K12 , K22 , K23 , K24 ; ...
+    K13 , K23 , K33 , K34 ; ...
+    K14 , K24 , K34 , K44 ; ...
+];
 K = K ./ 3;
 
 % For each input rotation matrix, calculate the corresponding eigenvalues and
@@ -75,7 +77,8 @@ for iq = 1:nq
     
     [~, maxIdx] = max(real(eigVal));
     
-    q(:,iq) = real([eigVec(4, maxIdx), eigVec(1, maxIdx), eigVec(2, maxIdx), eigVec(3, maxIdx)]);
+    % Build quaternion
+    q(:,iq) = real([ eigVec(4, maxIdx) , eigVec(1, maxIdx) , eigVec(2, maxIdx) , eigVec(3, maxIdx) ]);
     
     % By convention, always keep scalar quaternion element positive. Note that
     % this does not change the rotation that is represented by the unit
