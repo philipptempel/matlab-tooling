@@ -31,8 +31,10 @@ function mvfun(src, dst, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-01-27
+% Date: 2022-02-14
 % Changelog:
+%   2022-02-14
+%       * Fix adding newline at EOF on moving
 %   2022-01-27
 %       * Update to use renamed `onoffstate` function instead of
 %       `parseswitcharg`
@@ -197,7 +199,7 @@ try
     
     coClose = onCleanup(@() fclose(fid));
     
-    fprintf(fid, '%s%s', content, newline());
+    fprintf(fid, '%s', content);
     
 catch me
     throwAsCaller(me);
