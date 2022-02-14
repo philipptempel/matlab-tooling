@@ -13,8 +13,10 @@ function q = rotm2quat(R)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-13
+% Date: 2022-02-14
 % Changelog:
+%   2022-02-14
+%     * Remove validation of absolute values of input rotation matrix
 %   2022-02-13
 %     * Updates to inline comments
 %   2022-02-08
@@ -33,7 +35,7 @@ narginchk(1, 1);
 % Q = ROTM2QUAT(R);
 nargoutchk(0, 1);
 
-validateattributes(R, {'numeric'}, {'nonempty', 'real', '3d', 'size', [3, 3, NaN], 'finite', 'nonnan', 'nonsparse', '<=', +1 + 100 * eps(class(R)), '>=', -1 - 100 * eps(class(R))}, 'rotm2quat', 'R');
+validateattributes(R, {'numeric'}, {'nonempty', 'real', '3d', 'size', [3, 3, NaN], 'finite', 'nonnan', 'nonsparse'}, 'rotm2quat', 'R');
 
 
 
