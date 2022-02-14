@@ -1,4 +1,4 @@
-function [qv, nq] = quatvalid(q, caller, fast)%#codegen
+function [qv, nq] = quatvalid(q, caller)%#codegen
 %% QUATVALID Validate a quaternion
 %
 % [QV, NQ] = QUATVALID(Q, CALLER) validates quaternion Q and returns
@@ -22,6 +22,8 @@ function [qv, nq] = quatvalid(q, caller, fast)%#codegen
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
 % Date: 2022-02-09
 % Changelog:
+%   2022-02-14
+%     * Remove `FAST` argument
 %   2022-02-09
 %     * Remove call to `QUATNORMALIZED` as this messes with code using finite
 %     differences on quaternion
@@ -41,18 +43,12 @@ function [qv, nq] = quatvalid(q, caller, fast)%#codegen
 %% Parse arguments
 
 % QUATVALID(Q, CALLER)
-% QUATVALID(Q, CALLER, FAST)
-narginchk(2, 3);
+narginchk(2, 2);
 
 % QUATVALID(___)
 % QV = QUATVALID(___)
 % [QV, NQ] = QUATVALID(___)
 nargoutchk(0, 2);
-
-% QUATVALID(Q, CALLER)
-if nargin < 3 || isempty(fast)
-  fast = false;
-end
 
 
 
