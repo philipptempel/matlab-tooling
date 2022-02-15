@@ -1,41 +1,47 @@
-function f = isclose(g, c, atol, rtol)%#codegen
+function f = isclose(c, g, atol, rtol)%#codegen
 %% ISCLOSE Determines whether two numbers are close to each other.
 %
-% A number B is close to a number A if the following equation holds:
+% A number C is close to a number G if the following equation holds:
 % 
-% $$\mathrm{abs}(a - b) \leq atol + rtol \, \mathrm{abs}(b)$$
+% $$\mathrm{abs}(C - G) \leq ( a_{tol} + r_{tol} \mathrm{abs}(G) )$$
 % 
-% ISCLOSE(G, C) checks if C is close to G with respect to an absolute and
+% ISCLOSE(C, G) checks if C is close to G with respect to an absolute and
 % relative tolerance.
 %
-% ISCLCOSE(G, C, ATOL) compare using absolute tolerance ATOL.
+% ISCLCOSE(C, G, ATOL) compare using absolute tolerance ATOL.
 %
-% ISCLCOSE(G, C, ATOL, RTOL) compare using relative tolerance RTOL.
+% ISCLCOSE(C, G, ATOL, RTOL) compare using relative tolerance RTOL.
 %
 % Inputs:
 %
-%   G                   NxM array of ground truth values.
+%   C                       NxM array of candidate values.
 %
-%   C                   NxM array of candidate values.
+%   G                       NxM array of ground truth values.
 %
-%   ATOL                Absolute tolerance in comparing values. Defaults to
-%                       `1e4 * eps(class(G))`.
+%   ATOL                    Absolute tolerance in comparing values. Defaults to
+%                           `1e4 * eps(class(G))`.
 %
-%   RTOL                Relative tolerance in comparing values. Defaults to
-%                       `1e-8`.
+%   RTOL                    Relative tolerance in comparing values. Defaults to
+%                           `1e-8`.
 %
 % Outputs:
 %
-%   F                   NxM array of logical values where C is/are close to G.
+%   F                       NxM array of logical values where C is/are close to
+%                           G.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-17
+% Date: 2022-02-15
 % Changelog:
+%   2022-02-15
+%     * Change order of arguments G and C to have a more fluent function
+%     declaration
+%     * Fix missing equal sign in comparison (change 'less than' to 'less than
+%     or equal'
 %   2021-11-17
-%       * Update H1 to correct format
+%     * Update H1 to correct format
 %   2021-11-04
 %     * Update H1 documentation
 %   2021-04-30
@@ -58,28 +64,31 @@ function f = isclose(g, c, atol, rtol)%#codegen
 
 %% Parse arguments
 
-% ISCLOSE(G, C);
-% ISCLOSE(G, C, ATOL);
-% ISCLOSE(G, C, ATOL, RTOL);
+% ISCLOSE(C, G);
+% ISCLOSE(C, G, ATOL);
+% ISCLOSE(C, G, ATOL, RTOL);
 narginchk(2, 4);
-% F = ISCLOSE(G, C, ...);
+% F = ISCLOSE(___);
 nargoutchk(0, 1);
 
-% F = ISCLOSE(G, C)
+% F = ISCLOSE(C, G)
 if nargin < 3 || isempty(atol)
   atol = 1e4 * eps(class(g));
+  
 end
 
-% F = ISCLOSE(G, C, ATOL)
+% F = ISCLOSE(C, G, ATOL)
 if nargin < 4 || isempty(rtol)
   rtol  = 1e-8;
+  
 end
 
 
 
-%% Check
+%% Algorithm
 
-f = abs(g - c) < atol + rtol .* abs(g);
+% @see https://numpy.org/doc/stable/reference/generated/numpy.isclose.html?highlight=isclose#numpy.isclose
+f = abs(g - c) <= ( atol + rtol * abs(g) );
 
 
 end
