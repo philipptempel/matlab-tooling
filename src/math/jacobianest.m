@@ -1,15 +1,15 @@
-function [jac, err] = jacobest(fun, x0, maxh, ratioh)
-%% JACOBEST Estimate the Jacobian matrix of a vector-valued function of N variables
+function [jac, err] = jacobianest(fun, x0, maxh, ratioh)
+%% JACOBIANEST Estimate Jacobian matrix of a vector-valued function of N variables
 %
-% JAC = JACOBEST(FUN, X0) estimate the Jacobian matrix of a vector valued
+% JAC = JACOBIANEST(FUN, X0) estimate the Jacobian matrix of a vector valued
 % function of N variables usage.
 %
-% JAC = JACOBEST(FUN, X0, MAXH) sets maximum step size for Jacobian calculation
+% JAC = JACOBIANEST(FUN, X0, MAXH) sets maximum step size for Jacobian calculation
 % to MAXH.
 %
-% JAC = JACOBEST(FUN, X0, MAXH, RATIOH) sets ratio between 
+% JAC = JACOBIANEST(FUN, X0, MAXH, RATIOH) sets ratio between 
 %
-% [JAC, ERR] = JACOBEST(___) also returns error estimates of each partial
+% [JAC, ERR] = JACOBIANEST(___) also returns error estimates of each partial
 % derivative in JAC.
 % 
 % Inputs:
@@ -75,8 +75,10 @@ function [jac, err] = jacobest(fun, x0, maxh, ratioh)
 %% File information
 % Author: John D'Errico <woodchips@rochester.rr.com>
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-17
+% Date: 2022-02-15
 % Changelog:
+%   2022-02-15
+%       * Rename to `JACOBIANEST`
 %   2021-11-17
 %       * Update H1 to correct format
 %   2021-07-16
@@ -118,7 +120,7 @@ nsteps = length(relativedelta);
 % total number of derivatives we will need to take
 jac = zeros(n, nx);
 err = jac;
-for i = 1:nx
+parfor i = 1:nx
   x0_i = x0(i);
   if x0_i ~= 0
     delta = x0_i * relativedelta;
