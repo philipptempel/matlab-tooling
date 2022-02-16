@@ -13,8 +13,10 @@ function qn = quatnormalized(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-16
 % Changelog:
+%   2022-02-16
+%     * Fix wrong call of `QUATVALID`
 %   2022-02-08
 %     * Split dependency on `QUATNORM` to avoid too depp recursion
 %     * Code syntax updates
@@ -35,7 +37,7 @@ narginchk(1, 1);
 nargoutchk(0, 1);
 
 % Parse quaternions
-qv = quatvalid(q, 'quatnormalized', true);
+qv = quatvalid(q, 'quatnormalized');
 
 
 

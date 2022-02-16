@@ -13,8 +13,10 @@ function qn = quatnorm(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-08
+% Date: 2022-02-16
 % Changelog:
+%   2022-02-16
+%     * Fix wrong call of `QUATVALID`
 %   2022-02-08
 %     * Code syntax updates
 %   2020-11-24
@@ -41,7 +43,7 @@ nargoutchk(0, 1);
 %% Algorithm
 
 % Calculate norm
-qn = sqrt(sum(quatvalid(q, 'quatnorm', true) .^ 2, 1));
+qn = sqrt(sum(quatvalid(q, 'quatnorm') .^ 2, 1));
 
 
 
