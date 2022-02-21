@@ -68,7 +68,11 @@ for iS = 1:numel(os)
         
         % If field is a structure, merge it recursively
         if isstruct(os{iS}.(fn))
-            s.(fn) = mergestructs(s.(fn), os{iS}.(fn));
+            if ~isfield(s, fn)
+                s.(fn) = os{iS}.(fn);
+            else
+                s.(fn) = mergestructs(s.(fn), os{iS}.(fn));
+            end
         else
             s.(fn) = os{iS}.(fn);
         end
