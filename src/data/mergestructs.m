@@ -19,8 +19,10 @@ function s = mergestructs(varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-02-21
 % Changelog:
+%   2022-02-21
+%       * Add support to recursively merge structures
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-11-25
@@ -58,8 +60,17 @@ os = varargin(2:end);
 for iS = 1:numel(os)
     fns = fieldnames(os{iS});
     
+    % Loop over all fieldnames
     for iFn = 1:numel(fns)
-        s.(fns{iFn}) = os{iS}.(fns{iFn});
+        % Field name
+        fn = fns{iFn};
+        
+        % If field is a structure, merge it recursively
+        if isstruct(os{iS}.(fn))
+            s.(fn) = mergestructs(s.(fn), os{iS}.(fn));
+        else
+            s.(fn) = os{iS}.(fn);
+        end
     end
 end
 
