@@ -1,4 +1,4 @@
-function s = mergestructs(varargin)
+function s = mergestructs(varargin)%#codegen
 %% MERGESTRUCTS merges multiple structs into one
 %
 % S = MERGESTRUCTS(S1, S2, ...) merges S2 and succeeding structs into S1. Values
@@ -22,6 +22,7 @@ function s = mergestructs(varargin)
 % Date: 2022-02-21
 % Changelog:
 %   2022-02-21
+%       * Add codegen directive
 %       * Add support to recursively merge structures
 %   2021-12-14
 %       * Update email address of Philipp Tempel
