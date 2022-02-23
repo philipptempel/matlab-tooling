@@ -24,10 +24,14 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
+y = reshape(y, 2, []);
+
 [A, b] = specfun_2d(t);
 % dy(1)dt = -1 * y(1) + exp( -3 .* t);
 % dy(2)dt = -3 * y(2) + exp(-10 .* t);
 dydt = A * y + b;
+
+dydt = reshape(dydt, [], 1);
 
 
 end
