@@ -58,6 +58,8 @@ function varargout = odespec(ode, tspan, y0, options, varargin)
 % Date: 2022-02-23
 % Changelog:
 %   2022-02-23
+%       * Add support for parallel calculation of A and B matrices in case
+%       callback is not vectorized
 %       * Add support for handling matrix ODEs i.e., where Y, respectively Y',
 %       are matrices of size NYxNV
 %   2022-02-02
@@ -129,7 +131,7 @@ ns = ny * nout;
 Dn = chebdiffmtx(nout - 1, ab);
 
 % Check ODE arguments and get the ODE function in a common format
-f = parse_ode(ode, tout, y0);
+f = parse_ode(ode, tout, y0, options);
 
 sol = [];
 if output_sol
@@ -211,7 +213,7 @@ end
 end
 
 
-function f = parse_ode(ode, tout, y0)
+function f = parse_ode(ode, tout, y0, options)
 %% PARSE_ODE Parse ODE function and return it in a unified form
 %
 % PARSE_ODE(ODE, TOUT, Y0)
@@ -273,7 +275,7 @@ try
   [~, ~] = feval(ode, [t, t]);
   
 catch
-  f = @(t) ode_vectorized(ode, ny, nt, t);
+  f = @(t) ode_vectorized(ode, nf, nt, t, options.UseParallel);
   
 end
 
@@ -317,10 +319,10 @@ b = flip(b, 2);
 end
 
 
-function [A, b] = ode_vectorized(ode, ny, nt, t)
+function [A, b] = ode_vectorized(ode, nf, nt, t, useprlll)
 %% ODE_VECTORIZED creates a vectorized version of the ODE function
 %
-% [A, B] = ODE_VECTORIZED(ODEF, NY, NT, T) vectorizes ODE function ODEF to allow
+% [A, B] = ODE_VECTORIZED(ODEF, NF, NT, T) vectorizes ODE function ODEF to allow
 % T and Y to be XxN vectors and return A and B of appropriate size.
 %
 % Inputs:
@@ -329,30 +331,45 @@ function [A, b] = ode_vectorized(ode, ny, nt, t)
 %                       returns matrix A and vector B at a given spectral node
 %                       T.
 %
-%   NY                  Number of states of the ODE system. Value only needed
-%                       for quickly allocating A and B of right size.
+%   NF                  Number of functions of the ODE system i.e., number of
+%                       rows. Value only needed for quickly allocating A and B
+%                       of right size.
 %
-%   NT                  Number of time nodes at which spectral integration is
-%                       being performed. Value only needed for quickly
-%                       allocating A and B of right size.
+%   NT                  Number of spectral time nodes at which spectral
+%                       integration is being performed. Value only needed for
+%                       quickly allocating A and B of right size.
 % 
 %   T                   1xN vector of node values.
 %
+%   USEPRLLL            True/false flag wheter to use a parallel for loop or not
+%                       when calculating A and B matrices.
+%
 % Outputs:
 %
-%   A                   YxYxN array of constant terms at each node T.
+%   A                   NFxNFxN array of constant state terms at each node T.
 %
-%   B                   YxT array of of constant terms at each node T.
+%   B                   NFxN array of of constant terms at each node T.
 
 
 
 % Init outputs
-A = zeros(ny, ny, nt);
-b = zeros(ny, nt);
+A = zeros(nf, nf, nt);
+b = zeros(nf, nt);
 
-% Loop over each time step and evaluate ODE
-for it = 1:nt
-  [ A(:,:,it) , b(:,it) ] = feval(ode, t(it));
+% Parallel branch
+if useprlll
+  % Loop over each time step and evaluate ODE
+  parfor it = 1:nt
+    [ A(:,:,it) , b(:,it) ] = feval(ode, t(it));
+  end
+  
+% Non-parallel branch
+else
+  % Loop over each time step and evaluate ODE
+  for it = 1:nt
+    [ A(:,:,it) , b(:,it) ] = feval(ode, t(it));
+  end
+  
 end
 
 
@@ -383,11 +400,14 @@ persistent defaults
 
 % Default defaults
 if isempty(defaults)
-  defaults = struct('Nodes', 25);
+  defaults = struct( ...
+      'Nodes', 25 ...
+    , 'UseParallel', false ...
+  );
 end
 
 % Merge defaults structure with options given
-oopts = mergestruct(defaults, iopts);
+oopts = mergestructs(defaults, iopts);
 
 
 end
