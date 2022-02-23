@@ -172,7 +172,7 @@ for in = 1:nout
   A(in + idxYN,in + idxYN) = kron(nvEye, A_(:,:,in));
   
   % Push the i-th node's constant b vector values in
-  b(in + idxYN) = repmat(b_(1:nf,in), nv, 1);
+  b(in + idxYN) = repmat(b_(:,in), nv, 1);
   
 end
 
