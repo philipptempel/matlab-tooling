@@ -238,7 +238,7 @@ if isvector(y)
   y = y(:);
 end
 % Number of states of the system
-ny = size(y, 1);
+nf = size(y, 1);
 
 % Evaluate function
 try
@@ -260,13 +260,13 @@ catch me
 end
 
 % Check size of matrix A is correct
-if size(A, 1) ~= size(A, 2) && size(A, 1) ~= ny
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeA', 'Invalid shape of matrix A. Expected (%d %d) but got (%s).', ny, ny, num2str(size(A))));
+if size(A, 1) ~= size(A, 2) && size(A, 1) ~= nf
+  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeA', 'Invalid shape of matrix A. Expected (%d %d) but got (%s).', nf, nf, num2str(size(A))));
 end
 
 % Check size of matrix A is correct
-if size(b, 1) ~= ny && size(b, 2) ~= 1
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeB', 'Invalid shape of vector B. Expected (%d %d) but got (%s).', ny, 1, num2str(size(b))));
+if size(b, 1) ~= nf && size(b, 2) ~= 1
+  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeB', 'Invalid shape of vector B. Expected (%d %d) but got (%s).', nf, 1, num2str(size(b))));
 end
 
 % Lastly, check if function allows for vectorized input
