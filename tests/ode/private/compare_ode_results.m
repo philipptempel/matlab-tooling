@@ -19,8 +19,11 @@ function compare_ode_results(ab, g, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-12-13
+% Date: 2022-02-23
 % Changelog:
+%   2022-02-23
+%       * Update usage of `ALLISCLOSE` to follow correct argument order of
+%       `CANDIDATE, GROUNDTRUTH`
 %   2021-12-13
 %       * Initial release
 
@@ -65,8 +68,8 @@ for icand = 1:ncands
   y_c = sol_cand(:,2:end);
   
   % Ensure the X and Y values are fairly close to each other
-  assert(allisclose(x_g, x_c, atol, rtol));
-  assert(allisclose(y_g, y_c, atol, rtol));
+  assert(allisclose(x_c, x_g, atol, rtol));
+  assert(allisclose(y_c, y_g, atol, rtol));
   cprintf('*green', '\tsuccess\n');
   
   % Build a table of datas for easier comparison and display
