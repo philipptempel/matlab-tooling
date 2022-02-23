@@ -4,8 +4,12 @@ function varargout = odespec(ode, tspan, y0, options, varargin)
 % ODESPEC solves first-order linear ordinary differential equations using
 % spectral integration with Chebyshev differentation matrix and
 % Chebyshev-Lobatto points. A first-order linear ODE is given by the equation
-% $\dot{y}(t) = A(t) y + b(t)$ over interval $t = [ t_{a} , t_{b} ]$ with
+% $\dot{y}(t) = A(t) y(t) + b(t)$ over interval $t = [ t_{a} , t_{b} ]$ with
 % initial condition $y(t_{a}) = y_{a}$.
+%
+% ODESPEC also supports solving matrix ODEs i.e., where Y is a matrix of size
+% NYxNV. Simply provide Y0 of the right dimensions (and of course A and B for
+% this to work.
 %
 % [T, Y] = ODESPEC(ODEFUN, TSPAN, Y0) calculates the solution Y(T) for the
 % linear ODE defined in ODEFUN over integration interval TSPAN with initial
@@ -27,7 +31,7 @@ function varargout = odespec(ode, tspan, y0, options, varargin)
 %                       integration. Can be either increasing (forward
 %                       integration) or decreasing (backward increasing).
 %
-%   Y0                  NYx1 vector defining the initial state
+%   Y0                  NYxNV vector defining the initial state
 %
 %   OPTIONS             Structure of options to use for spectral integration.
 %                       See below for available options.
@@ -51,8 +55,11 @@ function varargout = odespec(ode, tspan, y0, options, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-02
+% Date: 2022-02-23
 % Changelog:
+%   2022-02-23
+%       * Add support for handling matrix ODEs i.e., where Y, respectively Y',
+%       are matrices of size NYxNV
 %   2022-02-02
 %       * Fix major error in how output node points are calculated and how the
 %       spectral integration is performed. This reduces the number of flips and
@@ -93,6 +100,7 @@ end
 options = parse_options(options);
 
 % Turn Y0 into a column vector
+[nf, nv] = size(y0);
 y0 = y0(:);
 ny = numel(y0);
 
@@ -153,14 +161,15 @@ idxX0 = idxY * nout;
 A = zeros(ns, ns);
 b = zeros(ns, 1);
 idxYN = (idxY - 1) * nout;
+nvEye = eye(nv, nv);
 
 % Looping over every node
 for in = 1:nout
   % Push the i-th node's constant A matrix values in
-  A(in + idxYN,in + idxYN) = A_(:,:,in);
+  A(in + idxYN,in + idxYN) = kron(nvEye, A_(:,:,in));
   
   % Push the i-th node's constant b vector values in
-  b(in + idxYN) = b_(1:ny,in);
+  b(in + idxYN) = repmat(b_(1:nf,in), nv, 1);
   
 end
 
