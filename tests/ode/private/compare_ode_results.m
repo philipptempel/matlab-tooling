@@ -44,7 +44,7 @@ nargoutchk(0, 0);
 %% Algorithm
 
 % Tolerances for comparison
-atol = 5 * 1e-3;
+atol = 5 * 1e-6;
 rtol = 1 * 1e-9;
 
 % Direction of integration
