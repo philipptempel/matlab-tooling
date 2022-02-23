@@ -43,8 +43,9 @@ compare_ode_results( ...
 );
 
 % Backward integration
+ya = permute(ode(end,2:end), [2, 1]);
 ab = [ 5 , 0 ];
-[ode, spec] = ode45_and_odespec(ny, ab, N);
+[ode, spec] = ode45_and_odespec(ny, ab, N, ya);
 compare_ode_results( ...
     ab ...
   , ode ...
@@ -68,8 +69,9 @@ compare_ode_results( ...
 );
 
 % Backward integration
+ya = permute(ode(end,2:end), [2, 1]);
 ab = [ 5 , 0 ];
-[ode, spec] = ode45_and_odespec(ny, ab, N);
+[ode, spec] = ode45_and_odespec(ny, ab, N, ya);
 compare_ode_results( ...
     ab ...
   , ode ...
@@ -93,8 +95,9 @@ compare_ode_results( ...
 );
 
 % Backward integration
+ya = reshape(permute(ode(end,2:end), [2, 1]), ny);
 ab = [ 5 , 0 ];
-[ode, spec] = ode45_and_odespec(ny, ab, N);
+[ode, spec] = ode45_and_odespec(ny, ab, N, ya);
 compare_ode_results( ...
     ab ...
   , ode ...
@@ -106,10 +109,12 @@ end
 
 
 
-function [ode, spec] = ode45_and_odespec(ny, ab, nn)
+function [ode, spec] = ode45_and_odespec(ny, ab, nn, ya)
 %% ODE45_AND_ODESPEC
 %
 % ODE45_AND_ODESPEC(NY, AB, NN)
+%
+% ODE45_AND_ODESPEC(NY, AB, NN, YA)
 
 
 
@@ -118,7 +123,10 @@ if isscalar(ny)
 end
 
 % Initial state
-ya = rand(ny) - 0.5;
+if nargin < 4 || isempty(ya)
+  ya = rand(ny) - 0.5;
+end
+
 nf = ny(1);
 
 % Convert state count into function handles
