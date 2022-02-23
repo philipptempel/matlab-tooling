@@ -22,6 +22,8 @@ function compare_ode_results(ab, g, varargin)
 % Date: 2022-02-23
 % Changelog:
 %   2022-02-23
+%       * Change columns of comparison table to use absolute difference between
+%       ground truth and candidate
 %       * Update usage of `ALLISCLOSE` to follow correct argument order of
 %       `CANDIDATE, GROUNDTRUTH`
 %   2021-12-13
@@ -33,6 +35,7 @@ function compare_ode_results(ab, g, varargin)
 
 % COMPARE_ODE_RESULTS(AB, GROUND, CANDIDATE1, ...)
 narginchk(3, Inf);
+
 % COMPARE_ODE_RESULTS(___)
 nargoutchk(0, 0);
 
@@ -74,7 +77,7 @@ for icand = 1:ncands
   
   % Build a table of datas for easier comparison and display
   t = array2table( ...
-    [ x_g - x_c , y_g - y_c ] ...
+    [ abs(x_g - x_c) , abs(y_g - y_c) ] ...
       , 'VariableNames', [ ...
         sprintf('x_g - x_c%d', icand) ...
       , arrayfun( ...
