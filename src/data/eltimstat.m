@@ -1,8 +1,8 @@
 function varargout = eltimstat(elt, names)
 %% ELTIMSTAT Calculate statistics of elapsed times
 %
-% ELTIMSTAT(ELT) calculates the statistics MIN, MAX, MEAN, and MEDIAN of all
-% columns of ELT and displays the output as a formatted table.
+% ELTIMSTAT(ELT) calculates the statistics SUM, MIN, MAX, MEAN, MEDIAN, and STD
+% of all columns of ELT and displays the output as a formatted table.
 %
 % ELTIMSTAT(ELT, TRIALNAMES) uses trial names TRIALNAMES as table headings
 % instead of generic `Trial x` text.
@@ -16,14 +16,16 @@ function varargout = eltimstat(elt, names)
 %   TRIALNAMES          1xM cell array of trial names.
 %
 % See also:
-%   TABLE MIN MAX MEDIAN MEAN
+%   TABLE MIN MAX MEDIAN MEAN STD
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-01-20
+% Date: 2022-02-23
 % Changelog:
+%   2022-02-23
+%       * Add fields `SUM` and `STD` to table
 %   2022-01-20
 %       * Add option `TRIALNAMES`.
 %   2021-11-24
@@ -53,16 +55,19 @@ nargoutchk(0, 1);
 t = array2table( ...
   time2str( ...
     [ ...
+      sum(elt, 1) ; ...
       min(elt, [], 1) ; ...
       median(elt, 1) ; ...
       mean(elt, 1) ; ...
       max(elt, [], 1) ; ...
+      std(elt, [], 1) ; ...
     ] ...
     , 'Format', '%.3f' ...
   ) ...
-  , 'RowNames', {'min', 'median', 'mean', 'max'} ...
+  , 'RowNames', { 'sum', 'min' , 'median' , 'mean' , 'max' , 'std' } ...
   , 'VariableNames', names ...
 );
+
 
 
 %% Assign output quanttiies
