@@ -77,6 +77,31 @@ compare_ode_results( ...
 );
 
 
+
+%% Integration of a 2D matrix system
+
+% Number of states
+ny = [2, 5];
+
+% Forward integration
+ab = [ 0 , 5 ];
+[ode, spec] = ode45_and_odespec(ny, ab, N);
+compare_ode_results( ...
+    ab ...
+  , ode ...
+  , spec ...
+);
+
+% Backward integration
+ab = [ 5 , 0 ];
+[ode, spec] = ode45_and_odespec(ny, ab, N);
+compare_ode_results( ...
+    ab ...
+  , ode ...
+  , spec ...
+);
+
+
 end
 
 
@@ -88,12 +113,17 @@ function [ode, spec] = ode45_and_odespec(ny, ab, nn)
 
 
 
-% Convert state count into function handles
-odefun  = str2func(sprintf('odefun_%dd', ny));
-specfun = str2func(sprintf('specfun_%dd', ny));
+if isscalar(ny)
+  ny = [ny, 1];
+end
 
 % Initial state
-ya = rand(ny, 1) - 0.5;
+ya = rand(ny) - 0.5;
+nf = ny(1);
+
+% Convert state count into function handles
+odefun  = str2func(sprintf('odefun_%dd', nf));
+specfun = str2func(sprintf('specfun_%dd', nf));
 
 % Obtain solution using MATLAB's numerical integrators
 solode = ode45(odefun, ab, ya, odeset('RelTol', 1e-9, 'MaxStep', 1e-3));
