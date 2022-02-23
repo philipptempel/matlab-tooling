@@ -103,6 +103,7 @@ options = parse_options(options);
 
 % Turn Y0 into a column vector
 [nf, nv] = size(y0);
+szy0 = [nf, nv];
 y0 = y0(:);
 ny = numel(y0);
 
@@ -131,7 +132,7 @@ ns = ny * nout;
 Dn = chebdiffmtx(nout - 1, ab);
 
 % Check ODE arguments and get the ODE function in a common format
-f = parse_ode(ode, tout, y0, options);
+f = parse_ode(ode, tout, y0, szy0, options);
 
 sol = [];
 if output_sol
@@ -213,7 +214,7 @@ end
 end
 
 
-function f = parse_ode(ode, tout, y0, options)
+function f = parse_ode(ode, tout, y0, szy0, options)
 %% PARSE_ODE Parse ODE function and return it in a unified form
 %
 % PARSE_ODE(ODE, TOUT, Y0)
@@ -233,12 +234,7 @@ end
 % Values to test-evaluate function at
 t = tout(1);
 nt = numel(tout);
-y = y0;
-if isvector(y)
-  y = y(:);
-end
-% Number of states of the system
-nf = size(y, 1);
+nf = szy0(1);
 
 % Evaluate function
 try
