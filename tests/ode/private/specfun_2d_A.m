@@ -24,7 +24,7 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-A = repmat(diag([-1, -3]), 1, 1, numel(t));
+A = repmat(diag([-1, -1.5]), 1, 1, numel(t));
 
 
 end

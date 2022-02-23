@@ -24,7 +24,7 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-b = permute(reshape(exp([-3 , -0.2] .* t(:)), [], 2), [2, 1]);
+b = permute(reshape(exp([-3 , -2.5] .* t(:)), [], 2), [2, 1]);
 
 
 end
