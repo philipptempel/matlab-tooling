@@ -1,4 +1,4 @@
-function varargout = odespec(ode, tspan, y0, options, varargin)
+function varargout = odespec(ode, tspan, y0, options, varargin)%#codegen
 %% ODESPEC Spectral integration of first-order linear ODEs
 %
 % ODESPEC solves first-order linear ordinary differential equations using
