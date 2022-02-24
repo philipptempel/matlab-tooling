@@ -83,7 +83,7 @@ compare_ode_results( ...
 %% Integration of a 2D matrix system
 
 % Number of states
-ny = [2, 5];
+ny = [2, 4];
 
 % Forward integration
 ab = [ 0 , 5 ];
@@ -95,7 +95,33 @@ compare_ode_results( ...
 );
 
 % Backward integration
-ya = reshape(permute(ode(end,2:end), [2, 1]), ny);
+ya = reshape(ode(end,2:end), ny);
+ab = [ 5 , 0 ];
+[ode, spec] = ode45_and_odespec(ny, ab, N, ya);
+compare_ode_results( ...
+    ab ...
+  , ode ...
+  , spec ...
+);
+
+
+
+%% Integration of a 2D matrix system
+
+% Number of states
+ny = [6, 13];
+
+% Forward integration
+ab = [ 0 , 5 ];
+[ode, spec] = ode45_and_odespec(ny, ab, N);
+compare_ode_results( ...
+    ab ...
+  , ode ...
+  , spec ...
+);
+
+% Backward integration
+ya = reshape(ode(end,2:end), ny);
 ab = [ 5 , 0 ];
 [ode, spec] = ode45_and_odespec(ny, ab, N, ya);
 compare_ode_results( ...
