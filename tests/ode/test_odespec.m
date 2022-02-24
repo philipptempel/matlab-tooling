@@ -160,8 +160,8 @@ odefun  = str2func(sprintf('odefun_%dd', nf));
 specfun = str2func(sprintf('specfun_%dd', nf));
 
 % Obtain solution using MATLAB's numerical integrators
-solode = ode45(odefun, ab, ya, odeset('RelTol', 1e-9, 'MaxStep', 1e-3));
-% [xode, yode] = ode45(odefun, ab, ya, odeset('RelTol', 1e-6, 'MaxStep', 1e-3));
+solode = ode45(odefun, ab, ya, odeset('AbsTol', 1e-6, 'RelTol', 1e-9, 'MaxStep', 1e-3));
+% [xode, yode] = ode45(odefun, ab, ya, odeset('AbsTol', 1e-6, 'RelTol', 1e-6, 'MaxStep', 1e-3));
 
 % Obtain solution using my implementation of spectral integration
 % solspec = odespec(specfun, ab, ya, struct('Nodes', nn));
