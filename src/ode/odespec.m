@@ -55,8 +55,12 @@ function varargout = odespec(ode, tspan, y0, options, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-23
+% Date: 2022-02-24
 % Changelog:
+%   2022-02-24
+%       * Fix implementation of solving matrix ODEs as this was buggy in some
+%       cases and created a system with too many DOF. The new implementation
+%       solves the linear equation Y = (D-A) \ B where Y is a matrix directly
 %   2022-02-23
 %       * Add support for parallel calculation of A and B matrices in case
 %       callback is not vectorized
@@ -104,7 +108,6 @@ options = parse_options(options);
 % Turn Y0 into a column vector
 [nf, nv] = size(y0);
 szy0 = [nf, nv];
-y0 = y0(:);
 ny = numel(y0);
 
 
@@ -112,7 +115,7 @@ ny = numel(y0);
 %% Algorithm
 
 % Eye-matrix of state system
-nyEye = eye(ny, ny);
+nfEye = speye(nf, nf);
 
 % Number of nodes
 nout = options.Nodes;
@@ -126,13 +129,13 @@ ab = tspan;
 tout = flip(chebpts2(nout - 1, ab), 2);
 
 % Dimension of extended system
-ns = ny * nout;
+ns = nf * nout;
 
 % Chebyshev differentation matrix on TSPAN's interval
 Dn = chebdiffmtx(nout - 1, ab);
 
 % Check ODE arguments and get the ODE function in a common format
-f = parse_ode(ode, tout, y0, szy0, options);
+f = parse_ode(ode, tout, y0, options);
 
 sol = [];
 if output_sol
@@ -146,7 +149,7 @@ end
 
 % Build differentiation matrix D for all of the ODE's degrees of freedom
 D = kron( ...
-    nyEye ...
+    nfEye ...
   , Dn ...
 );
 
@@ -156,32 +159,33 @@ D = kron( ...
 [A_, b_] = feval(f, tout);
 
 % Index of initial state in global state vector
-idxY = 1:ny;
+idxY = 1:nf;
 idxX0 = idxY * nout;
 
 % Build global A matrix which is composed of node-wise entries of the ODE
 % system's Ai matrices
 A = zeros(ns, ns);
-b = zeros(ns, 1);
+b = zeros(ns, nv);
 idxYN = (idxY - 1) * nout;
-nvEye = eye(nv, nv);
 
 % Looping over every node
 for in = 1:nout
   % Push the i-th node's constant A matrix values in
-  A(in + idxYN,in + idxYN) = kron(nvEye, A_(:,:,in));
+  A(in + idxYN,in + idxYN) = A_(:,:,in);
   
   % Push the i-th node's constant b vector values in
-  b(in + idxYN) = repmat(b_(:,in), nv, 1);
+  b(in + idxYN,:) = repmat(b_(:,in), 1, nv);
   
 end
+A = sparse(A);
+b = sparse(b);
 
 % Matrix to map each state into the right block-segment of its differential part
-P = sparse(eye(ns, ns));
+P = speye(ns, ns);
 P(idxY,idxY) = 0;
 P(idxX0,idxX0) = 0;
-P(idxY,idxX0) = nyEye;
-P(idxX0,idxY) = nyEye;
+P(idxY,idxX0) = nfEye;
+P(idxX0,idxY) = nfEye;
 Pt = transpose(P);
 
 % Apply transformation of initial condition onto ODE's matrices
@@ -190,14 +194,14 @@ b = Pt * b;
 D = Pt * D * P;
 
 % New indices for quicker array indexing
-idxX0 = 1:ny;
-idxY = (ny + 1):ns;
+idxX0 = 1:nf;
+idxY = (nf + 1):ns;
 
 % Calculation of B0
 b0 = ( D(:,idxX0) - A(:,idxX0) ) * y0;
 
 % Calculation of solution
-yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY) - b0(idxY) );
+yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY,:) - b0(idxY,:) );
 
 % Reshape solution of ODE to be TxY
 yout = reshape(P * [ y0 ; yn ], nout, ny);
@@ -214,7 +218,7 @@ end
 end
 
 
-function f = parse_ode(ode, tout, y0, szy0, options)
+function f = parse_ode(ode, tout, y0, options)
 %% PARSE_ODE Parse ODE function and return it in a unified form
 %
 % PARSE_ODE(ODE, TOUT, Y0)
@@ -234,7 +238,7 @@ end
 % Values to test-evaluate function at
 t = tout(1);
 nt = numel(tout);
-nf = szy0(1);
+[nf, nv] = size(y0, [1, 2]);
 
 % Evaluate function
 try
