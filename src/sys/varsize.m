@@ -1,18 +1,25 @@
 function varargout = varsize(varargin)
-% VARSIZE determines the size of each variable given
+%% VARSIZE determines the size of each variable given
 %
-%   VARSIZE(X) prints the size of variable X to the screen
+% VARSIZE() prints the size of all of caller's variables in bytes.
 %
-%   VARSIZE(X, Y) prints the size of variables X and Y to the screen
+% VARSIZE(X) prints the size of variable X on the screen.
 %
-%   S = VARSIZE(...) returns the size of all variables in bytes in struct S.
+% VARSIZE(X, Y) prints the size of variables X and Y on the screen.
+%
+% S = VARSIZE(...) returns the size of all variables in bytes in struct S.
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-02-28
 % Changelog:
+%   2022-02-28
+%       * Beautify output of function
+%       * Add support for 0-argument call
+%       * Code improvement
+%       * Update H1 documentation
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2018-02-06
@@ -22,12 +29,12 @@ function varargout = varsize(varargin)
 
 %% Validate arguments
 try
-    % VARSIZE(X)
+    % VARSIZE()
     % VARSIZE(X, ...)
-    narginchk(1, Inf);
+    narginchk(0, Inf);
     
-    % VARSIZE(...)
-    % S = VARSIZE(...)
+    % VARSIZE(___)
+    % S = VARSIZE(___)
     nargoutchk(0, 1);
     
 catch me
@@ -50,35 +57,57 @@ for iArg = 1:nargin
 end
 
 % Get all variables in the caller's workspace
-stWho = evalin('caller', 'whos();');
+vars = evalin('caller', 'whos();');
 
 % Get info of only the variables that were passed to this function
-stWho(~ismember({stWho.name}, ceVarnames)) = [];
+if numel(ceVarnames)
+  vars(~ismember({vars.name}, ceVarnames)) = [];
+end
 
-% Clean the structure
-stWho = rmfield(stWho, 'class');
-stWho = rmfield(stWho, 'complex');
-stWho = rmfield(stWho, 'global');
-stWho = rmfield(stWho, 'persistent');
-stWho = rmfield(stWho, 'sparse');
-stWho = rmfield(stWho, 'size');
-stWho = rmfield(stWho, 'nesting');
+% Extract only the fields from the WHOS structure that we need
+vars = struct('name', {vars.name}, 'bytes', {vars.bytes});
 
 % Convert bytes to respective byte sizes
-ceBytes = bytes2str([stWho.bytes]);
-[stWho.bytes] = deal(ceBytes{:});
+ceBytes = bytes2str([vars.bytes]);
+[vars.bytes] = deal(ceBytes{:});
 
 
 
 %% Assign output quantities
 % No output, display the data
 if nargout == 0
-    display(struct2table(stWho))
+    % Count width of each column (variables' names and variables' size in bytes)
+    col_widths = transpose(cell2mat(arrayfun(@(v) structfun(@(f) length(f), v), vars, 'UniformOutput', false)));
+    % Ensure each column is at least 12 characters wide
+    col_widths = max([12, 12], max(col_widths, [], 1)) + [4, 0];
+    
+    % Table headers
+    fprintf('  ');
+    fprintf(sprintf('%%-%ds', col_widths(1)), 'Name');
+    fprintf(sprintf('%%+%ds', col_widths(2)), 'Bytes');
+    fprintf(newline());
+    % Separator between table and content
+    fprintf(newline());
+    
+    % Loop over all variables
+    for ivar = 1:numel(vars)
+      var = vars(ivar);
+      % Initial spacer
+      fprintf('  ');
+      % Variable's name
+      fprintf(sprintf('%%-%ds', col_widths(1)), var.name);
+      % Variable's size
+      fprintf(sprintf('%%+%ds', col_widths(2)), strrep(var.bytes, ' b', ' b '));
+      % And a newline character
+      fprintf(newline());
+    end
+    
 end
 
 % One output: return the structure
 if nargout > 0
-    varargout{1} = stWho;
+    varargout{1} = vars;
+    
 end
 
 
