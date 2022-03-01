@@ -51,8 +51,10 @@ function Files = allfiles(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-03-01
 % Changelog:
+%   2022-03-01
+%       * Fix incorrect use of old `PARSESWITCHARG`
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-12-13
@@ -170,9 +172,9 @@ chPrefix = ip.Results.Prefix;
 % File suffix: char
 chSuffix = ip.Results.Suffix;
 % Include system: char, {'on', 'off'}
-chIncludeHidden = parseswitcharg(ip.Results.IncludeHidden);
+chIncludeHidden = onoffstate(ip.Results.IncludeHidden);
 % Recurse into subdirectories: char, {'on', 'off'})
-chRecurse = parseswitcharg(ip.Results.Recurse);
+chRecurse = onoffstate(ip.Results.Recurse);
 % Custom pattern
 pat = ip.Results.Pattern;
 
