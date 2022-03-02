@@ -51,8 +51,11 @@ function Files = allfiles(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-03-01
+% Date: 2022-03-02
 % Changelog:
+%   2022-03-02
+%       * Update handling of arguments for recursive calling of this function
+%       * Fix incorrect validation of `PATTERN` argument
 %   2022-03-01
 %       * Fix incorrect use of old `PARSESWITCHARG`
 %   2021-12-14
@@ -128,11 +131,11 @@ valFcn_IncludeHidden = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'n
 addParameter(ip, 'IncludeHidden', 'off', valFcn_IncludeHidden);
 
 % Parameter: Recurse. Char. Matches {on, yes, off, no}
-valFcn_Recurse = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename(), 'Recurse'));
+valFcn_Recurse = @(x) ischar(x) && any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename(), 'Recurse')) || ~ischar(x);
 addParameter(ip, 'Recurse', 'off', valFcn_Recurse);
 
 % Parameter: Pattern. Char. Non-empty.
-valFcn_Pattern = @(x) validateattributes(x, {'char'}, {'nonempty', mfilename(), 'Pattern'});
+valFcn_Pattern = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'Pattern');
 addParameter(ip, 'Pattern', '', valFcn_Pattern);
 
 % Configuration of input parser
@@ -199,13 +202,13 @@ if chRecurse == matlab.lang.OnOffSwitchState.on
     % Remove arguments that are marked `required` or `optional`
     ip_results = rmfield(ip_results, 'Dir');
     ip_results = rmfield(ip_results, 'Extension');
-    % All names of the arguments
-    arguments = fieldnames(ip_results);
     % Build cell array for recursion
-    ceArgsRecurse = cell(1, 1 + 2 * numel(arguments));
-    ceArgsRecurse{1} = ip.Results.Extension;
-    ceArgsRecurse(2:2:end) = arguments;
-    ceArgsRecurse(3:2:end) = struct2cell(ip_results);
+    argsrecurse = reshape(struct2varargin(ip_results), 2, []);
+    % And remove empty entries so they don't interfere with the argument
+    % validation
+    emptyargs = cellfun(@isempty, argsrecurse(2,:));
+    argsrecurse(:,emptyargs) = [];
+    argsrecurse = [{''}, reshape(argsrecurse, [], 1).'];
     
 end
 
@@ -230,7 +233,7 @@ if ~isempty(stFiles)
         for iDir = 1:numel(idxDirs)
             % And merge with the files found in the subdirectory
             stFiles = vertcat(stFiles, allfiles(fullfile(chDir, stFiles(idxDirs(iDir)).name) ...
-                , ceArgsRecurse{:} ...
+                , argsrecurse{:} ...
             ));
         end
     end
