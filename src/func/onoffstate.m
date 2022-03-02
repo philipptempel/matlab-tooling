@@ -29,8 +29,13 @@ function res = onoffstate(arg, moreon)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-01-27
+% Date: 2022-03-02
 % Changelog:
+%   2022-03-02
+%       * Add support for passing true/false logical values, too, by converting
+%       them into strings first
+%       * Add support to also pass `MATLAB.LANG.ONOFFSWITCHSTATE` objects
+%       without the function failing
 %   2022-01-27
 %       * Rename to `ONOFFSTATE`
 %       * Remove assertion of arguments
@@ -70,7 +75,22 @@ end
 
 %% Algorithm
 
-res = matlab.lang.OnOffSwitchState(any(strcmpi(arg, [ 'on' , 'yes' , 'please' , moreon ])));
+% If the input is already of the right data type, just continue
+if isa(arg, 'matlab.lang.OnOffSwitchState')
+    res = arg;
+
+% Parse input data type
+else
+  % If arg is not a char, then we will convert it to a string
+  if ~ischar(arg)
+      arg = bool2str(arg);
+      
+  end
+  
+  % And create a OnOffSwitchState object
+  res = matlab.lang.OnOffSwitchState(any(strcmpi(arg, [ 'true' , 'on' , 'yes' , 'please' , moreon ])));
+  
+end
 
 
 end
