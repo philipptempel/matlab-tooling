@@ -25,8 +25,10 @@ function varargout = wd(varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-29
+% Date: 2022-03-03
 % Changelog:
+%   2022-03-03
+%       * Allow `WD PATH` to accept more arguments and return the merged path.
 %   2021-05-11
 %       * Update to work on windows, too.
 %   2021-03-29
@@ -37,9 +39,10 @@ function varargout = wd(varargin)
 %       * Initial release
 
 
+
 %% Parse arguments
 
-narginchk(0, 3)
+narginchk(0, Inf);
 nargoutchk(0, 1);
 
 if nargin == 0
@@ -88,6 +91,7 @@ function wd_help()
 % WD_HELP()
 
 
+
 hlp = [ ...
     {'add';    'Add a warp point'} ...
   , {'rm';     'Remove a warp point'} ...
@@ -114,6 +118,7 @@ function rc = wd_read_rc()
 %% WD_READ_RC
 %
 % WD_READ_RC()
+
 
 
 persistent prc
@@ -145,6 +150,7 @@ function wd_save_rc(rc)
 %% WD_SAVE_RC
 %
 % WD_SAVE_RC(RC)
+
 
 
 persistent prc
@@ -182,6 +188,7 @@ function wd_go(point, p)
 % WD_GO(POINT, PATH)
 
 
+
 % WD_GO(POINT)
 % WD_GO(POINT, PATH)
 narginchk(1, 2);
@@ -204,6 +211,7 @@ function wd_add(point)
 % WD_ADD()
 %
 % WD_ADD(POINT)
+
 
 
 % WD_ADD()
@@ -236,6 +244,7 @@ function wd_rm(point)
 % WD_RM()
 %
 % WD_RM(POINT)
+
 
 
 % WD_RM()
@@ -288,6 +297,7 @@ function wd_list()
 % WD_LIST()
 
 
+
 % Get all warp directories
 rc = wd_read_rc();
 
@@ -315,6 +325,7 @@ function wd_ls(point)
 % WD_LS(POINT)
 
 
+
 % WD_LS(POINT)
 narginchk(1, 1);
 nargoutchk(0, 0);
@@ -326,10 +337,11 @@ ls(wd_path(point))
 end
 
 
-function p = wd_path(point)
+function p = wd_path(point, varargin)
 %% WD_PATH
 %
 % WD_PATH(POINT)
+
 
 
 % Get all warp directories
@@ -339,7 +351,7 @@ rc = wd_read_rc();
 idx = find(strcmpi(point, {rc.name}), 1, 'first');
 
 if ~isempty(idx)
-  p = rc(idx).path;
+  p = fullfile(rc(idx).path, varargin{:});
 else
   throw(MException('PHILIPPTEMPEL:WD:WarpPointNotFound', 'Warp point was not found'));
 end
@@ -352,6 +364,7 @@ function wd_clean()
 %% WD_CLEAN
 %
 % WD_CLEAN()
+
 
 
 % Load all directories
@@ -376,6 +389,7 @@ function ep = wd_encode_path(p)
 % EP = WD_ENCODE_PATH(P)
 
 
+
 % Convert all machine-local separators into UNIX-style file separators
 ep = strrep(p, filesep(), '/');
 
@@ -395,6 +409,7 @@ function p = wd_decode_path(ep)
 %% WD_DECODE_PATH
 %
 % P = WD_DECODE_PATH(EP)
+
 
 
 % Convert all UNIX-style file separators into machine-local separators
