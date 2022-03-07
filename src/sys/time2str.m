@@ -1,21 +1,23 @@
 function s = time2str(d, varargin)
 %% TIME2STR turns a duration in seconds into a human readable string
 %
-%   Inputs:
+% Inputs:
 %
-%   D                   MxN numeric array of durations to translate.
+%   D                       MxN numeric array of durations to translate.
 %
-%   Outputs:
+% Outputs:
 %
-%   S                   MxN char array representing durations D in the lowest
-%                       human readable scale.
+%   S                       MxN char array representing durations D in the
+%                           lowest human readable scale.
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-03-07
 % Changelog:
+%   2022-03-07
+%       * Format H1 documentation
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-07-02
