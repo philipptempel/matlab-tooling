@@ -1,9 +1,12 @@
 function s = time2str(d, varargin)
 %% TIME2STR turns a duration in seconds into a human readable string
 %
+% S = TIME2STR(D) turns time durations D into human readable strins.
+%
 % Inputs:
 %
-%   D                       MxN numeric array of durations to translate.
+%   D                       MxN numeric array of durations in seconds to
+%                           translate.
 %
 % Outputs:
 %
@@ -17,6 +20,9 @@ function s = time2str(d, varargin)
 % Date: 2022-03-07
 % Changelog:
 %   2022-03-07
+%       * Remove parameter `Format`
+%       * Change logic to return human readable time strings with 'min', 's',
+%       'ms', etc. included
 %       * Format H1 documentation
 %   2021-12-14
 %       * Update email address of Philipp Tempel
@@ -27,49 +33,25 @@ function s = time2str(d, varargin)
 
 
 
-%% Define the input parser
-ip = inputParser;
+%% Parse arguments
 
-% Duration: numeric; positive
-valFcn_Duration = @(x) validateattributes(x, {'numeric'}, {'nonnegative', 'finite', 'nonnan', 'nonsparse'}, mfilename, 'Duration');
-addRequired(ip, 'Duration', valFcn_Duration);
+% TIME2STR(D)
+narginchk(1, 1);
 
-% Format: char; non-empty
-valFcn_Format = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename, 'Format');
-addParameter(ip, 'Format', '%.2f', valFcn_Format);
-
-% Configuration of input parser
-ip.KeepUnmatched = true;
-ip.FunctionName = mfilename;
-
-% Parse the provided inputs
-try
-  % TIME2STR(B)
-  % TIME2STR(B, 'Name', 'Value', ...)
-  narginchk(1, Inf);
-  % TIME2STR(B)
-  % S = TIME2STR(B)
-  nargoutchk(0, 1);
-  
-  args = [{d}, varargin];
-  
-  parse(ip, args{:});
-catch me
-  throwAsCaller(me);
-end
+% TIME2STR(___)
+% S = TIME2STR(___)
+nargoutchk(0, 1);
 
 
 
-%% Parse IP results
-% The vector of durations to convert
-durs = ip.Results.Duration;
-% The format to use for each byte
-fmt = ip.Results.Format;
+%% Algorithm
 
 % Run over each element of B and convert it
-s = arrayfun(@(dur) in_parseduration(dur, fmt), durs, 'UniformOutput', false);
+s = arrayfun(@(dur) in_parseduration(dur), d, 'UniformOutput', false);
 
-if numel(durs) == 1
+% If there was only one time given, we will also have to adjust the array of
+% strings
+if numel(d) == 1
   s = s{1};
 end
 
@@ -77,29 +59,71 @@ end
 end
 
 
-function s = in_parseduration(d, fmt)
+function s = in_parseduration(d)
+%% IN_PARSEDURATION
+%
+% Inputs:
+%
+%   D                       Scalar duration in seconds.
+%
+% Outputs:
+%
+%   S                       Character array of duration.
 
-secs = 1;
-mins = 60 * secs;
-hours = 60 * mins;
-days = 24 * hours;
-weeks = 7 * days;
-months = 30.471 * days;
-years = 365.26 * days;
-millennia = 1000 * years;
 
-factors = [10 .^ (-24:3:0), mins, hours, days, weeks, months, years, millennia];
-metric = {'ys', 'zs', 'as', 'fs', 'ps', 'ns', 'mus', 'ms', 's', 'min', 'hr', 'd', 'w', 'a', 'ka'};
 
-% Get the scaling factor
-scls = d ./ factors;
+persistent sec_ min_ hour_ day_ week_ month_ year_ millennium_ factor metric;
 
+if isempty(sec_)
+  sec_        = 1;
+  min_        = 60     * sec_;
+  hour_       = 60     * min_;
+  day_        = 24     * hour_;
+  week_       = 7      * day_;
+  month_      = 30.471 * day_;
+  year_       = 365.26 * day_;
+  millennium_ = 1000   * year_;
+
+  factor = [ 10 .^ (-24:3:0) , min_ , hour_ , day_ , week_ , month_ , year_ , millennium_ ];
+  metric = { 'ys' , 'zs' , 'as' , 'fs' , 'ps' , 'ns' , 'mus' , 'ms' , 's' , 'min' , 'hr' , 'd' , 'w' , 'mo' , 'a' , 'ka' };
+  
+end
+
+% Find the largest scaling factor
+scls = d ./ factor;
 idx = find(1 <= scls & scls < 1e3, 1, 'last');
 if isempty(idx)
   idx = 9;
 end
 
-s = [sprintf(fmt, d ./ factors(idx)) , ' ' , metric{idx}];
+% Houses the fixed-integer parts of each factor
+parts = nan(1, idx);
+
+% Loop over each factor
+for fidx = idx:-1:1
+  % Full integer value of number and factor
+  v = fix(d / factor(fidx));
+  % 
+  parts(idx-fidx+1) = v;
+  % Calculate remaining value
+  d = d - v * factor(fidx);
+  % If remaining value is less than or equal to zero, we stop
+  if d <= 0
+    break
+    
+  end
+  
+end
+
+% Remove superfluous time parts
+parts(isnan(parts)) = [];
+nparts = numel(parts);
+% Get the metrics matching each part
+metrics = metric(idx - (0:(nparts - 1)));
+
+% Build the final time string
+s = strjoin(arrayfun(@(ind) sprintf('%d%s', parts(ind), metrics{ind}), 1:nparts, 'UniformOutput', false), ' ');
+
 
 end
 
