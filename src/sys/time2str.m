@@ -1,7 +1,7 @@
 function s = time2str(d, varargin)
 %% TIME2STR turns a duration in seconds into a human readable string
 %
-% S = TIME2STR(D) turns time durations D into human readable strins.
+% S = TIME2STR(D) turns time spans D into human readable strins.
 %
 % Inputs:
 %
@@ -17,8 +17,10 @@ function s = time2str(d, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-03-07
+% Date: 2022-03-08
 % Changelog:
+%   2022-03-08
+%       * Simplify code for generating final time string
 %   2022-03-07
 %       * Remove parameter `Format`
 %       * Change logic to return human readable time strings with 'min', 's',
@@ -92,19 +94,28 @@ end
 % Find the largest scaling factor
 scls = d ./ factor;
 idx = find(1 <= scls & scls < 1e3, 1, 'last');
+% If none was found, we will default to "seconds"
 if isempty(idx)
   idx = 9;
 end
 
-% Houses the fixed-integer parts of each factor
-parts = nan(1, idx);
+% Final string of time
+s = '';
 
 % Loop over each factor
 for fidx = idx:-1:1
   % Full integer value of number and factor
   v = fix(d / factor(fidx));
-  % 
-  parts(idx-fidx+1) = v;
+  
+  % If the integer after division is zero, then this factor is not included, so
+  % we will skip it.
+  if v == 0
+    continue
+  end
+  
+  % Append value and metric onto string
+  s = [ s , ' ' , num2str(v) , metric{fidx} ]; %#ok<AGROW>
+  
   % Calculate remaining value
   d = d - v * factor(fidx);
   % If remaining value is less than or equal to zero, we stop
@@ -115,14 +126,8 @@ for fidx = idx:-1:1
   
 end
 
-% Remove superfluous time parts
-parts(isnan(parts)) = [];
-nparts = numel(parts);
-% Get the metrics matching each part
-metrics = metric(idx - (0:(nparts - 1)));
-
-% Build the final time string
-s = strjoin(arrayfun(@(ind) sprintf('%d%s', parts(ind), metrics{ind}), 1:nparts, 'UniformOutput', false), ' ');
+% Remove superfluous whitespace
+s = strtrim(s);
 
 
 end
