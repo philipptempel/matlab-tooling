@@ -97,47 +97,58 @@ if isempty(sec_)
   
 end
 
-% No base metric given
-if isempty(b)
+% Base metric given
+if ~isempty(b)
+  idx = find(strcmp(char(b), metric), 1);
+  
+  % Ensure if there is no match for a metric, we will not fail
+  if isempty(idx)
+    idx = 9;
+  end
+  
+  % Scale value by the metric's factor
+  v = d ./ factor(idx);
+  
+  % Create the string
+  s = [ num2str(v) , metric{idx} ];
+  
+else
+
   % Find the largest scaling factor
   scls = d ./ factor;
   
   idx = find(1 <= scls & scls < 1e3, 1, 'last');
   
-% Base metric given
-else
-  idx = find(strcmp(char(b), metric));
-  
-end
-
-% If no base metric was found, we will default to "seconds"
-if isempty(idx)
-  idx = 9;
-end
-
-% Final string of time
-s = '';
-
-% Loop over each factor
-for fidx = idx:-1:1
-  % Full integer value of number and factor
-  v = fix(d / factor(fidx));
-  
-  % If the integer after division is zero, then this factor is not included, so
-  % we will skip it.
-  if v == 0
-    continue
+  % If no base metric was found, we will default to "seconds"
+  if isempty(idx)
+    idx = 9;
   end
-  
-  % Append value and metric onto string
-  s = [ s , ' ' , num2str(v) , metric{fidx} ]; %#ok<AGROW>
-  
-  % Calculate remaining value
-  d = d - v * factor(fidx);
-  % If remaining value is less than or equal to zero, we stop
-  if d <= 0
-    break
-    
+
+  % Final string of time
+  s = '';
+
+  % Loop over each factor
+  for fidx = idx:-1:1
+    % Full integer value of number and factor
+    v = fix(d / factor(fidx));
+
+    % If the integer after division is zero, then this factor is not included, so
+    % we will skip it.
+    if v == 0
+      continue
+    end
+
+    % Append value and metric onto string
+    s = [ s , ' ' , num2str(v) , metric{fidx} ]; %#ok<AGROW>
+
+    % Calculate remaining value
+    d = d - v * factor(fidx);
+    % If remaining value is less than or equal to zero, we stop
+    if d <= 0
+      break
+
+    end
+
   end
   
 end
