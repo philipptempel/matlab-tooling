@@ -1,4 +1,4 @@
-function s = time2str(d, varargin)
+function s = time2str(d, b)
 %% TIME2STR turns a duration in seconds into a human readable string
 %
 % S = TIME2STR(D) turns time spans D into human readable strins.
@@ -38,18 +38,24 @@ function s = time2str(d, varargin)
 %% Parse arguments
 
 % TIME2STR(D)
-narginchk(1, 1);
+% TIME2STR(D, B)
+narginchk(1, 2);
 
 % TIME2STR(___)
 % S = TIME2STR(___)
 nargoutchk(0, 1);
+
+% TIME2STR(D)
+if nargin < 2 || isempty(b)
+  b = [];
+end
 
 
 
 %% Algorithm
 
 % Run over each element of B and convert it
-s = arrayfun(@(dur) in_parseduration(dur), d, 'UniformOutput', false);
+s = arrayfun(@(dur) in_parseduration(dur, b), d, 'UniformOutput', false);
 
 % If there was only one time given, we will also have to adjust the array of
 % strings
@@ -61,7 +67,7 @@ end
 end
 
 
-function s = in_parseduration(d)
+function s = in_parseduration(d, b)
 %% IN_PARSEDURATION
 %
 % Inputs:
@@ -91,10 +97,20 @@ if isempty(sec_)
   
 end
 
-% Find the largest scaling factor
-scls = d ./ factor;
-idx = find(1 <= scls & scls < 1e3, 1, 'last');
-% If none was found, we will default to "seconds"
+% No base metric given
+if isempty(b)
+  % Find the largest scaling factor
+  scls = d ./ factor;
+  
+  idx = find(1 <= scls & scls < 1e3, 1, 'last');
+  
+% Base metric given
+else
+  idx = find(strcmp(char(b), metric));
+  
+end
+
+% If no base metric was found, we will default to "seconds"
 if isempty(idx)
   idx = 9;
 end
