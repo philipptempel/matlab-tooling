@@ -1,4 +1,4 @@
-function varargout = eltimstat(elt, names)
+function varargout = eltimstat(elt, names, prec)
 %% ELTIMSTAT Calculate statistics of elapsed times
 %
 % ELTIMSTAT(ELT) calculates the statistics SUM, MIN, MAX, MEAN, MEDIAN, and STD
@@ -7,23 +7,32 @@ function varargout = eltimstat(elt, names)
 % ELTIMSTAT(ELT, TRIALNAMES) uses trial names TRIALNAMES as table headings
 % instead of generic `Trial x` text.
 %
+% ELTIMSTAT(___, PRECISION) allows setting the decimal precision of durations.
+%
 % T = ELTIMSTAT(___) returns the table object instead.
 %
 % Inputs:
 %
-%   ELT                 NxM array of N time samples and M trials.
+%   ELT                     NxM array of N time samples and M trials.
 %
-%   TRIALNAMES          1xM cell array of trial names.
+%   TRIALNAMES              1xM cell array of trial names.
+%
+%   PRECISION               Scalar precision used in displaying the elasped
+%                           durations.
+%                           Default: 3.
 %
 % See also:
-%   TABLE MIN MAX MEDIAN MEAN STD
+%   SECONDS TABLE MIN MAX MEDIAN MEAN STD
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-23
+% Date: 2022-03-09
 % Changelog:
+%   2022-03-09
+%       * Add input argument `PREC`
+%       * Replace use of `time2str` with `seconds`
 %   2022-02-23
 %       * Add fields `SUM` and `STD` to table
 %   2022-01-20
@@ -37,23 +46,29 @@ function varargout = eltimstat(elt, names)
 
 % ELTIMSTAT(ELT)
 % ELTIMSTAT(ELT, NAMES)
-narginchk(1, 2);
+% ELTIMSTAT(ELT, NAMES, PREC)
+narginchk(1, 3);
+
+% ELTIMSTAT(___)
+% T = ELTIMSTAT(___)
+nargoutchk(0, 1);
 
 % ELTIMSTAT(ELT)
 if nargin < 2 || isempty(names)
   names = arrayfun(@(idx) sprintf('Trial %d', idx), 1:size(elt, 2), 'UniformOutput', false);
 end
 
-% ELTIMSTAT(___)
-% T = ELTIMSTAT(___)
-nargoutchk(0, 1);
+% ELTIMSTAT(ELT, NAMES)
+if nargin < 3 || isempty(prec)
+  prec = 3;
+end
 
 
 
 %% Algorithm
 
-t = array2table( ...
-  time2str( ...
+% Elapsed durations in seconds
+durs = round( ...
     [ ...
       sum(elt, 1) ; ...
       min(elt, [], 1) ; ...
@@ -62,8 +77,13 @@ t = array2table( ...
       max(elt, [], 1) ; ...
       std(elt, [], 1) ; ...
     ] ...
-    , 'Format', '%.3f' ...
-  ) ...
+  , prec ...
+);
+durs = seconds(durs);
+
+% Build table
+t = array2table( ...
+  durs ...
   , 'RowNames', { 'sum', 'min' , 'median' , 'mean' , 'max' , 'std' } ...
   , 'VariableNames', names ...
 );
