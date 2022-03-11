@@ -11,14 +11,18 @@ function q = quatrand(n)%#codegen
 %
 % Outputs:
 %
-%   Q                   4xN array of random quaterions
+%   Q                   4xN array of N quaternions. Each quaternion represents
+%                       a 3D rotation in form q = [w, x, y, z], with the scalar
+%                       given as the first value w.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-13
+% Date: 2022-03-10
 % Changelog:
+%   2022-03-10
+%     * Update H1 documentation clarifying format of output quaternions Q
 %   2022-02-13
 %     * Enforce quaternion scalar components positive.
 %   2022-02-08
