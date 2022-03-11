@@ -1,27 +1,38 @@
-function f = inside(v, l, u)%#codegen
+function f = inside(v, l, u, flopen)%#codegen
 %% INSIDE Check if value inside an interval
 %
 % INSIDE(VALUE, LOWER, UPPER) checks if VALUE is inside the interval defined
 % through LOWER and UPPER boundary.
 %
+% INSIDE(___, FLOPEN) checks if VALUE is inside the open interval.
+%
 % Inputs:
 %
-%   VALUE                   Description of argument VALUE
+%   VALUE                   NxK array of values.
 % 
-%   LOWER                   Description of argument LOWER
+%   LOWER                   NxK array of lower interval boundaries.
 % 
-%   UPPER                   Description of argument UPPER
+%   UPPER                   NxK array of upper interval boundaries.
+%
+%   FLOPEN                  Flag whether VALUE should be contained in the closed
+%                           (FLOPEN == false) or the open (FLOPEN == true)
+%                           interval.
 %
 % Outputs:
 %
-%   F                       Description of argument F
+%   F                       NxK array where VALUE is inside the closed/open
+%                           interval defiend by LOWER and UPPER.
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-01-26
+% Date: 2022-03-09
 % Changelog:
+%   2022-03-09
+%       * Fix algorithm for checking if a value is inside the interval
+%       * Update H1 documentation
+%       * Add argument `FLOPEN`
 %   2022-01-26
 %       * Initial release
 
@@ -29,18 +40,35 @@ function f = inside(v, l, u)%#codegen
 
 %% Parse arguments
 
-% INSIDE(V, L, U)
-narginchk(3, 3);
+% INSIDE(VALUE, LOWER, UPPER)
+% INSIDE(VALUE, LOWER, UPPER, FLOPEN)
+narginchk(3, 4);
 
 % INSIDE(___)
 % F = INSIDE(___)
 nargoutchk(0, 1);
 
+% INSIDE(VALUE, LOWER, UPPER)
+if nargin < 4 || isempty(flopen)
+  flopen = matlab.lang.OnOffSwitchState.off;
+end
+
 
 
 %% Algorithm
 
-f = v <= l | l <= u;
+% Parse open-interval flag
+flopen = onoffstate(flopen);
+
+% Check on the open interval
+if flopen == matlab.lang.OnOffSwitchState.on
+  f = l < v & v < u;
+  
+% Check on the closed interval
+else
+  f = l <= v & v <= u;
+  
+end
 
 
 
