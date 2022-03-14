@@ -5,8 +5,11 @@ function finish()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2022-01-31
+% Date: 2022-03-14
 % Changelog:
+%   2022-03-14
+%       * Split repository into tooling repo and workspace repo, thus update
+%       function to reflect new layout
 %   2022-01-31
 %       * Fix removing of paths in incorrect order
 %   2021-12-22
@@ -18,19 +21,7 @@ function finish()
 
 
 
-%% Do your code magic here
-
-
-% Where to save the current workspace to
-chWorkspacePath = fullfile(fileparts(mfilename('fullpath')), 'workspace');
-
-% Make sure we have a directory for our workspace files
-if 7 ~= exist(chWorkspacePath, 'dir')
-    mkdir(chWorkspacePath);
-end
-
-% Save the current workspace to a file in this file's directory
-evalin('base', sprintf('save(''%s'');', fullfile(chWorkspacePath, sprintf('ws_%s.mat', datestr(now, 'yyyymmddThhMMss')))));
+%% Algorithm
 
 % Get path's to add to MATLAB's search path
 p = mtl_projpath();
