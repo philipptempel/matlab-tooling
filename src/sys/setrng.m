@@ -9,8 +9,10 @@ function setrng()
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-03-14
 % Changelog:
+%   2022-03-14
+%       * Code formatting
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2016-12-03
@@ -21,7 +23,7 @@ function setrng()
 %% Do your code magic here
 
 rng('shuffle')
-rng(sum(100*clock), 'simdTwister');
+rng(sum(100 * clock()), 'simdTwister');
 
 
 end
