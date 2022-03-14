@@ -8,6 +8,7 @@ function startup()
 % Date: 2022-03-14
 % Changelog:
 %   2022-03-14
+%       * Reverse order of adding paths
 %       * Split repository into tooling repo and workspace repo, thus update
 %       function to reflect new layout
 %   2020-06-11
@@ -32,7 +33,7 @@ function startup()
 % Get path's to add to MATLAB's search path
 p = mtl_projpath();
 % and add the paths
-addpath(p{:});
+addpath(p{end:-1:1});
 
 
 end

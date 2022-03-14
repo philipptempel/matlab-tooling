@@ -8,6 +8,7 @@ function finish()
 % Date: 2022-03-14
 % Changelog:
 %   2022-03-14
+%       * Reverse order of removing paths
 %       * Split repository into tooling repo and workspace repo, thus update
 %       function to reflect new layout
 %   2022-01-31
@@ -26,7 +27,7 @@ function finish()
 % Get path's to add to MATLAB's search path
 p = mtl_projpath();
 % and remove the paths in reverse order
-rmpath(p{end:-1:1});
+rmpath(p{:});
 
 
 end
