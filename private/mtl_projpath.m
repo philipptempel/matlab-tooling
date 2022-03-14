@@ -11,8 +11,11 @@ function p = mtl_projpath()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2022-01-31
+% Date: 2022-03-14
 % Changelog:
+%   2022-03-14
+%       * Add `NARGINCHK` and `NARGOUTCHK`
+%       * Remove submodules from list of paths
 %   2022-01-31
 %       * Fix post-processing of generated paths
 %       * Remove top-level directory from list of paths
@@ -39,6 +42,12 @@ function p = mtl_projpath()
 
 %% Parse arguments
 
+% MTL_PROJPATH()
+narginchk(0, 0);
+
+% P = MTL_PROJPATH()
+nargoutchk(0, 1);
+
 
 
 %% Algorithm
@@ -51,16 +60,26 @@ chPath = char(java.io.File(b).getCanonicalPath());
 
 % All paths to add
 p = { ...
-    fullfile(chPath, 'exportfig') ...
-  , fullfile(chPath, 'jsonlab') ...
-  , fullfile(chPath, 'matlab2tikz', 'src') ...
-  , genpath(fullfile(chPath, 'mex')) ...
+    genpath(fullfile(chPath, 'mex')) ...
   , genpath(fullfile(chPath, 'src')) ...
-  , fullfile(chPath, 'solarized-matlab') ...
 };
 
+% Remove empty paths
+p(cellfun(@isempty, p)) = [];
+
 % Porcess all paths to be absolute, fully qualified paths
-p = normalizepath(p{:});
+p = cellfun( ...
+    @(ip) strjoin( ...
+        cellfun( ...
+            @(p) char(java.io.File(p).getCanonicalPath()) ...
+          , strsplit(strip(ip, 'both', pathsep()), pathsep()) ...
+          , 'UniformOutput', false ...
+        ) ...
+      , pathsep() ...
+    ) ...
+  , p ...
+  , 'UniformOutput', false ...
+);
 
 
 end
@@ -68,4 +87,4 @@ end
 %------------- END OF CODE --------------
 % Please send suggestions for improvement of this file to the original author as
 % can be found in the header. Your contribution towards improving this function
-% will be acknowledged in the "Changes" section of the header.
+% will be acknowledged in the "Changelog" section of the header.
