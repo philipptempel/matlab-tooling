@@ -19,8 +19,12 @@ function makecontents(cwd, options)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-03-01
+% Date: 2022-03-15
 % Changelog:
+%   2022-03-15
+%       * Fix bug where recursing would only get all functions from lower levels
+%       but not create `Contents.m` files in directories further down the
+%       hierarchy
 %   2022-03-01
 %       * Initial release
 
@@ -55,8 +59,39 @@ end
 % Parse options
 options = parse_options(options);
 
+% Find all directories from the given base
+suff = '';
+if options.Recurse == matlab.lang.OnOffSwitchState.on
+  suff = '**';
+end
+d = dir(fullfile(cwd, suff));
+% Remove files
+d(~[d.isdir]) = [];
+% Remove the "up" directory i.e., ".."
+d(strcmp({d.name}, '..')) = [];
+% Remove system directories
+d(contains({d.name}, '.')) = [];
+% Remove `private` directories
+d(strcmp({d.name}, 'private')) = [];
+nd = numel(d);
+
+% Loop over each directory
+for id = 1:nd
+  dir2contents(fullfile(d(id).folder, d(id).name), options);
+end
+
+
+end
+
+
+
+function dir2contents(cwd, options)
+%% DIR2CONTENTS
+
+
+
 % Find all M-Files
-mfs = allfiles(cwd, '.m', 'Recurse', options.Recurse);
+mfs = allfiles(cwd, '.m');
 % Remove possible `CONTENTS.M` file
 mfs(arrayfun(@(f) isequal(char(lower(f.name)), 'contents.m'), mfs)) = [];
 nmf = numel(mfs);
