@@ -22,6 +22,7 @@ function makecontents(cwd, options)
 % Date: 2022-03-15
 % Changelog:
 %   2022-03-15
+%       * Fix bug removing the given directory if `Recurse` was on
 %       * Fix bug where recursing would only get all functions from lower levels
 %       but not create `Contents.m` files in directories further down the
 %       hierarchy
@@ -69,8 +70,6 @@ d = dir(fullfile(cwd, suff));
 d(~[d.isdir]) = [];
 % Remove the "up" directory i.e., ".."
 d(strcmp({d.name}, '..')) = [];
-% Remove system directories
-d(contains({d.name}, '.')) = [];
 % Remove `private` directories
 d(strcmp({d.name}, 'private')) = [];
 nd = numel(d);
