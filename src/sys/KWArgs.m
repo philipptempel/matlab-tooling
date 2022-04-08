@@ -30,13 +30,13 @@ classdef KWArgs < handle ...
   properties ( Hidden, SetAccess = protected )
     
     % Keys only
-    Keys
+    Keys = {}
     
     % Values only
-    Values
+    Values = {}
     
     % Dynamic properties we added for each argument
-    DynamicProperties
+    DynamicProperties = struct();
     
   end
   
@@ -47,6 +47,7 @@ classdef KWArgs < handle ...
     
     function obj = KWArgs(varargin)
       %% KWArgs
+      
       
       
       % One argument fallback
@@ -118,6 +119,7 @@ classdef KWArgs < handle ...
       %% ENSUREPROP
       
       
+      
       % Find property
       prop = findprop(obj, name);
       
@@ -133,6 +135,7 @@ classdef KWArgs < handle ...
     
     function prop = addprop(obj, name)
       %% ADDPROP
+      
       
       
       % Ensure we have a valid MATLAB property name
@@ -154,6 +157,7 @@ classdef KWArgs < handle ...
       %% FINDPROP
       
       
+      
       p = findprop@dynamicprops(obj, KWArgs.makeValidName(prop));
       
     end
@@ -161,6 +165,7 @@ classdef KWArgs < handle ...
     
     function rmprop(obj, prop)
       %% RMPROP
+      
       
       
       % Ensure we have a dynamic property object
@@ -193,6 +198,7 @@ classdef KWArgs < handle ...
       %% HAS Check if a key exists
       
       
+      
       v = any(strcmp(KWArgs.makeValidName(k), obj.Keys));
       
     end
@@ -218,6 +224,7 @@ classdef KWArgs < handle ...
       % Outputs:
       % 
       %   V           Value found for KEY or DEFAULT if not found.
+      
       
       
       narginchk(1, 3);
@@ -269,6 +276,7 @@ classdef KWArgs < handle ...
       % Outputs:
       % 
       %   V           Value found for KEY or DEFAULT if not found.
+      
       
       
       narginchk(2, 3);
@@ -351,6 +359,7 @@ classdef KWArgs < handle ...
       %% INTERSECT
       
       
+      
       % Determine the new keys
       ckeys = intersect(obj.Keys, that.Keys);
       
@@ -369,6 +378,7 @@ classdef KWArgs < handle ...
     
     function nobj = union(obj, that)
       %% UNION
+      
       
       
       % Determine the new keys
@@ -406,6 +416,7 @@ classdef KWArgs < handle ...
       %% SETDIFF
       
       
+      
       % Determine the new keys
       ckeys = setdiff(obj.Keys, that.Keys);
       
@@ -424,6 +435,7 @@ classdef KWArgs < handle ...
     
     function nobj = setxor(obj, that)
       %% SETXOR
+      
       
       
       % Determine the new keys
@@ -461,6 +473,7 @@ classdef KWArgs < handle ...
       %% MERGE
       
       
+      
       % Copy this object
       nobj = copy(obj);
       
@@ -494,6 +507,7 @@ classdef KWArgs < handle ...
       %% COPYELEMENT
       
       
+      
       % Main copy
       copbj = copyElement@matlab.mixin.Copyable(obj);
       
@@ -521,6 +535,7 @@ classdef KWArgs < handle ...
     
     function n = makeValidName(k)
       %% MAKEVALIDNAME
+      
       
       
       n = matlab.lang.makeValidName(replace(k, {'+', '-'}, {'Plus', 'Minus'}));
