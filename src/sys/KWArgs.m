@@ -474,25 +474,8 @@ classdef KWArgs < handle ...
       
       
       
-      % Copy this object
-      nobj = copy(obj);
-      
-      % Loop over the other body's data
-      tkeys = that.Keys;
-      tvals = that.Values;
-      ntkeys = numel(tkeys);
-      
-      % Loop over each of the other KWargs object's keys
-      for ickey = 1:ntkeys
-        % Get key and value
-        k = tkeys{ickey};
-        v = tvals{ickey};
-        % Ensure the property exists
-        ensureprop(nobj, k);
-        % And append the value
-        nobj.(k) = v;
-        
-      end
+      % New object with new data
+      nobj = KWArgs(obj.Args{:}, that.Args{:});
       
     end
     
