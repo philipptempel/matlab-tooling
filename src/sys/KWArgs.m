@@ -475,7 +475,23 @@ classdef KWArgs < handle ...
       
       
       % New object with new data
-      nobj = KWArgs(obj.Args{:}, that.Args{:});
+      nobj = KWArgs([ cell(obj) , cell(that) ]);
+      
+    end
+    
+  end
+  
+  
+  
+  %% CONVERSION
+  methods
+    
+    function c = cell(obj)
+      %% CELL
+      
+      
+      
+      c = obj.Args;
       
     end
     
