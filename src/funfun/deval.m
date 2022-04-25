@@ -19,8 +19,10 @@ function varargout = deval(sol, xint, idx)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-01-18
+% Date: 2022-04-25
 % Changelog:
+%   2022-04-25
+%       * Use `SWAP` to flip inputs if SOL and XINT are permuted
 %   2022-01-18
 %       * Initial release
 
@@ -39,17 +41,19 @@ narginchk(2, 3);
 nargoutchk(0, 2);
 
 % DEVAL(XINT, SOL)
-if ~isa(sol, 'struct')  
-  temp = sol;
-  sol  = xint;
-  xint = temp;
+if ~isa(sol, 'struct')
+  % Flip first two arguments
+  [sol, xint] = swap(xint, sol);
+  
 end
 
 try
   t = sol.x;
   y = sol.y;
+  
 catch
   error(message('MATLAB:deval:SolNotFromDiffEqSolver', inputname(1)));
+  
 end
 
 % DEVAL(SOL, X)
@@ -61,6 +65,7 @@ if nargin < 3
 % Return only some solution components
 elseif any(idx < 0) || any(idx > size(y, 1))
   error(message('MATLAB:deval:IDXInvalidSolComp', inputname(3)));
+  
 end
 
 
