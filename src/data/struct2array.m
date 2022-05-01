@@ -7,8 +7,10 @@ function a = struct2array(s)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-12-03
+% Date: 2022-04-26
 % Changelog:
+%   2022-04-26
+%       * Change algorithm to use `CELL2MAT` and `STRUCT2CELL`
 %   2021-12-03
 %       * Initial release
 
@@ -27,10 +29,8 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-% Convert struture to a cell array, then each field in the structure to an array
-c = cellfun(@(v) v(:), struct2cell(s), 'UniformOutput', false);
-% And concat the cell array into a numeric array
-a = [c{:}];
+% Convert struture to a cell array, then into a matrix
+a = cell2mat(struct2cell(s));
 
 
 end
