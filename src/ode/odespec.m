@@ -55,8 +55,11 @@ function varargout = odespec(ode, tspan, y0, options, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-24
+% Date: 2022-05-01
 % Changelog:
+%   2022-05-01
+%       * Add support for solving matrix-ODEs where the B vector now can also be
+%       a matrix
 %   2022-02-24
 %       * Fix implementation of solving matrix ODEs as this was buggy in some
 %       cases and created a system with too many DOF. The new implementation
@@ -168,13 +171,18 @@ A = zeros(ns, ns);
 b = zeros(ns, nv);
 idxYN = (idxY - 1) * nout;
 
+% Ensure B_ is of size YxYxN as well if it isn't already
+if size(b_, 2) == 1
+  b_ = repmat(b_, 1, nv, 1);
+end
+
 % Looping over every node
 for in = 1:nout
   % Push the i-th node's constant A matrix values in
   A(in + idxYN,in + idxYN) = A_(:,:,in);
   
   % Push the i-th node's constant b vector values in
-  b(in + idxYN,:) = repmat(b_(:,in), 1, nv);
+  b(in + idxYN,:) = b_(:,:,in);
   
 end
 A = sparse(A);
@@ -308,12 +316,15 @@ function [A, b] = flip_wrapper(f, t)
 % Evaluate ODE function
 [A, b] = feval(f, t);
 % Ensure B is YxN, if not, transpose it
-if size(b, 1) == size(A, 3) && size(b, 2) == size(A, 1)
-  b = permute(b, [2, 1]);
+if size(b, 2) == size(A, 3)
+  b = permute(b, [1, 3, 2]);
 end
+% if size(b, 1) == size(A, 3) && size(b, 2) == size(A, 1)
+%   b = permute(b, [2, 1]);
+% end
 % Flip columns i.e., node points
 A = flip(A, 3);
-b = flip(b, 2);
+b = flip(b, 3);
 
 
 end
