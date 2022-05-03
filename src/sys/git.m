@@ -47,8 +47,10 @@ function varargout = git(varargin)
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
 % URL: https://mathworks.com/matlabcentral/fileexchange/29154-a-thin-matlab-wrapper-for-the-git-source-control-system
-% Date: 2022-03-18
+% Date: 2022-05-03
 % Changelog:
+%   2022-05-03
+%       * Fix bug in stripping commands
 %   2022-03-18
 %       * Initial release based on FEX submission 29154
 
@@ -213,7 +215,7 @@ function sdl = parseArguments(varargin)
 
 
 
-sdl = cell2mat(cellfun(@(s) ([s ,' ']), varargin, 'UniformOutput', false));
+sdl = strip(cell2mat(cellfun(@(s) ([char(s) ,' ']), varargin, 'UniformOutput', false)), 'right', ' ');
 
 
 end
