@@ -1,9 +1,11 @@
-function c = color(varargin)
+function c = color(name, varargin)
 %% COLOR Create a color RGB triplet from a human readable name
 %
 % C = COLOR(NAME)
 %
 % C = COLOR(NAME_1, NAME_2, ...)
+%
+% COLOR() lists all registered colors
 %
 % Inputs:
 %
@@ -39,8 +41,10 @@ function c = color(varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-12
+% Date: 2022-07-21
 % Changelog:
+%   2022-07-21
+%       * Add zero-argument call syntax which automatically lists all colors
 %   2021-03-12
 %       * Add darker and lighter gray colors
 %       * Add alias `grey` for `gray`
@@ -53,12 +57,18 @@ function c = color(varargin)
 
 %% Parse arguments
 
+% COLOR()
 % COLOR(NAME)
 % COLOR(NAME, ...)
-narginchk(1, Inf);
+narginchk(0, Inf);
 % COLOR(___)
 % C = COLOR(___)
 nargoutchk(0, 1);
+
+% COLOR()
+if nargin < 1 || isempty(name)
+  name = 'list';
+end
 
 
 
@@ -121,7 +131,7 @@ switch lower(varargin{1})
       warning(me.identifier, '%s', me.message);
     end
     
-  case 'list'
+  case {'list', ''}
     spacer = 2 + max(cell2mat(cellfun(@numel, colors(:,1), 'UniformOutput', false)));
     fmt = ['  %-', num2str(spacer) , 's %4d %4d %4d\n'];
     for iname = 1:size(colors, 1)
