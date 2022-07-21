@@ -78,6 +78,9 @@ if nargin < 1 || isempty(name)
   name = 'list';
 end
 
+% Merge arguments
+args = [ name , varargin ];
+
 
 
 %% Do your code magic here
@@ -115,11 +118,11 @@ end
 
 
 % Decide what to do
-switch lower(name)
+switch lower(args{1})
   case 'add'
     narginchk(3, 3);
-    cname = varargin{2};
-    crgb = varargin{3};
+    cname = args{2};
+    crgb = args{3};
     
     % Try adding new color
     try
@@ -132,7 +135,7 @@ switch lower(name)
     
   case 'remove'
     narginchk(2, 2);
-    cname = varargin{2};
+    cname = args{2};
     
     % Remove matching color(s)
     try
@@ -153,9 +156,9 @@ switch lower(name)
     end
     
   otherwise
-    % Extract RGB triplet for each color name match in `varargin`
+    % Extract RGB triplet for each color name match in `args`
     try
-      matches = cellfun(@(m) colors(m,2), cellfun(@(n) strcmpi(n, colors(:,1)), varargin, 'UniformOutput', false), 'UniformOutput', false);
+      matches = cellfun(@(m) colors(m,2), cellfun(@(n) strcmpi(n, colors(:,1)), args, 'UniformOutput', false), 'UniformOutput', false);
 
     catch me
       throwAsCaller(me);
@@ -164,7 +167,7 @@ switch lower(name)
 
     % Some colors were not found?
     if any(cellfun(@isempty, matches))
-      error('invalid color name `%s`', varargin{find(cellfun(@isempty, matches), 1)});
+      error('invalid color name `%s`', args{find(cellfun(@isempty, matches), 1)});
 
     end
 
