@@ -16,6 +16,7 @@ function c = color(name, varargin)
 %                         * cyan
 %                         * darkgray
 %                         * darkgrey
+%                         * fuchsia
 %                         * fuelyellow
 %                         * gray
 %                         * grey
@@ -44,6 +45,7 @@ function c = color(name, varargin)
 % Date: 2022-07-21
 % Changelog:
 %   2022-07-21
+%       * Add color `Fuchsia`
 %       * Add zero-argument call syntax which automatically lists all colors
 %   2021-03-12
 %       * Add darker and lighter gray colors
@@ -84,6 +86,7 @@ if isempty(colors)
     {'Cyan'},         {[0.000, 1.000, 1.000]} ; ...
     {'DarkGray'},     {[0.333, 0.333, 0.333]} ; ...
     {'DarkGrey'},     {[0.333, 0.333, 0.333]} ; ...
+    {'Fuchsia'},      {[1.000, 1.000, 1.000]} ; ...
     {'FuelYellow'},   {[0.929, 0.694, 0.125]} ; ...
     {'Gray'},         {[0.500, 0.500, 0.500]} ; ...
     {'Grey'},         {[0.500, 0.500, 0.500]} ; ...
