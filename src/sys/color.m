@@ -115,7 +115,7 @@ end
 
 
 % Decide what to do
-switch lower(varargin{1})
+switch lower(name)
   case 'add'
     narginchk(3, 3);
     cname = varargin{2};
