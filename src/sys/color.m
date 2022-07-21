@@ -9,6 +9,8 @@ function c = color(name, varargin)
 %
 % COLOR('list') lists all registered colors.
 %
+% COLOR('reset') resets the list of registered colors to the default ones.
+%
 % Inputs:
 %
 %   NAME                Name of the color to convert into RGB. Possible values
@@ -47,6 +49,7 @@ function c = color(name, varargin)
 % Date: 2022-07-21
 % Changelog:
 %   2022-07-21
+%       * Add option `RESET` to reset the color list to its default values
 %       * Code formatting
 %       * Add color `Fuchsia`
 %       * Add zero-argument call syntax which automatically lists all colors
@@ -137,6 +140,9 @@ switch lower(varargin{1})
     catch me
       warning(me.identifier, '%s', me.message);
     end
+    
+  case 'reset'
+    colors = {};
     
   case {'list', ''}
     spacer = 2 + max(cell2mat(cellfun(@numel, colors(:,1), 'UniformOutput', false)));
