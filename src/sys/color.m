@@ -145,7 +145,7 @@ switch lower(args{1})
     end
     
   case 'reset'
-    colors = {};
+    clear('color');
     
   case {'list', ''}
     spacer = 2 + max(cell2mat(cellfun(@numel, colors(:,1), 'UniformOutput', false)));
