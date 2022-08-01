@@ -63,8 +63,11 @@ function mkfun(fname, varargin)
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-02-01
+% Date: 2022-08-01
 % Changelog:
+%   2022-08-01
+%       * Fix bug in not correctly stripping `varargin` and `varargout` from the
+%       list of arguments in the file's H1 documentation
 %   2022-02-01
 %       * Fix bug introduced earlier which didn't allow for creating function
 %       files in (sub)directories
@@ -236,9 +239,9 @@ if isempty(fun_ext)
 end
 fun_name = matlab.lang.makeValidName(fun_name);
 % List of input arguments
-[arg_in, fVarArgIn] = parse_vararg('in', ip.Results.ArgIn);
+[arg_in, h1arg_in, fVarArgIn] = parse_vararg('in', ip.Results.ArgIn);
 % List of output arguments
-[arg_out, fVarArgOut] = parse_vararg('out', ip.Results.ArgOut);
+[arg_out, h1arg_out, sfVarArgOut] = parse_vararg('out', ip.Results.ArgOut);
 % Description text
 description = ip.Results.Description;
 % Author name
@@ -332,7 +335,7 @@ arginchk  = build_argchk('in', narg_in);
 argoutchk = build_argchk('out', narg_out);
 
 % Description string
-description = in_createDescription(description, arg_in, arg_out);
+description = in_createDescription(description, h1arg_in, h1arg_out);
 
 % Define the set of placeholders to replace here
 substitutions = {...
@@ -468,19 +471,21 @@ end
 end
 
 
-function [args, f] = parse_vararg(t, args)
+function [args, h1args, f] = parse_vararg(t, args)
 %% PARSE_VARARG
 %
-% [ARGS, F] = PARSE_VARARG(T, ARGS)
+% [ARGS, H1ARGS, F] = PARSE_VARARG(T, ARGS)
 
 
 
+% H1 arguments are the same as signature arguments
+h1args = args;
 % Find the index of 'varargin' in the input argument names
 idxS = find(strcmpi(args, sprintf('vararg%s', t)));
 f = ~isempty(idxS) && numel(args) >= idxS;
 % Reject everything after 'varargin'
 if f
-  args((idxS + 1):end) = [];
+  h1args(idxS:end) = [];
 end
 
 
