@@ -55,8 +55,11 @@ function varargout = odespec(ode, tspan, y0, options, varargin)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-05-01
+% Date: 2022-08-01
 % Changelog:
+%   2022-08-01
+%       * Add support to skip checking the function handle passed `ODE` in order
+%       to speed up spectral integration
 %   2022-05-01
 %       * Add support for solving matrix-ODEs where the B vector now can also be
 %       a matrix
@@ -110,7 +113,6 @@ options = parse_options(options);
 
 % Turn Y0 into a column vector
 [nf, nv] = size(y0);
-szy0 = [nf, nv];
 ny = numel(y0);
 
 
@@ -233,60 +235,87 @@ function f = parse_ode(ode, tout, y0, options)
 
 
 
-% Check type of ODE: Allowed types are function handles of (t, y) or strings to
-% function names
-fhUsed = isa(ode, 'function_handle');
+% Check if user asked to not perform any tests, then we will skip out here
+if onoffstate(optsget(options, 'SkipChecks', false, 'fast')) == matlab.lang.OnOffSwitchState.on
+  % Just use the given function as the ODE function
+  f = ode;
+  
+% Perform full suite of tests
+else
+  
+  % Check type of ODE: Allowed types are function handles of (t, y) or strings to
+  % function names
+  fhUsed = isa(ode, 'function_handle');
 
-% In case of string arguments, check the function exists (either as M-file (==2)
-% or as MEX file (==3)).
-if ~fhUsed && any(exist(ode, 'file') == [2, 3])
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:ODENotFound', 'ODE function with name %s not found.', funcstring(ode)));
-end
+  % In case of string arguments, check the function exists (either as M-file (==2)
+  % or as MEX file (==3)).
+  if ~fhUsed && any(exist(ode, 'file') == [2, 3])
+    throwAsCaller(MException('COSSEROOTS:ODESPEC:ODENotFound', 'ODE function with name %s not found.', funcstring(ode)));
+  end
 
-% Values to test-evaluate function at
-t = tout(1);
-nt = numel(tout);
-[nf, nv] = size(y0, [1, 2]);
+  % Values to test-evaluate function at
+  t = tout(1);
+  nt = numel(tout);
+  [nf, nv] = size(y0, [1, 2]);
 
-% Evaluate function
-try
-  [A, b] = feval(ode, t);
-catch me
-  % Wrong number of input arguments
-  if strcmp(me.identifier, 'MATLAB:TooManyInputs')
+  nIn  = nargin(ode);
+  nOut = nargout(ode);
+
+  % Check number of input arguments is 1: `ODE(T)`
+  if nIn ~= 1
     throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgin', 'Invalid number of input arguments to ODE function. Must take 1 (t), but takes %d.', nargin(ode)));
-    
-  % Wrong number of output arguments
-  elseif strcmp(me.identifier, 'MATLAB:TooManyOutputs')
+  end
+
+  % Check number of output arguments is 2: `[A, B] = ODE(T)`
+  if nOut ~= 2 && nOut ~= -1
     throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidNArgout', 'Invalid number of output arguments to ODE function. Must return 2 (A, B), but returns %d.', nargout(ode)));
-    
+  end
+
+  % Evaluate function
+  [A, b] = feval(ode, t);
+
+  % % Evaluate function
+  % try
+  %   [A, b] = feval(ode, t);
+  % catch me
+  %   % Wrong number of input arguments
+  %   if strcmp(me.identifier, 'MATLAB:TooManyInputs')
+  % 
+  %     
+  %   % Wrong number of output arguments
+  %   elseif strcmp(me.identifier, 'MATLAB:TooManyOutputs')
+  %     
+  %     
+  %   end
+  %   
+  %   % Any other case
+  %   throwAsCaller(addCause(MException('COSSEROOTS:ODESPEC:ErrorEvaluatingODE', 'Error evaluating ODE function at initial step.'), me));
+  %   
+  % end
+
+  % Check size of matrix A is correct
+  if size(A, 1) ~= size(A, 2) && size(A, 1) ~= nf
+    throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeA', 'Invalid shape of matrix A. Expected (%d %d) but got (%s).', nf, nf, num2str(size(A))));
+  end
+
+  % Check size of matrix A is correct
+  if size(b, 1) ~= nf && size(b, 2) ~= 1
+    throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeB', 'Invalid shape of vector B. Expected (%d %d) but got (%s).', nf, 1, num2str(size(b))));
+  end
+
+  % Lastly, check if function allows for vectorized input
+  f = ode;
+  try
+    [~, ~] = feval(ode, [t, t]);
+
+  catch me
+    f = @(t) ode_vectorized(ode, nf, nt, t, options.UseParallel);
+
   end
   
-  % Any other case
-  throwAsCaller(addCause(MException('COSSEROOTS:ODESPEC:ErrorEvaluatingODE', 'Error evaluating ODE function at initial step.'), me));
-  
 end
 
-% Check size of matrix A is correct
-if size(A, 1) ~= size(A, 2) && size(A, 1) ~= nf
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeA', 'Invalid shape of matrix A. Expected (%d %d) but got (%s).', nf, nf, num2str(size(A))));
-end
-
-% Check size of matrix A is correct
-if size(b, 1) ~= nf && size(b, 2) ~= 1
-  throwAsCaller(MException('COSSEROOTS:ODESPEC:InvalidSizeB', 'Invalid shape of vector B. Expected (%d %d) but got (%s).', nf, 1, num2str(size(b))));
-end
-
-% Lastly, check if function allows for vectorized input
-f = ode;
-try
-  [~, ~] = feval(ode, [t, t]);
-  
-catch
-  f = @(t) ode_vectorized(ode, nf, nt, t, options.UseParallel);
-  
-end
-
+% Lastly, for reasons of usability, the flip-wrapper must always be added
 f = @(t) flip_wrapper(f, t);
 
 
