@@ -20,8 +20,11 @@ function [qv, nq] = quatvalid(q, caller)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-09
+% Date: 2022-08-01
 % Changelog:
+%   2022-08-01
+%     * Allow empty quaternions to be valid as well i.e., also allow 4x0 to be a
+%     valid quaternion
 %   2022-02-14
 %     * Remove `FAST` argument
 %   2022-02-09
@@ -55,7 +58,7 @@ nargoutchk(0, 2);
 %% Algorithm
 
 % Validate...
-validateattributes(q, {'numeric'}, {'nonempty', '2d', 'nrows', 4}, caller, 'q');
+validateattributes(q, {'numeric'}, {'2d', 'nrows', 4}, caller, 'q');
 
 % Push quaternions into output
 qv = q;
