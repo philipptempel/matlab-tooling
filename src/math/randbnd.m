@@ -1,27 +1,27 @@
-function r = randbnd(sz, bnd, varargin)
+function r = randbnd(ab, varargin)
 %% RANDBND Create uniformly distributed pseudorandom numbers on an interval
 %
-% R = RANDBND(N, BND) creates an NxN array of pseudorandom numbers using RAND in
-% the interval defined by BND.
+% R = RANDBND(AB, N) creates an NxN array of pseudorandom numbers using RAND in
+% the interval defined by AB.
 %
-% R = RANDBND([N, M, P, ...], BND) creates an NxMxPx... array of pseudorandom
+% R = RANDBND(AB, [N, M, P, ...]) creates an NxMxPx... array of pseudorandom
 % numbers.
 %
-% R = RANDBND(SZ, BND, ...) passes additional parameters through to the
+% R = RANDBND(AB, SZ, ...) passes additional parameters through to the
 % underlying call to RAND.
 %
 % Inputs:
+% 
+%   AB                      1x2 array of interval boundaries in which the
+%                           pseudorandom numbers should lie.
 %
 %   SZ                      Scalar of NxMxPx... array of dimensions of array of
 %                           pseudorandom numbers.
-% 
-%   BND                     1x2 array of interval boundaries in which the
-%                           pseudorandom numbers should lie.
 %
 % Outputs:
 %
 %   R                       Array of size SZ of pseudorandom numbers in the
-%                           interval defined through BND.
+%                           interval defined through AB.
 %
 % See also:
 %   RAND
@@ -30,8 +30,11 @@ function r = randbnd(sz, bnd, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-07-21
+% Date: 2022-07-27
 % Changelog:
+%   2022-07-27
+%       * Change function declaration and move interval boundaries to first
+%       argument slot
 %   2022-07-21
 %       * Initial release
 
@@ -39,32 +42,26 @@ function r = randbnd(sz, bnd, varargin)
 
 %% Parse arguments
 
-% RANDBND(N, BND)
-% RANDBND(N, BND, CLASSNAME)
-% RANDBND(N, BND, 'like', Y)
-narginchk(2, Inf);
+% RANDBND(AB)
+% RANDBND(AB, N)
+% RANDBND(AB, N, CLASSNAME)
+% RANDBND(AB, N, 'like', Y)
+narginchk(1, Inf);
 
 % RANDBND(___)
 % R = RANDBND(___)
 nargoutchk(0, 1);
-
-% RANDBND(N, BND, CLASSNAME)
-% RANDBND(N, BND, 'like', Y)
-if nargin < 2 || isempty(bnd)
-  bnd = [ 0.0 , 1.0 ];
-  
-end
 
 
 
 %% Algorithm
 
 % Extract interval boundaries
-a = bnd(1);
-b = bnd(2);
+a = ab(1);
+b = ab(2);
 
 % And get the pseudorandom numbers
-r = ( b - a ) .* rand(sz, varargin{:}) + a;
+r = ( b - a ) .* rand(varargin{:}) + a;
 
 
 end
