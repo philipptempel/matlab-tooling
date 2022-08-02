@@ -5,8 +5,10 @@ function startup()
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@isw.uni-stuttgart.de>
-% Date: 2022-03-14
+% Date: 2022-08-02
 % Changelog:
+%   2022-08-02
+%       * Revert previous change (Reverse order of adding paths)
 %   2022-03-14
 %       * Reverse order of adding paths
 %       * Split repository into tooling repo and workspace repo, thus update
@@ -33,7 +35,7 @@ function startup()
 % Get path's to add to MATLAB's search path
 p = mtl_projpath();
 % and add the paths
-addpath(p{end:-1:1});
+addpath(p{1:1:end});
 
 
 end
