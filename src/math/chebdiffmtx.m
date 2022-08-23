@@ -1,4 +1,4 @@
-function D = chebdiffmtx(n, ab)
+function D = chebdiffmtx(n, ab)%#codegen
 %% CHEBDIFFMTX Calculate the Chebyshev Differentiation Matrix
 %
 % D = CHEBDIFFMTX(N) calculates the Chebyshev differentiation matrix D for a
@@ -25,8 +25,10 @@ function D = chebdiffmtx(n, ab)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-11-23
+% Date: 2022-08-23
 % Changelog:
+%   2022-08-23
+%       * Add codegen directive
 %   2021-11-23
 %       * Make `D` matrix sparse
 %   2021-11-19
