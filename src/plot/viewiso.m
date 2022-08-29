@@ -8,6 +8,7 @@ function viewiso(hax)
 % Date: 2021-10-20
 % Changelog:
 %   2021-10-20
+%       * Fix viewport angles
 %   2020-12-06
 %       * Initial release
 
