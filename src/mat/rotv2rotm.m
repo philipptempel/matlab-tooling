@@ -1,4 +1,4 @@
-function r = rotv2rotm(v, tol)%#codegen
+function R = rotv2rotm(v, tol)%#codegen
 %% ROTV2ROTM 
 %
 % R = ROTV2ROTM(V)
@@ -7,8 +7,8 @@ function r = rotv2rotm(v, tol)%#codegen
 %
 % Inputs:
 %
-%   V                   4x1 axis-angle where the angle is the first component
-%                       and the axis is in R([2,3,4]).
+%   V                   4xN axis-angle where the angle is the first component
+%                       and the axis is in V([2,3,4],:).
 %
 %   TOL                 Tolerance threshold used as upper limit for determining
 %                       if a value is singular (close to zero) or not.
@@ -21,8 +21,10 @@ function r = rotv2rotm(v, tol)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2020-12-23
+% Date: 2022-08-30
 % Changelog:
+%   2022-08-30
+%       * Add support for multiple rotation vectors
 %   2020-12-23
 %       * Rename to `rotv2rotm`
 %   2020-12-11
@@ -32,43 +34,58 @@ function r = rotv2rotm(v, tol)%#codegen
 
 %% Parse arguments
 
+% ROTV2ROTM(V)
+% ROTV2ROTM(V, TOL)
 narginchk(1, 2);
+
+% ROTV2ROTM(___)
+% R = ROTV2ROTM(___)
 nargoutchk(0, 1);
 
+% ROTV2ROTM(V)
 if nargin < 2 || isempty(tol)
   tol = 1e-12;
 end
 
 
 
-%% Do your code magic here
+%% Algorithm
 
+% Number of rotation vectors
+nv = size(v, 2);
 
-% build the rotation matrix
-s = sin(v(1));
-c = cos(v(1));
+% Shift each column into its own page
+vp = reshape(v, [4, 1, nv]);
+
+% Get sine and cosine of rotations
+s = sin(vp(1,:,:));
+c = cos(vp(1,:,:));
 t = 1 - c;
 
-n = v([2,3,4]);
-
-n = n ./ repmat(sqrt(sum(n .^ 2, 1)), [3, 1]);
+% Get rotation vectors and normalize
+n = vp([2,3,4],:,:);
+n = n ./ repmat(sqrt(sum(n .^ 2, 1)), [3, 1, 1]);
 
 % Remove singular values
 n(issingular(n, tol)) = 0;
 
-x = n(1);
-y = n(2);
-z = n(3);
+% Extract components
+x = n(1,:,:);
+y = n(2,:,:);
+z = n(3,:,:);
 
 % Compose rotation matrix
-r = [ ...
-  t * x * x + c,     t * x * y - s * z,  t * x * z + s * y ; ...
-  t * x * y + s * z, t * y * y + c,      t * y * z - s * x ; ...
-  t * x * z - s * y, t * y * z + s * x,  t * z * z + c ; ...
-];
+r = cat(1 ...
+  , t .* x .* x + c      , t .* x .* y - s .* z , t .* x .* z + s .* y ...
+  , t .* x .* y + s .* z , t .* y .* y + c      , t .* y .* z - s .* x ...
+  , t .* x .* z - s .* y , t .* y .* z + s .* x , t .* z .* z + c ...
+);
+
+% Reshape to 3x3xN and then transpose each page  (due to MATLAB's column major)
+R = permute(reshape(r, [3, 3, nv]), [2, 1, 3]);
 
 % Remove more singular values
-r(issingular(r)) = 0;
+R(issingular(R)) = 0;
 
 
 end
