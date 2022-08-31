@@ -25,8 +25,10 @@ function ts = timespace(t0, tf, h)%#codegen
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-01-27
+% Date: 2022-08-31
 % Changelog:
+%   2022-08-31
+%       * Fix upper bound not being correctly included in created time vector
 %   2022-01-27
 %       * Fix wrong function name in H1 documentation
 %       * Fix H1 documentation layout
@@ -67,14 +69,10 @@ end
 
 
 
-%% Perform creation of TS
+%% Algorithm
 
 % Simply pass the properly formatted values to linspace
-ts = t0:h:tf;
-if ~isclose(ts(end), tf)
-  ts = [ ts , tf ];
-  
-end
+ts = unique([t0:h:tf, tf]);
 
 
 end
