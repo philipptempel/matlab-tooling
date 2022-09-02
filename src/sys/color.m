@@ -15,28 +15,28 @@ function c = color(name, varargin)
 %
 %   NAME                Name of the color to convert into RGB. Possible values
 %                       are
-%                         * black
-%                         * blue
-%                         * cyan
-%                         * darkgray
-%                         * darkgrey
-%                         * fuchsia
-%                         * fuelyellow
-%                         * gray
-%                         * grey
-%                         * green
-%                         * lochmara
-%                         * lightgray
-%                         * lightgrey
-%                         * magenta
-%                         * orange
-%                         * pictonblue
-%                         * red
-%                         * sushi
-%                         * tamarillo
-%                         * violet
-%                         * white
-%                         * yellow
+%                         * Black
+%                         * Blue
+%                         * Cyan
+%                         * DarkGray
+%                         * DarkGrey
+%                         * Fuchsia
+%                         * FuelYellow
+%                         * Gray
+%                         * Grey
+%                         * Green
+%                         * Lochmara
+%                         * LightGray
+%                         * LightGrey
+%                         * Magenta
+%                         * Orange
+%                         * PictonBlue
+%                         * Red
+%                         * Sushi
+%                         * Tamarillo
+%                         * Violet
+%                         * White
+%                         * Yellow
 %
 % Outputs:
 %
@@ -49,6 +49,7 @@ function c = color(name, varargin)
 % Date: 2022-09-02
 % Changelog:
 %   2022-09-02
+%       * Update H1 documentation
 %       * Ensure that colors can only be added once
 %   2022-07-21
 %       * Add option `RESET` to reset the color list to its default values
