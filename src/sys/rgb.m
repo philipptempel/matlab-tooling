@@ -1,17 +1,20 @@
 function mrgb = rgb(r, g, b)%#codegen
-% RGB converts a conventional RGB representation into MATLAB RGB format
+%% RGB converts a conventional RGB representation into MATLAB RGB format
 %
-%   Inputs:
+% LRGB = RGB(R, G, B) converts RGB values in range of [0, 255] to values between
+% 0 and 1.
 %
-%   R                   Nx1 matrix of Red values from 0..255.
+% Inputs:
 %
-%   G                   Nx1 matrix of Green values from 0..255.
+%   R                   Nx1 matrix of Red values from 0...255.
 %
-%   B                   Nx1 matrix of Blue values form 0..255.
+%   G                   Nx1 matrix of Green values from 0...255.
 %
-%   Outputs:
+%   B                   Nx1 matrix of Blue values form 0...255.
 %
-%   MRGB                Nx1 matrix of RGB values scaled between 0..1.
+% Outputs:
+%
+%   MRGB                Nx3 matrix of RGB values scaled between 0...1.
 
 
 
@@ -20,6 +23,7 @@ function mrgb = rgb(r, g, b)%#codegen
 % Date: 2022-09-02
 % Changelog:
 %   2022-09-02
+%       * Fix H1 documentation
 %       * Ensure that R, G, and B are all column vectors
 %   2021-12-14
 %       * Update email address of Philipp Tempel
