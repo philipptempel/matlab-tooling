@@ -49,6 +49,7 @@ function c = color(name, varargin)
 % Date: 2022-09-02
 % Changelog:
 %   2022-09-02
+%       * Add `has` action
 %       * Update H1 documentation
 %       * Ensure that colors can only be added once
 %   2022-07-21
@@ -148,6 +149,12 @@ switch lower(args{1})
     catch me
       warning(me.identifier, '%s', me.message);
     end
+  
+  case 'has'
+    cname = args{2};
+    
+    % Check if any color matches the name
+    c = any(strcmpi(colors(:,1), cname));
     
   case 'reset'
     clear('color');
