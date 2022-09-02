@@ -46,8 +46,10 @@ function c = color(name, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-07-21
+% Date: 2022-09-02
 % Changelog:
+%   2022-09-02
+%       * Ensure that colors can only be added once
 %   2022-07-21
 %       * Add option `RESET` to reset the color list to its default values
 %       * Code formatting
@@ -126,9 +128,11 @@ switch lower(args{1})
     
     % Try adding new color
     try
-      newcs = vertcat(colors, {lower(cname), crgb});
-      [~, idx] = sort(lower(newcs(:,1)));
-      colors = newcs(idx,:);
+      if ~any(strcmpi(colors(:,1), cname))
+        newcs = vertcat(colors, {cname, crgb});
+        [~, idx] = sort(lower(newcs(:,1)));
+        colors = newcs(idx,:);
+      end
     catch me
       warning(me.identifier, '%s', me.message);
     end
