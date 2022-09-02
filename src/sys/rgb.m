@@ -17,8 +17,10 @@ function mrgb = rgb(r, g, b)%#codegen
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-09-02
 % Changelog:
+%   2022-09-02
+%       * Ensure that R, G, and B are all column vectors
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2018-09-12
@@ -29,7 +31,7 @@ function mrgb = rgb(r, g, b)%#codegen
 %% Do your code magic here
 
 % Simple, but efficient
-mrgb = horzcat(r, g, b)./255;
+mrgb = [ r(:) , g(:) , b(:) ] ./ 255;
 
 
 end
