@@ -23,8 +23,10 @@ function b = hslice(A, dim, ind)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-08-05
+% Date: 2022-09-08
 % Changelog:
+%   2022-09-08
+%       * Update implementation to be codegen compatible
 %   2022-08-05
 %       * Initial release
 
@@ -43,12 +45,25 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-% Build cell array of ':' selectors the same size as A
-subses = repmat({ ':' }, [ 1 , ndims(A) ]);
+% Count dimensions of A
+ndim = ndims(A);
 
-% Place the requested indices at the DIM-th entry
-% subses(dim) = mat2cell(ind, 1);
-subses(dim) = {ind};
+% Build cell array of ':' selectors the same size as A
+subses = cell(1, ndim);
+for idim = 1:ndim
+  % If dimension is desired dimension
+  if idim == dim
+    % Get its indices
+    subses{dim} = ind;
+  
+  % Else...
+  else
+    % Get all indices
+    subses{idim} = ':';
+    
+  end
+  
+end
 
 % Extract
 b = A(subses{:});
