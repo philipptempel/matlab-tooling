@@ -1,4 +1,4 @@
-function M = mmin(A, nanflag)%#codegen
+function m = mmin(A, nanflag)%#codegen
 %% MMIN behaves similar to MIN except that it automatically shrinks down to
 % dimension 1
 %
@@ -55,13 +55,8 @@ end
 
 %% Algorithm
 
-% Get the first minimum
-M = min(A, [], nanflag);
-
-% While M is not a scalar, we will get the minimum value of it
-while ~isscalar(M)
-  M = min(M, [], nanflag);
-end
+% Simple wrapper
+m = min(A, [], 'all', nanflag);
 
 
 end

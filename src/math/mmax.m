@@ -55,13 +55,8 @@ end
 
 %% Algorithm
 
-% Get the first maximum
-M = max(A, [], nanflag);
-
-% While M is not a scalar, we will get the maximum value of it
-while ~isscalar(M)
-  M = max(M, [], nanflag);
-end
+% Simple wrapper
+M = max(A, [], 'all', nanflag);
 
 
 end
