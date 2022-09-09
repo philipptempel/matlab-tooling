@@ -1,4 +1,4 @@
-function varargout = odespec(ode, tspan, y0, options, varargin)%#codegen
+function [t, y] = odespec(ode, tspan, y0, options, varargin)%#codegen
 %% ODESPEC Spectral integration of first-order linear ODEs
 %
 % ODESPEC solves first-order linear ordinary differential equations using
@@ -111,117 +111,81 @@ end
 % Parse user-defined options
 options = parse_options(options);
 
-% Turn Y0 into a column vector
-[nf, nv] = size(y0);
-ny = numel(y0);
-
 
 
 %% Algorithm
 
-% Eye-matrix of state system
-nfEye = speye(nf, nf);
+% ODESPEC(@(t) fun, ___)
+if ~iscell(ode)
+  % Number of nodes
+  nout = options.Nodes;
 
-% Number of nodes
-nout = options.Nodes;
+  % Span vector of spectral nodes, must be flipped along the columns as the
+  % Chebyshev-Lobatto points are on the interval [+1, -1] for an interval. Thus,
+  % without flip, for an increasing interval [a,b] with a < b, tout would be on
+  % [b, a] thus decreasing
+  tout = flip(chebpts2(nout - 1, tspan), 2);
+  
+  % Check ODE arguments and get the ODE function in a common format
+  f = parse_ode(ode, tout, y0, options);
 
-% Get interval of integration
-ab = tspan;
-% Span vector of spectral nodes, must be flipped along the columns as the
-% Chebyshev-Lobatto points are on the interval [+1, -1] for an interval. Thus,
-% without flip, for an increasing interval [a,b] with a < b, tout would be on
-% [b, a] thus decreasing
-tout = flip(chebpts2(nout - 1, ab), 2);
+  % Evaluate ODE at all nodes
+  % A_ = YxYxN
+  % B_ = YxN
+  [A_, b_] = feval(f, tout);
 
-% Dimension of extended system
-ns = nf * nout;
+% ODESPEC({A, B}, ___)
+else
+  % Get matrices
+  A_ = ode{1};
+  b_ = ode{2};
+  
+  % Ensure B is YxVxN
+  if size(b_, 2) == size(A_, 3)
+    b_ = permute(b_, [1, 3, 2]);
+  end
+  
+  % Since spectral integration always works on the reverse abscissae of
+  % integration, we need to also flip the values as their are assumed to be
+  % provided on the forward abscissae
+  A_ = flip(A_, 3);
+  b_ = flip(b_, 3);
+  
+end
 
-% Chebyshev differentation matrix on TSPAN's interval
-Dn = chebdiffmtx(nout - 1, ab);
+% Solve ODE function
+[tout, yout] = odespec_solve(A_, b_, tspan, y0, options);
 
-% Check ODE arguments and get the ODE function in a common format
-f = parse_ode(ode, tout, y0, options);
-
+% Create solution structure
 sol = [];
 if output_sol
   sol = struct();
   sol.solver = 'odespec';
-  sol.extdata.odefun = ode;
-  sol.extdata.options = options;
+  sol.extdata.odefun   = ode;
+  sol.extdata.options  = options;
   sol.extdata.varargin = varargin;
 
 end
 
-% Build differentiation matrix D for all of the ODE's degrees of freedom
-D = kron( ...
-    nfEye ...
-  , Dn ...
-);
+% Flip direction of state vector as it is always calculated on the interval [b,
+% a] rather than [a, b]
+yout = flip(yout, 1);
 
-% Evaluate ODE at all nodes
-% A_ = YxYxN
-% B_ = YxN
-[A_, b_] = feval(f, tout);
-
-% Index of initial state in global state vector
-idxY = 1:nf;
-idxX0 = idxY * nout;
-
-% Build global A matrix which is composed of node-wise entries of the ODE
-% system's Ai matrices
-A = zeros(ns, ns);
-b = zeros(ns, nv);
-idxYN = (idxY - 1) * nout;
-
-% Ensure B_ is of size YxYxN as well if it isn't already
-if size(b_, 2) == 1
-  b_ = repmat(b_, 1, nv, 1);
-end
-
-% Looping over every node
-for in = 1:nout
-  % Push the i-th node's constant A matrix values in
-  A(in + idxYN,in + idxYN) = A_(:,:,in);
+% SOL = ODESPEC(...)
+if output_sol
+  sol.x = tout;
+  sol.y = transpose(yout);
   
-  % Push the i-th node's constant b vector values in
-  b(in + idxYN,:) = b_(:,:,in);
+  t = { sol };
+
+% [T, Y] = ODESPEC(...)
+else
+  % Turn data into column-major
+  tout = transpose(tout);
   
-end
-A = sparse(A);
-b = sparse(b);
-
-% Matrix to map each state into the right block-segment of its differential part
-P = speye(ns, ns);
-P(idxY,idxY) = 0;
-P(idxX0,idxX0) = 0;
-P(idxY,idxX0) = nfEye;
-P(idxX0,idxY) = nfEye;
-Pt = transpose(P);
-
-% Apply transformation of initial condition onto ODE's matrices
-A = Pt * A * P;
-b = Pt * b;
-D = Pt * D * P;
-
-% New indices for quicker array indexing
-idxX0 = 1:nf;
-idxY = (nf + 1):ns;
-
-% Calculation of B0
-b0 = ( D(:,idxX0) - A(:,idxX0) ) * y0;
-
-% Calculation of solution
-yn = ( D(idxY,idxY) - A(idxY,idxY) ) \ ( b(idxY,:) - b0(idxY,:) );
-
-% Reshape solution of ODE to be TxY
-yout = reshape(P * [ y0 ; yn ], nout, ny);
-
-% Finalize result
-solver_output = odespec_finalize(tout, yout, sol);
-
-% Assign outputs
-if nargout > 0
-  varargout = solver_output;
+  t = tout;
+  y = yout;
+  
 end
 
 
@@ -441,13 +405,16 @@ persistent defaults
 % Default defaults
 if isempty(defaults)
   defaults = struct( ...
-      'Nodes', 25 ...
+      'Nodes'      , 25 ...
     , 'UseParallel', false ...
+    , 'SkipChecks' , false ...
   );
+  
 end
 
 % Merge defaults structure with options given
-oopts = mergestructs(defaults, iopts);
+oopts = defaults * iopts;
+
 
 
 end
