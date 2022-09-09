@@ -75,7 +75,7 @@ defaultopt = struct( ...
 );
 
 % Get user-defined options
-options = mergestructs(defaultopt, options);
+options = defaultopt * options;
 
 % Get some option values
 h = options.FiniteDifferenceStepSize;

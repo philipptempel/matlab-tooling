@@ -171,7 +171,7 @@ defaultopts = struct( ...
 );
 
 % Merge with user-provided options
-options = mergestructs(defaultopts, options);
+options = defaultopts * options;
 
 % And turn true/false into correct object
 options.Recurse = onoffstate(options.Recurse);

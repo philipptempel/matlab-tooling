@@ -52,11 +52,11 @@ nargoutchk(0, 1);
 
 % OPTSSET(OLDOPTS, NEWOPTS)
 if nargin == 2 && isstruct(varargin{1}) && isstruct(varargin{2})
-  options = mergestructs(varargin{1}, varargin{2});
+  options = varargin{1} * varargin{2};
 
 % OPTSSET(OLDOPTS, NAME, VALUE, ...)
 elseif nargin > 2 && isstruct(varargin{1})
-  options = mergestructs(varargin{1}, struct(varargin{2:end}));
+  options = varargin{1} * struct(varargin{2:end});
 
 % OPTSSET(NAME, VALUE, ...)
 else
