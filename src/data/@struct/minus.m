@@ -1,8 +1,7 @@
-function c = plus(a, b)%#codegen
-%% PLUS Add two structures
+function c = minus(a, b)%#codegen
+%% MINUS Subtract two structures
 %
-% C = PLUS(A, B) add fields of structure B to structure A or overwrites existing
-% fields with values from B.
+% C = MINUS(A, B) subtracts fields of structure B from fields structure A.
 %
 % Inputs:
 %
@@ -27,11 +26,11 @@ function c = plus(a, b)%#codegen
 
 %% Parse arguments
 
-% PLUS(A, B)
+% MINUS(A, B)
 narginchk(2, 2);
 
-% PLUS(___)
-% C = PLUS(___)
+% MINUS(___)
+% C = MINUS(___)
 nargoutchk(0, 1);
 
 
@@ -42,24 +41,18 @@ nargoutchk(0, 1);
 fna = fieldnames(a);
 fnb = fieldnames(b);
 
-% Get values of both structures
+% Get values of original strucutre
 va = struct2cell(a);
-vb = struct2cell(b);
 
-% Get unique field names
-fn = unique([ fna ; fnb ]);
+% Find out the difference between A's fields and B's fields
+[fnc, inda] = setdiff(fna, fnb);
 
-% Find indices of the new fields in the fold field
-[~, indAS, indAV] = intersect(fn, fna);
-[~, indBS, indBV] = intersect(fn, fnb);
+% Build a list of arguments to create a new structure
+sargs = cell(2, numel(fnc));
+sargs(1,:) = fnc;
+sargs(2,:) = va(inda);
 
-% % Create arguments to create a new structure with combined data
-sargs = cell(2, numel(fn));
-sargs(1,:) = fn;
-sargs(2,indAS) = va(indAV);
-sargs(2,indBS) = vb(indBV);
-
-% And create new structure
+% And create a new structure
 c = struct(sargs{:});
 
 

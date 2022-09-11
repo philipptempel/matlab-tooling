@@ -49,7 +49,7 @@ fnb = fieldnames(b);
 va = struct2cell(a);
 vb = struct2cell(b);
 
-% Intersect the field names
+% Get difference of names
 [~, ia] = setdiff(fna, fnb, varargin{:});
 
 % Count matching fields
