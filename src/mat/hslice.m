@@ -45,28 +45,20 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-% Count dimensions of A
-ndim = ndims(A);
+% Get maximum of number of dimensions and the requested dimension index
+ndim = max(ndims(A), dim);
 
-% Build cell array of ':' selectors the same size as A
-subses = cell(1, ndim);
-for idim = 1:ndim
-  % If dimension is desired dimension
-  if idim == dim
-    % Get its indices
-    subses{dim} = ind;
-  
-  % Else...
-  else
-    % Get all indices
-    subses{idim} = ':';
-    
-  end
-  
-end
+% Create cell array of subscript indices
+subes = cell(1, ndim);
 
-% Extract
-b = A(subses{:});
+% Mark all dimensions we don't extract with ':' (colon)
+[subes{(1:ndim) ~= dims}] = deal(':');
+
+% Mark dimension to extract
+subes{dim} = ind;
+
+% Extract data
+b = A(subes{:});
 
 
 end
