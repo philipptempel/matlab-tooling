@@ -52,7 +52,7 @@ ndim = max(ndims(A), dim);
 subes = cell(1, ndim);
 
 % Mark all dimensions we don't extract with ':' (colon)
-[subes{(1:ndim) ~= dims}] = deal(':');
+[subes{(1:ndim) ~= dim}] = deal(':');
 
 % Mark dimension to extract
 subes{dim} = ind;
