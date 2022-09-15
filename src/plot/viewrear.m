@@ -5,8 +5,10 @@ function viewrear(hax)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-10-20
+% Date: 2022-09-15
 % Changelog:
+%   2022-09-15
+%       * Change argument parsing to use `NARGIN < X` rather than `NARGIN == X`
 %   2021-10-20
 %       * Fix viewport angles
 %   2021-03-18
@@ -23,7 +25,7 @@ function viewrear(hax)
 narginchk(0, 1);
 nargoutchk(0, 0);
 
-if nargin == 0
+if nargin < 1 || isempty(hax)
   hax = gca();
 end
 

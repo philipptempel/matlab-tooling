@@ -5,8 +5,10 @@ function viewdimetric(hax)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-08-29
+% Date: 2022-09-15
 % Changelog:
+%   2022-09-15
+%       * Change argument parsing to use `NARGIN < X` rather than `NARGIN == X`
 %   2022-08-29
 %       * Initial release
 
@@ -17,7 +19,7 @@ function viewdimetric(hax)
 narginchk(0, 1);
 nargoutchk(0, 0);
 
-if nargin == 0
+if nargin < 1 || isempty(hax)
   hax = gca();
 end
 
