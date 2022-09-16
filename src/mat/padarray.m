@@ -90,7 +90,7 @@ if isempty(a)
     end
   end
   
-  b = mkconstarray(class(a), padVal, sizeB);
+  b = mkconstarray(class(a), padval, sizeB);
   
 elseif strcmpi(method, 'constant')
   % constant value padding with padVal
