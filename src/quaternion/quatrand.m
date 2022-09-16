@@ -56,8 +56,6 @@ end
 % We will first create random vectors in the range from [-1, 1] and then
 % normalize all these
 q = quatnormalized(2 * (rand(4, n) - 0.5));
-% Per convention, always keep scalar quaternion elements positive
-q(:,q(1,:) < 0) = -q(:,q(1,:) < 0);
 
 
 end

@@ -45,7 +45,8 @@ qv = quatvalid(q, 'quatnormalized');
 
 % Normalize quaternions
 qn = qv ./ repmat(sqrt(sum(qv .^ 2, 1)), [4, 1]);
-
+% Per convention, always keep scalar quaternion elements positive
+qn(:,q(1,:) < 0) = -qn(:,qn(1,:) < 0);
 
 
 end
