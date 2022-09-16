@@ -1,21 +1,24 @@
-function [varargout] = figplot(varargin)
-% FIGPLOT opens a figure and plots inside this figure.
+function varargout = figplot(varargin)
+%% FIGPLOT opens a figure and plots inside this figure.
 %
-%   FIGPLOT takes the same arguments as regular PLOT but additionally creates a
-%   new figure.
+% FIGPLOT takes the same arguments as regular PLOT but additionally creates a
+% new figure.
 %
-%   FIGPLOT is a shortcut for the common code
-%       figure;
-%       plot(t, y)
+% FIGPLOT is a shortcut for the common code
+%   figure();
+%   plot(t, y)
 %
-% See also: FIGURE PLOT
+% See also
+%   FIGURE PLOT
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-09-16
 % Changelog:
+%   2022-09-16
+%       * Minor code and H1 beautifications
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2016-10-19
@@ -23,9 +26,10 @@ function [varargout] = figplot(varargin)
 
 
 
-%% Do your code magic here
+%% Algorithm
+
 % Create a new figure
-figure;
+figure();
 
 % And plot however the user wants the plot
 h = plot(varargin{:});
