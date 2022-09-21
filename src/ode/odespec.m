@@ -115,17 +115,17 @@ options = parse_options(options);
 
 %% Algorithm
 
+% Number of nodes
+nout = options.Nodes;
+
+% Span vector of spectral nodes, must be flipped along the columns as the
+% Chebyshev-Lobatto points are on the interval [+1, -1] for an interval. Thus,
+% without flip, for an increasing interval [a,b] with a < b, tout would be on
+% [b, a] thus decreasing
+tout = flip(chebpts2(nout - 1, tspan), 2);
+
 % ODESPEC(@(t) fun, ___)
 if ~iscell(ode)
-  % Number of nodes
-  nout = options.Nodes;
-
-  % Span vector of spectral nodes, must be flipped along the columns as the
-  % Chebyshev-Lobatto points are on the interval [+1, -1] for an interval. Thus,
-  % without flip, for an increasing interval [a,b] with a < b, tout would be on
-  % [b, a] thus decreasing
-  tout = flip(chebpts2(nout - 1, tspan), 2);
-  
   % Check ODE arguments and get the ODE function in a common format
   f = parse_ode(ode, tout, y0, options);
 
@@ -134,27 +134,18 @@ if ~iscell(ode)
   % B_ = YxN
   [A_, b_] = feval(f, tout);
 
-% ODESPEC({A, B}, ___)
-else
-  % Get matrices
-  A_ = ode{1};
-  b_ = ode{2};
-  
-  % Ensure B is YxVxN
-  if size(b_, 2) == size(A_, 3)
-    b_ = permute(b_, [1, 3, 2]);
-  end
-  
-  % Since spectral integration always works on the reverse abscissae of
-  % integration, we need to also flip the values as their are assumed to be
-  % provided on the forward abscissae
-  A_ = flip(A_, 3);
-  b_ = flip(b_, 3);
-  
+end
+
+% If B is YxN, turn it into Yx1xN
+if size(b_, 2) == size(A_, 3)
+  b_ = permute(b_, [1, 3, 2]);
 end
 
 % Solve ODE function
-[tout, yout] = odespec_solve(A_, b_, tspan, y0, options);
+% Since spectral integration always works on the reverse abscissae of
+% integration, we need to also flip the values as their are assumed to be
+% provided on the forward abscissae
+yout = odespec_solve(flip(A_, 3), flip(b_, 3), tout, y0, options);
 
 % Create solution structure
 sol = [];
@@ -279,8 +270,8 @@ else
   
 end
 
-% Lastly, for reasons of usability, the flip-wrapper must always be added
-f = @(t) flip_wrapper(f, t);
+% % Lastly, for reasons of usability, the flip-wrapper must always be added
+% f = @(t) flip_wrapper(f, t);
 
 
 end

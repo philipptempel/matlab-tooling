@@ -1,4 +1,4 @@
-function [tout, yout] = odespec_solve(A, b, tspan, y0, options)%#codegen
+function yout = odespec_solve(A, b, tnodes, y0, options)%#codegen
 %% ODESPEC Spectral integration of first-order linear ODEs
 %
 % ODESPEC solves first-order linear ordinary differential equations using
@@ -11,12 +11,12 @@ function [tout, yout] = odespec_solve(A, b, tspan, y0, options)%#codegen
 % NYxNV. Simply provide Y0 of the right dimensions (and of course A and B for
 % this to work.
 %
-% [T, Y] = ODESPEC(ODEFUN, TSPAN, Y0) calculates the solution Y(T) for the
-% linear ODE defined in ODEFUN over integration interval TSPAN with initial
-% condition Y0.
+% Y = ODESPEC(ODEFUN, TNODES, Y0) calculates the solution Y(T) for the linear
+% ODE defined in ODEFUN over integration interval TNODES with initial condition
+% Y0.
 %
-% [T, Y] = ODESPEC(ODEFUN, TSPAN, Y0, OPTIONS) allows passing additional options
-% as structure array to the spectral integration algorithm.
+% Y = ODESPEC(ODEFUN, TNODES, Y0, OPTIONS) allows passing additional options as
+% structure array to the spectral integration algorithm.
 %
 % Inputs:
 %
@@ -27,11 +27,10 @@ function [tout, yout] = odespec_solve(A, b, tspan, y0, options)%#codegen
 %                       an NxNxK array and B must be a NxK vector where K is the
 %                       number of knots and N the number of states of the ODE.
 %
-%   TSPAN               2-element vector defining the interval of spectral
-%                       integration. Can be either increasing (forward
-%                       integration) or decreasing (backward increasing).
+%   TNODES              1xT vector providing the Chebyshev-Lobatto 2 points for
+%                       spectral integration.
 %
-%   Y0                  NYxNV vector defining the initial state
+%   Y0                  YxV vector defining the initial state
 %
 %   OPTIONS             Structure of options to use for spectral integration.
 %                       See below for available options.
@@ -43,11 +42,7 @@ function [tout, yout] = odespec_solve(A, b, tspan, y0, options)%#codegen
 %
 % Outputs:
 %
-%   T                   NTx1 vector of Chebyshev-Lobatto points used as node
-%                       points in spectral integration. This vector is always in
-%                       increasing order.
-%
-%   Y                   NTxNY vector of solutions of Y at node points. The
+%   Y                   TxV vector of solutions of Y at node points. The
 %                       values in the i-th row Y(i,:) are the values at the i-th
 %                       node T(i).
 
@@ -64,14 +59,14 @@ function [tout, yout] = odespec_solve(A, b, tspan, y0, options)%#codegen
 
 %% Parse arguments
 
-% ODESPEC_SOLVE(A, B, TSPAN, Y0)
-% ODESPEC_SOLVE(A, B, TSPAN, Y0, OPTIONS)
+% ODESPEC_SOLVE(A, B, TNODES, Y0)
+% ODESPEC_SOLVE(A, B, TNODES, Y0, OPTIONS)
 narginchk(4, 5);
 
-% [T, Y] = ODESPEC_SOLVE(___)
-nargoutchk(2, 2);
+% Y = ODESPEC_SOLVE(___)
+nargoutchk(1, 1);
 
-% ODESPEC_SOLVE(A, B, TSPAN, Y0)
+% ODESPEC_SOLVE(A, B, TNODES, Y0)
 if nargin < 5 || isempty(options)
   options = struct();
 end
@@ -90,17 +85,11 @@ nfEye = speye(nf, nf);
 % Number of nodes
 nout = options.Nodes;
 
-% Span vector of spectral nodes, must be flipped along the columns as the
-% Chebyshev-Lobatto points are on the interval [+1, -1] for an interval. Thus,
-% without flip, for an increasing interval [a,b] with a < b, tout would be on
-% [b, a] thus decreasing
-tout = flip(chebpts2(nout - 1, tspan), 2);
-
 % Dimension of extended system
 ns = nf * nout;
 
-% Chebyshev differentation matrix on TSPAN's interval
-Dn = chebdiffmtx(nout - 1, tspan);
+% Chebyshev differentation matrix on TNODES's interval
+Dn = chebdiffmtx(nout - 1, tnodes(end:-1:1));
 
 % Build differentiation matrix D for all of the ODE's degrees of freedom
 D = kron( ...
