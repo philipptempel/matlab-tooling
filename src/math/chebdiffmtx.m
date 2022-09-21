@@ -40,6 +40,7 @@ function D = chebdiffmtx(n, ab)%#codegen
 
 % CHEBDIFFMTX(N)
 % CHEBDIFFMTX(N, AB)
+% CHEBDIFFMTX(N, NSPAN)
 narginchk(1, 2);
 % CHEBDIFFMTX(___)
 % D = CHEBDIFFMTX(___)
@@ -54,8 +55,19 @@ end
 
 %% Algorithm
 
-% Get Chebyshev-Lobatto points for the given degree
-x = transpose(chebpts2(n, ab));
+% CHEBDIFFMTX(N, AB)
+if numel(ab) == 2
+  % Calculate Chebyshev-Lobatto points for the given degree
+  x = chebpts2(n, ab);
+
+% CHEBDIFFMTX(N, NSPAN)
+else
+  % Chebyshev-Lobatto points are already given by the user
+  x = ab;
+  
+end
+
+x = reshape(x, [], 1);
 
 % Row index
 r = transpose(0:n);
@@ -71,11 +83,11 @@ c = [ ...
 X = repmat(x, 1, n + 1);
 
 % Calculate total differentiation matrix
-D = ( c * transpose(1 ./ c) ) ./ ( ( X - transpose(X) ) + eye(n + 1, n + 1));
+D = sparse( ( c * transpose(1 ./ c) ) ./ ( ( X - transpose(X) ) + eye(n + 1, n + 1)) );
 
 % Sum over the columns and diagonalize, to remove diagonal offsets in
 % differentiation matrix
-D = sparse(D - diag(sum(D, 2)));
+D = D - diag(sum(D, 2));
 
 
 end
