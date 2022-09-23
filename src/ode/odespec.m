@@ -134,6 +134,11 @@ if ~iscell(ode)
   % B_ = YxN
   [A_, b_] = feval(f, tout);
 
+% ODESPEC({A, B}, ___)
+else
+  A_ = ode{1};
+  b_ = ode{2};
+  
 end
 
 % If B is YxN, turn it into Yx1xN
