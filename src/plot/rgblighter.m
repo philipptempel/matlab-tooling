@@ -22,8 +22,10 @@ function lighter = rgblighter(rgb, factor, varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-12-13
+% Date: 2022-09-29
 % Changelog:
+%   2022-09-29
+%       * Fix deprecated call to `PARSESWITCHARG` with `ONOFFSTATE`
 %   2021-12-13
 %       * Update to new signature of `PARSESWITCHARG`
 %   2020-11-16
@@ -78,7 +80,7 @@ aRgb = ip.Results.rgb;
 % Factor to scale each color
 dFactor = ip.Results.factor;
 % Return result as integer not float?
-chAsInteger = parseswitcharg(ip.Results.AsInteger);
+chAsInteger = onoffstate(ip.Results.AsInteger);
 
 
 
