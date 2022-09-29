@@ -24,8 +24,11 @@ function classdiagram(varargin)
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2021-03-09
+% Date: 2022-09-29
 % Changelog:
+%   2022-09-29
+%       * Fix bug when passing a single class (name) would not result in
+%       displaying its super classes list
 %   2021-03-09
 %       * Fix not finding classes when running `classdiagram` inside a package
 %       directory
@@ -161,10 +164,8 @@ end
 if isa(arg, 'meta.package')
   clss = package2classes(arg);
   
-end
-
-if isa(arg, 'meta.class')
-  clss = arg;
+elseif isa(arg, 'meta.class')
+  clss = [ arg ; arg.SuperclassList ];
   
 end
 
