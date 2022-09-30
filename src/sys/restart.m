@@ -7,8 +7,10 @@
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2022-08-30
+% Date: 2022-09-30
 % Changelog:
+%   2022-09-30
+%       * Remove clearing of debug breakpoints (that was too annoying)
 %   2022-08-30
 %       * Add clearing of debug breakpoints
 %   2021-12-14
@@ -59,9 +61,6 @@ clear('global')
 
 % Clear all memoized function caches
 clearAllMemoizedCaches();
-
-% Clear all debugging things
-dbclear('all');
 
 % Lastly, we will stop all timers that may still be running in the background
 try
