@@ -13,8 +13,11 @@ function qn = quatnormalized(q)%#codegen
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-02-16
+% Date: 2022-10-03
 % Changelog:
+%   2022-10-03
+%     * Fix incorrect check for checking scalar part of normalized quaternion
+%     being positive
 %   2022-02-16
 %     * Fix wrong call of `QUATVALID`
 %   2022-02-08
@@ -46,7 +49,7 @@ qv = quatvalid(q, 'quatnormalized');
 % Normalize quaternions
 qn = qv ./ repmat(sqrt(sum(qv .^ 2, 1)), [4, 1]);
 % Per convention, always keep scalar quaternion elements positive
-qn(:,q(1,:) < 0) = -qn(:,qn(1,:) < 0);
+qn(:,qn(1,:) < 0) = -qn(:,qn(1,:) < 0);
 
 
 end
