@@ -15,8 +15,10 @@ function Mn = mnormcol(M)%#codegen
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-10-04
 % Changelog:
+%   2022-10-04
+%       * Replace internal implementation with `MNORMDIM`
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-11-17
@@ -28,16 +30,18 @@ function Mn = mnormcol(M)%#codegen
 
 %% Parse arguments
 
+% MNORMCOL(M)
 narginchk(1, 1);
-nargoutchk(0, 1);
 
-assert(isa(M, 'double'), 'Input must be of type double');
+% MNORMCOL(___)
+% MN = MNORMCOL(___)
+nargoutchk(0, 1);
 
 
 
 %% Algorithm
 
-Mn = transpose(mnormrow(transpose(M)));
+Mn = mnormdim(M, 2);
 
 
 end

@@ -15,10 +15,10 @@ function Mn = mnormrow(M)%#codegen
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-10-04
 % Changelog:
-%   2021-12-14
-%       * Update email address of Philipp Tempel
+%   2022-10-04
+%       * Replace internal implementation with `MNORMDIM`
 %   2021-11-17
 %       * Update H1 to correct format
 %   2017-04-14
@@ -30,16 +30,18 @@ function Mn = mnormrow(M)%#codegen
 
 %% Parse arguments
 
+% MNORMROW(M)
 narginchk(1, 1);
-nargoutchk(0, 1);
 
-validateattributes(M, {'numeric'}, {'2d', 'nonempty', 'finite'}, mfilename, 'M');
+% MNORMROW(___)
+% MN = MNORMROW(___)
+nargoutchk(0, 1);
 
 
 
 %% Algorithm
 
-Mn = bsxfun(@times, M, 1 ./ sqrt(sum(M .^ 2, 2)));
+Mn = mnormdim(M, 1);
 
 
 end
