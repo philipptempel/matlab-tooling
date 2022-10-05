@@ -38,30 +38,30 @@ function qdp = quatdiv(q, p)%#codegen
 
 % QUATDIV(Q, P);
 narginchk(2, 2);
+
 % QUATDIV(Q, P);
 % QP = QUATDIV(Q, P);
 nargoutchk(0, 1);
-
-% Parse quaternions
-[qv, nq] = quatvalid(q, 'quatdiv');
-[pv, np] = quatvalid(p, 'quatdiv');
 
 
 
 %% Algorithm
 
+nq = size(q, 2);
+np = size(p, 2);
+
 % If either q or p are matrices, make the other one of the same size
 if nq == 1 && np  > 1
-  qvn = repmat(qv, [1, np]);
-  pvn = pv;
+  qvn = repmat(q, [1, np]);
+  pvn = p;
   
 elseif np == 1 && nq > 1
-  qvn = qv;
-  pvn = repmat(pv, [1, nq]);
+  qvn = q;
+  pvn = repmat(p, [1, nq]);
   
 else
-  qvn = qv;
-  pvn = pv;
+  qvn = q;
+  pvn = p;
   
 end
 

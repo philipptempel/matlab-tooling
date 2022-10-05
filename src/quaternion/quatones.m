@@ -20,10 +20,10 @@ function q = quatones(n)%#codegen
 %   2022-02-08
 %     * Inliune code fixes
 %   2021-12-06
-%       * Update H1 documentation
-%       * Add parameter N
+%     * Update H1 documentation
+%     * Add parameter N
 %   2020-11-12
-%       * Initial release
+%     * Initial release
 
 
 

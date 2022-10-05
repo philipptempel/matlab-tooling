@@ -43,8 +43,7 @@ nargoutchk(0, 1);
 %% Algorithm
 
 % Calculate norm
-qn = sqrt(sum(quatvalid(q, 'quatnorm') .^ 2, 1));
-
+qn = sqrt(sum(q .^ 2, 1));
 
 
 end

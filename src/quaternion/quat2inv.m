@@ -1,5 +1,5 @@
-function qi = quatinv(q)%#codegen
-%% QUATINV Calculate inverse quaternion
+function qi = quat2inv(q)%#codegen
+%% QUAT2INV Calculate inverse quaternion
 %
 % Inputs:
 %
@@ -24,23 +24,18 @@ function qi = quatinv(q)%#codegen
 
 %% Parse arguments
 
-% QUATINV(Q);
+% QUAT2INV(Q);
 narginchk(1, 1);
-% QUATINV(P);
-% QP = QUATINV(Q);
+% QUAT2INV(P);
+% QP = QUAT2INV(Q);
 nargoutchk(0, 1);
-
-% Parse quaternions
-qv = quatvalid(q, 'quatinv');
 
 
 
 %% Algorithm
 
-% Quaternion norm
-qn = repmat(quatnorm(qv), 4, 1);
-
-qi = quatconj(qv) ./ ( qn .^ 2 );
+% Invert and normalize
+qi = quatconj(q) ./ ( repmat(quatnorm(q), 4, 1) .^ 2 );
 
 
 end

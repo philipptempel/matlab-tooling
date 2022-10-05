@@ -1,5 +1,5 @@
-function qa = quatconj(q)%#codegen
-%% QUATCONJ Calculate adjoint quaternion
+function qa = quat2conj(q)%#codegen
+%% QUAT2CONJ Calculate adjoint quaternion
 %
 % Inputs:
 %
@@ -18,7 +18,7 @@ function qa = quatconj(q)%#codegen
 %   2022-02-08
 %     * Code syntax updates
 %   2021-11-05
-%     * Rename to `quatconj`
+%     * Rename to `quat2conj`
 %   2020-11-24
 %     * Updates to support code generation
 %   2020-11-11
@@ -30,23 +30,18 @@ function qa = quatconj(q)%#codegen
 
 %% Parse arguments
 
-% QUATCONJ(Q);
+% QUAT2CONJ(Q);
 narginchk(1, 1);
-% QUATCONJ(P);
-% QP = QUATCONJ(Q);
-nargoutchk(0, 1);
 
-% Parse quaternions
-qv = quatvalid(q, 'quatconj');
+% QUAT2CONJ(Q);
+% QP = QUAT2CONJ(Q);
+nargoutchk(0, 1);
 
 
 
 %% Algorithm
 
-qa = [ ...
-    qv(1,:) ...
-  ; -qv([2,3,4],:) ...
-];
+qa = cat(1, q(1,:), -q(2:4,:));
 
 
 end

@@ -49,26 +49,25 @@ narginchk(2, 2);
 % QP = QUATMUL(Q, P);
 nargoutchk(0, 1);
 
-% Parse quaternions
-[qv, mq] = quatvalid(q, 'quatmul');
-[pv, mp] = quatvalid(p, 'quatmul');
-
 
 
 %% Algorithm
 
+nq = size(q, 2);
+np = size(p, 2);
+
 % If either q or p are matrices, make the other one of the same size
-if mq == 1 && mp  > 1
-  qvn = repmat(qv, [1, mp]);
-  pvn = pv;
+if nq == 1 && np  > 1
+  qvn = repmat(q, [1, np]);
+  pvn = p;
   
-elseif mp == 1 && mq > 1
-  qvn = qv;
-  pvn = repmat(pv, [1, mq]);
+elseif np == 1 && nq > 1
+  qvn = q;
+  pvn = repmat(p, [1, nq]);
   
 else
-  qvn = qv;
-  pvn = pv;
+  qvn = q;
+  pvn = p;
   
 end
 

@@ -34,10 +34,10 @@ function f = quatisclose(c, g, atol, rtol)%#codegen
 % Date: 2022-03-03
 % Changelog:
 %   2022-03-03
-%       * Change order of arguments from `GROUND, CANDIDATE` to `CANDIDATE,
+%     * Change order of arguments from `GROUND, CANDIDATE` to `CANDIDATE,
 %       GROUND`
 %   2022-02-08
-%       * Initial release
+%     * Initial release
 
 
 
@@ -62,17 +62,15 @@ if nargin < 4
   rtol = [];
 end
 
-% Parse quaternions
-gv = quatvalid(g, 'quatisclose');
-[cv, nc] = quatvalid(c, 'quatisclose');
-
 
 
 %% Algorithm
 
+nc = size(c, 2);
+
 % Check if the angle of rotation between the ground truth and the candidate
 % quaternions is close to 0 (zero)
-f = isclose(0, acos(2 .* dot(repmat(gv, 1, nc), cv, 1) .^ 2 - ones(1, nc)), atol, rtol);
+f = isclose(0, acos(2 .* dot(repmat(g, 1, nc), c, 1) .^ 2 - ones(1, nc)), atol, rtol);
 
 
 end
