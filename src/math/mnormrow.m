@@ -41,7 +41,7 @@ nargoutchk(0, 1);
 
 %% Algorithm
 
-Mn = mnormdim(M, 1);
+Mn = mnormdim(M, 2);
 
 
 end
