@@ -1,14 +1,15 @@
-function q = quatunit(n)%#codegen
-%% QUATUNIT Create a unit quaternion
+function q = quatones(n)%#codegen
+%% QUATONES Create array of one-quaternions
 %
-% Q = QUATUNIT() creates one unit quaternion.
+% Q = QUATONES() creates one one-quaternion i.e., a quaternion of 1 unit of
+% rotation (pi) about the normalized axis of [ 1 ; 1 ; 1 ].
 %
-% Q = QUATUNIT(N) creates N unit quaternions.
+% Q = QUATONES(N) creates N such unit quaternions.
 %
 % Outputs:
 %
 %   Q                   4xN unit quaternion(s) where each column reads
-%                       Q(:,i) = [ 1.0 , 0.0 , 0.0 , 0.0 ].
+%                       Q(:,i) = [ 0.0 ; 1/sqrt(3) ; 1/sqrt(3) ; 1/sqrt(3) ].
 
 
 
@@ -28,15 +29,15 @@ function q = quatunit(n)%#codegen
 
 %% Parse arguments
 
-% QUATUNIT()
-% QUATUNIT(N)
+% QUATONES()
+% QUATONES(N)
 narginchk(0, 1);
 
-% QUATUNIT()
-% Q = QUATUNIT()
+% QUATONES()
+% Q = QUATONES()
 nargoutchk(0, 1);
 
-% QUATUNIT()
+% QUATONES()
 if nargin < 1 || isempty(n)
   n = 1;
 end
@@ -45,7 +46,9 @@ end
 
 %% Algorithm
 
-q = repmat([ 1.0 ; 0.0 ; 0.0 ; 0.0 ], 1, n);
+s = sqrt(1 / 3);
+
+q = repmat([ 0.0 ; s ; s ; s ], 1, fix(abs(n)));
 
 
 end
