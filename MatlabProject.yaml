@@ -1,0 +1,11 @@
+name: philipptempel/matlab-tooling
+uuid: 4c616c6d-0b3e-4b5a-98c6-82c006b64a3f
+version: 0.1.0
+description: Philipp Tempel's MATLAB Tooling suite
+homepage: https://philipptempel.gitlab.com/matlab-tooling
+license: MIT
+readme: README.md
+authors: [Philipp Tempel <matlab@philipptempel.me>]
+autoload: []
+startup: []
+finish: []
