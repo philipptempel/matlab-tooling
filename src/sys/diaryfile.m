@@ -20,7 +20,7 @@ function df = diaryfile()
 
 %% Do your code magic here
 
-df = fullfile(mlproject(), 'diaries', sprintf('%s.txt', datestr(now(), 'yyyy-mm-dd')));
+df = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'diaries', sprintf('%s.txt', datestr(now(), 'yyyy-mm-dd')));
 
 
 end

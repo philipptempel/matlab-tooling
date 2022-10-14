@@ -50,7 +50,7 @@ addRequired(ip, 'action', valFcn_Action);
 
 % Optional: Filename
 valFcn_Filename = @(x) validateattributes(x, {'char'}, {'nonempty'}, mfilename(), 'file');
-addOptional(ip, 'file', fullfile(mlproject(), 'preferences.json'), valFcn_Filename);
+addOptional(ip, 'file', 'preferences.json', valFcn_Filename);
 
 % Configuration of input parser
 ip.KeepUnmatched = true;
