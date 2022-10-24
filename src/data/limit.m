@@ -1,32 +1,35 @@
-function l = limit(v, mi, ma)%#codegen
+function l = limit(v, vmin, vmax)%#codegen
 % LIMIT the given value between minimum and maximum
 %
-% LIMIT(V, MI) limits all values in V to be at larger or equal to MI.
+% LIMIT(V, VMIN) limits all values in V to be at larger or equal to VMIN.
 %
-% LIMIT(V, MI, MA) additionally limits all values in V to be at most MA large.
+% LIMIT(V, VMIN, VMAX) additionally limits all values in V to be at most VMAX
+% large.
 %
 % Inputs:
 %
-%   V                   MxN array or values to limit.
+%   V                       MxN array or values to limit.
 %
-%   MI                  Lower limit of each value.
+%   VMIN                    Lower limit of each value.
 %
-%   MA                  Upper limit of each value.
+%   VMAX                    Upper limit of each value.
 %
 % Outputs:
 %
-%   L                   MxN array of limited values of V.
+%   L                       MxN array of limited values of V.
 %
 % See also:
-%   MIN
-%   MAX
+%   MIN MAX
 
 
 
 %% File information
 % Author: Philipp Tempel <matlab@philipptempel.me>
-% Date: 2021-12-14
+% Date: 2022-10-24
 % Changelog:
+%   2022-10-24
+%       * Fix H1 documentation
+%       * Inline documentation fixes
 %   2021-12-14
 %       * Update email address of Philipp Tempel
 %   2021-06-21
@@ -36,29 +39,32 @@ function l = limit(v, mi, ma)%#codegen
 
 
 
-%% Valdiate arguments
+%% Parse Arguments
 
-% LIMIT(V, MI)
-% LIMIT(V, MI, MA)
+% LIMIT(V, VMIN)
+% LIMIT(V, VMIN, VMAX)
 narginchk(2, 3);
+
 % LIMIT(___)
 % L = LIMIT(___);
 nargoutchk(0, 1);
 
-if nargin < 2 || isempty(mi)
-  mi = -Inf;
+% LIMIT(V)
+if nargin < 2 || isempty(vmin)
+  vmin = -Inf;
 end
 
-if nargin < 3 || isempty(ma)
-  ma = +Inf;
+% LIMIT(V, VMIN)
+if nargin < 3 || isempty(vmax)
+  vmax = +Inf;
 end
 
 
 
-%% Do your code magic here
+%% Algorithm
 
-% Limit v by the lower boundary, then by the upper boundary.
-l = min(ma, max(v, mi));
+% Limit v by the upper boundary, then by the lower boundary.
+l = min(vmax, max(v, vmin));
 
 
 end
