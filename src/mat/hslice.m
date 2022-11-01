@@ -41,21 +41,26 @@ narginchk(3, 3);
 % B = HSLICE(___)
 nargoutchk(0, 1);
 
+% HSLICE(A, DIM, IND)
+if ~iscell(ind)
+  ind = { ind };
+end
+
 
 
 %% Algorithm
 
 % Get maximum of number of dimensions and the requested dimension index
-ndim = max(ndims(A), dim);
+ndim = max(ndims(A), max(dim));
 
 % Create cell array of subscript indices
 subes = cell(1, ndim);
 
 % Mark all dimensions we don't extract with ':' (colon)
-[subes{(1:ndim) ~= dim}] = deal(':');
+[subes{all((1:ndim) ~= dim(:), 1)}] = deal(':');
 
 % Mark dimension to extract
-subes{dim} = ind;
+subes(dim) = ind;
 
 % Extract data
 b = A(subes{:});
