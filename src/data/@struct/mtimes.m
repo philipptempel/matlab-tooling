@@ -50,13 +50,12 @@ vb = struct2cell(b);
 [~, ia, ib] = intersect(fna, fnb);
 
 % Build arguments for `STRUCT` to create a new merged structure
-sargs = cell(2, numel(fna));
-sargs(1,:)  = fna;
-sargs(2,:)  = va;
-sargs(2,ia) = vb(ib);
+cfields = fna;
+cvalues = va;
+cvalues(ia) = vb(ib);
 
 % And create a new matching structure
-c = struct(sargs{:});
+c = cell2struct(cvalues, cfields, 1);
 
 
 end
