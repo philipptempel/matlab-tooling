@@ -31,9 +31,6 @@ narginchk(1, 1);
 % R = HEX2RGB(H);
 nargoutchk(0, 1);
 
-% Validate
-validateattributes(h, {'numeric', 'cell', 'char'}, {'nonempty', 'ncols', 1}, mfilename, 'h');
-
 
 
 %% Do your code magic here
