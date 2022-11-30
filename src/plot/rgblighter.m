@@ -1,29 +1,36 @@
-function lighter = rgblighter(rgb, factor, varargin)
-% RGBLIGHTER 
+function rgbl = rgblighter(rgb, lfactor, asint)
+%% RGBLIGHTER
 %
-%   RGBLIGHTER(RGB, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
+% RGBLIGHTER(RGB, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
 %
-%   RGBLIGHTER(RGB, FACTOR, 'Name', 'Value', ...) allows setting optional
-%   inputs using name/value pairs.
+% RGBLIGHTER(RGB, FACTOR, ASINT) allows returning the RGB-triplet as integers in
+% the range 0...255
 %
-%   Inputs:
+% Inputs:
 %
-%   RGB                 1x3 triplet of RGB values in the range of 0..1.
+%   RGB                 Nx3 array of RGB triplets in the range of 0...1.
 %
 %   FACTOR              Factor to lighten the RGB triplet to. Must be between
-%                       0 and 1. With 1, the triplet will not be lightened, with
-%                       0 it will be set to zero
+%                       0 and 1. With 1, the triplet will be 100% brighter
+%                       (becoming white), with 0, the triplet will not be
+%                       lightened at all.
 %
-%   Outputs:
+%   ASINT               Flag to indicate whether lighter color should be
+%                       returned as integer between 0...255.
 %
-%   LIGHTER             1x3 array of lightened RGB values in the range of 0..1
+% Outputs:
+%
+%   LIGHTER             Nx3 array of lightened RGB values in the range of 0...1
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-09-29
+% Date: 2022-11-30
 % Changelog:
+%   2022-11-30
+%       * Change algorithm to use `RGBBLEND`
+%       * Remove Name/Value pair and turn it into a single flag
 %   2022-09-29
 %       * Fix deprecated call to `PARSESWITCHARG` with `ONOFFSTATE`
 %   2021-12-13
@@ -43,55 +50,35 @@ function lighter = rgblighter(rgb, factor, varargin)
 
 
 
-%% Define the input parser
-ip = inputParser;
+%% Parse arguments
 
-% Required: RGB; numeric; 2d, ncols 3, non-empty, non-sparse, non-negative, <=
-% 1,
-valFcn_Rgb = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncols', 3, 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'rgb');
-addRequired(ip, 'rgb', valFcn_Rgb);
+% RGBLIGHTER(RGB, FACTOR)
+% RGBLIGHTER(RGB, FACTOR, ASINT)
+narginchk(2, 3);
 
-% Required: factor; numeric; scalar, non-empty, non-sparse, non-negative, <= 1,
-valFcn_Factor = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'scalar', 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'factor');
-addRequired(ip, 'factor', valFcn_Factor);
+% RGBLIGHTER(___)
+% RGBL = RGBLIGHTER(___)
+nargoutchk(0, 1);
 
-% Optional: AsInteger; 
-valFcn_AsInteger = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'AsInteger'));
-addOptional(ip, 'AsInteger', 'off', valFcn_AsInteger);
-
-% Configuration of input parser
-ip.KeepUnmatched = true;
-ip.FunctionName = mfilename;
-
-% Parse the provided inputs
-try
-    args = [{rgb}, {factor}, varargin];
-    
-    parse(ip, args{:});
-catch me
-    throwAsCaller(me);
+% RGBLIGHTER(RGB, FACTOR)
+if nargin < 3 || isempty(asint)
+  asint = false;
 end
 
-
-
-%% Parse IP results
-% Values to transform
-aRgb = ip.Results.rgb;
-% Factor to scale each color
-dFactor = ip.Results.factor;
-% Return result as integer not float?
-chAsInteger = onoffstate(ip.Results.AsInteger);
+% Convert ASINT flag to a proper matlab.lang.OnOffSwitchState object
+asint = onoffstate(asint);
 
 
 
-%% Do your code magic here
+%% Algorithm
 
-% Calculate the lighter RGB values
-lighter = (aRgb + (1 - aRgb)*dFactor);
+% Blend color with white to get it lighter
+rgbl = rgbblend(rgb, [ 1.000 , 1.000 , 1.000 ], lfactor);
 
-% Turn floats into integers as requested by the user
-if chAsInteger == matlab.lang.OnOffSwitchState.on
-    lighter = round(lighter.*255);
+% Convert to full integers?
+if asint == matlab.lang.OnOffSwitchState.on
+  rgbl = round(rgbl .* 255);
+  
 end
 
 

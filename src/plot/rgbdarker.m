@@ -1,30 +1,38 @@
-function darker = rgbdarker(rgb, factor, varargin)
-% RGBDARKER 
+function rgbd = rgbdarker(rgb, lfactor, asint)
+%% RGBDARKER 
 %
-%   RGBDARKER(RGB, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
+% RGBDARKER(RGB, FACTOR) turns the RGB-triplet RGB darker by factor FACTOR.
 %
-%   RGBDARKER(RGB, FACTOR, 'Name', 'Value', ...) allows setting optional inputs
-%   using name/value pairs.
+% RGBDARKER(RGB, FACTOR, ASINT) allows returning the RGB-triplet as integers in
+% the range 0...255
 %
-%   Inputs:
+% Inputs:
 %
-%   RGB                 1x3 triplet of RGB values in the range of 0..1.
+%   RGB                     Nx3 array of RGB triplets in the range of 0...1.
 %
-%   FACTOR              Factor to darken the RGB triplet to. Must be between
-%                       0 and 1. With 1, the triplet will not be darkened, with
-%                       0 it will be set to zero
+%   FACTOR                  Factor to darken the RGB triplet to. Must be between
+%                           0 and 1. With 1, the triplet will be darkened by
+%                           100% (becoming black), with 0, the triplet will not
+%                           be darkened at all.
 %
-%   Outputs:
+%   ASINT                   Flag to indicate whether darker color should be
+%                           returned as integer between 0...255.
 %
-%   DARKER              1x3 array of darkened RGB values in the range of 0..1
+% Outputs:
+%
+%   DARKER                  Nx3 array of darkened RGB values in the range of
+%                           0...1
 
 
 
 %% File information
 % Author: Philipp Tempel <philipp.tempel@ls2n.fr>
-% Date: 2022-09-09
+% Date: 2022-11-30
 % Changelog:
-%   2022-09-09
+%   2022-11-30
+%       * Change algorithm to use `RGBBLEND`
+%       * Remove Name/Value pair and turn it into a single flag
+%   2022-09-29
 %       * Fix deprecated call to `PARSESWITCHARG` with `ONOFFSTATE`
 %   2021-12-13
 %       * Update to new signature of `PARSESWITCHARG`
@@ -43,55 +51,35 @@ function darker = rgbdarker(rgb, factor, varargin)
 
 
 
-%% Define the input parser
-ip = inputParser;
+%% Parse arguments
 
-% Required: RGB; numeric; 2d, ncols 3, non-empty, non-sparse, non-negative, <=
-% 1,
-valFcn_Rgb = @(x) validateattributes(x, {'numeric'}, {'2d', 'nonempty', 'ncols', 3, 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'rgb');
-addRequired(ip, 'rgb', valFcn_Rgb);
+% RGBDARKER(RGB, FACTOR)
+% RGBDARKER(RGB, FACTOR, ASINT)
+narginchk(2, 3);
 
-% Required: factor; numeric; scalar, non-empty, non-sparse, non-negative, <= 1,
-valFcn_Factor = @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonempty', 'scalar', 'nonsparse', 'nonnegative', '<=', 1}, mfilename, 'factor');
-addRequired(ip, 'factor', valFcn_Factor);
+% RGBDARKER(___)
+% RGBL = RGBDARKER(___)
+nargoutchk(0, 1);
 
-% Optional: AsInteger; 
-valFcn_AsInteger = @(x) any(validatestring(lower(x), {'on', 'yes', 'off', 'no'}, mfilename, 'AsInteger'));
-addOptional(ip, 'AsInteger', 'off', valFcn_AsInteger);
-
-% Configuration of input parser
-ip.KeepUnmatched = true;
-ip.FunctionName = mfilename;
-
-% Parse the provided inputs
-try
-    args = [{rgb}, {factor}, varargin];
-    
-    parse(ip, args{:});
-catch me
-    throwAsCaller(me);
+% RGBDARKER(RGB, FACTOR)
+if nargin < 3 || isempty(asint)
+  asint = false;
 end
 
-
-
-%% Parse IP results
-% Values to transform
-aRgb = ip.Results.rgb;
-% Factor to scale each color
-dFactor = ip.Results.factor;
-% Return result as integer not float?
-chAsInteger = onoffstate(ip.Results.AsInteger);
+% Convert ASINT flag to a proper matlab.lang.OnOffSwitchState object
+asint = onoffstate(asint);
 
 
 
-%% Do your code magic here
+%% Algorithm
 
-% Turn the RGB value darker
-darker = aRgb.*(1 - dFactor);
+% Blend color with black to get it darker
+rgbd = rgbblend(rgb, [ 0.000 , 0.000 , 0.000 ], lfactor);
 
-% Turn floats into integers as requested by the user
-if chAsInteger == matlab.lang.OnOffSwitchState.on
-    darker = round(darker.*255);
+% Convert to full integers?
+if asint == matlab.lang.OnOffSwitchState.on
+  rgbd = round(rgbd .* 255);
+  
 end
 
 
