@@ -40,7 +40,8 @@ end
 
 %% Algorithm
 
-p = get(h);
+% Get object's properties
+p  = get(h);
 fn = fieldnames(p);
 np = numel(fn);
 
@@ -58,34 +59,19 @@ for ip = 1:np
   if isobject(v)
     try
       textinterpreters(v, intp);
-    catch me
+    catch
     end
     
   % Value is no object, proceed as normal
   else
     % If property key does not contain text "Interpreter", we will skip it
-    if ~contains(fn{ip}, 'Interpreter', 'IgnoreCase', true)
-      continue
+    if contains(fn{ip}, 'Interpreter', 'IgnoreCase', true)
+      set(h, fn{ip}, intp);
     end
-    
-    set(h, fn{ip}, intp);
     
   end
   
 end
-
-% % Cache of properties that are "Interpreter"s
-% persistent p
-% 
-% % Cache all factor defaylts
-% if isempty(p)
-%   p = fieldnames(get(groot(), 'factory'));
-%   p = p(contains(p, 'Interpreter', 'IgnoreCase', true));
-%   
-% end
-% 
-% % Set all text interpreter defaults
-% cellfun(@(pp) set(h, strrep(pp, 'factory', 'Default'), intp), p);
 
 
 end
