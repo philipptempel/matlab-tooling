@@ -13,7 +13,7 @@ function hfig = tightfig(hfig)
 %
 %
     if nargin == 0
-        hfig = gcf;
+        hfig = gcf();
     end
     % There can be an issue with tightfig when the user has been modifying
     % the contnts manually, the code below is an attempt to resolve this,
