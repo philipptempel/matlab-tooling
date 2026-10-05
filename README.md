@@ -60,6 +60,10 @@ Most used methods for data visualization and data import/export
 
 * [Typesetting of MATLAB data in LaTeX documents](guides/matlab-array-typesetting.md)
 
+## Third-party code
+
+Some functions are based on other people's work. See [THIRD_PARTY.md](THIRD_PARTY.md) for attribution and licensing notes.
+
 ## Comments
 
 ### On notation of matrices (aka. **row/column issue**)
