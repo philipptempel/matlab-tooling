@@ -162,7 +162,7 @@ done = false;
 
 % Initialize the output function.
 if haveOutputFcn
-  feval(outputFcn, [dTime_0, dTime_T], [xFull(:,nout); vFull(:,nout)], 'init', outputArgs{:});
+  feval(outputFcn, [dTime_0, dTime_T], y0, 'init', outputArgs{:});
 end
 
 % Do not stop while we are not done (d'uh)
@@ -294,7 +294,7 @@ yout = yout(:,1:nout);
 
 % Call output function on done?
 if haveOutputFcn
-  feval(outfun, [], [], 'done', outputArgs{:});
+  feval(outputFcn, [], [], 'done', outputArgs{:});
 end
 
 

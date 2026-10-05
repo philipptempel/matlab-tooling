@@ -295,7 +295,7 @@ vout = vFull(:,1:nout);
 
 % Call output function on done?
 if haveOutputFcn
-  feval(outfun, [], [], 'done', outputArgs{:});
+  feval(outputFcn, [], [], 'done', outputArgs{:});
 end
 
 
