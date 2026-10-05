@@ -81,18 +81,14 @@ stOptions = odeset(stDefaultOptions, options);
 % Set solver name
 chSolverName = 'leapfrog';
 
-% Check if ODEFUN is a function handle or points to a file
-loFHUsed = isa(odefun, 'function_handle');
-
 % Number of function evaluations
 nFuncEval = 0;
 
-% Parse the ODE arguments using MATLAB's built-in ODEARGUMENTS function
-[nEquations, vTspan, nTime, next, dTime_0, dTime_T, dTime_Dirn, y0, f0, odeArgs, odefun, ...
- stOptions, threshold, rtol, normcontrol, normy, hmax, htry, htspan, dataType] = ...
-    odearguments(loFHUsed, chSolverName, odefun, tsp, [x0(:); v0(:)], stOptions, varargin);
+% Check the ODE arguments
+[nEquations, nTime, dTime_0, dTime_T, y0, htspan, dataType] = ...
+    ode_arguments(chSolverName, odefun, tsp, [x0(:); v0(:)]);
 
-% ODE function was once evaluated inside ODEARGUMENTS
+% ODE function was once evaluated inside ODE_ARGUMENTS
 nFuncEval = nFuncEval + 1;
 
 % Get step size from options
@@ -100,7 +96,7 @@ dStepsize = odeget(stOptions, 'MaxStep', -1, 'fast');
 
 % No step size given in options, so infer it from vTspan
 if dStepsize == -1
-  % Get the default step size from the call to `ODEARGUMENTS`
+  % Get the default step size from the call to `ODE_ARGUMENTS`
   dStepsize = htspan;
 end
 % Pre-calculate half of the step size
@@ -111,42 +107,8 @@ dStepsizeDouble = 2*dStepsize;
 
 
 %% Handle mass matrix
-% nMass_Type == 0: no mass matrix
-% nMass_Type == 1: M
-% nMass_Type == 2: M(t)
-% nMass_Type == 3: M(t, y)
-[nMass_Type, aMass_0, fhMass, ceMass_arg, stMass_Options] = odemass(loFHUsed, odefun, dTime_0, [x0(:); v0(:)], stOptions, varargin);
-% Stucture containing information on the mass matrix
-stMass = struct( ...
-    'Type', nMass_Type ...
-  , 'Value', aMass_0 ...
-  , 'Function', fhMass ...
-  , 'Arguments', {{}} ...
-  , 'Options', [] ...
-);
-if ~isempty(ceMass_arg)
-  stMass.Arguments = ceMass_arg;
-end
-if isa(stMass_Options, 'struct')
-  stMass.Options = stMass_Options;
-end
-% Adjust for ODEMASS returning a mass matrix of size 2Nx2N when there isn't any
-% mass matrix given in OPTIONS
-if size(stMass.Value, 1) == 2*nEquations
-  stMass.Value = stMass.Value(end-(nEquations-1):end,end-(nEquations-1):end);
-end
-
-% Determine function callback of mass matrix
-switch stMass.Type
-  case 0 % []
-    stMass.Function = @(t, y) stMass.Value;
-  case 1 % M
-    stMass.Function = @(t, y) stMass.Value;
-  case 2 % M(t)
-    stMass.Function = @(t, y) stMass.Function(tn);
-  case {3, 4} % M(t, [x; v])
-    % Nothing to be done here, everything's as it's supposed to be
-end
+% Function handle MASSFCN(t, [x; v]) returning the mass matrix
+fhMass = ode_mass(stOptions, nEquations, varargin);
 
 
 
@@ -204,7 +166,7 @@ vFull(:,nout) = v0;
 % Calculate initial acceleration to determine the velocity at half a time step
 % in the past
 [aFull(:,nout), ~, ~, output] = fsolve( ...
-  @(aTest) leapfrog_acceleration(odefun, dTime_0, x0, v0, aTest, dStepsize, stMass) ...
+  @(aTest) leapfrog_acceleration(odefun, dTime_0, x0, v0, aTest, dStepsize, fhMass) ...
   , v0 ...
   , stOptsFsolve ...
 );
@@ -247,7 +209,7 @@ while ~done
   % Predict an acceleration for the current time step based on solving the ODE
   % M*a = f for the current position but the previous velocity
   [aNPred, ~, ~, output] = fsolve( ...
-      @(atest) leapfrog_acceleration(odefun, tN, xN, vNm12, atest, dStepsize, stMass) ...
+      @(atest) leapfrog_acceleration(odefun, tN, xN, vNm12, atest, dStepsize, fhMass) ...
     , aN ...
     , stOptsFsolve ...
   );
@@ -268,7 +230,7 @@ while ~done
   % And determine a corrected acceleration a_n knowing the corrected current
   % acceleration and the corrected current velocity
   [aN, ~, ~, output] = fsolve( ...
-      @(atest) leapfrog_acceleration(odefun, tN, xN, vN, atest, dStepsize, stMass) ...
+      @(atest) leapfrog_acceleration(odefun, tN, xN, vN, atest, dStepsize, fhMass) ...
       , aNPred ...
       , stOptsFsolve ...
     );

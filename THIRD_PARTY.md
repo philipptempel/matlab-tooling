@@ -36,17 +36,12 @@ parts of those files.
 | `src/plot/tightfig.m` | Looks like the File Exchange `tightfig`. No author, source or licence in the file. |
 | `src/ode/ode2.m` … `ode5.m` | Fixed-step solvers in the style of Cleve Moler's. No attribution in the header. |
 
-## MathWorks code (cannot be fixed with attribution)
-
-These carry a MathWorks copyright notice or use MathWorks internals, and
-MathWorks source is proprietary. It can't be relicensed as MIT.
+## MathWorks code
 
 | File | Evidence |
 | --- | --- |
-| `src/ode/private/odearguments.m` | "Copyright 1984-2017 The MathWorks, Inc." |
-| `src/ode/private/odemass.m` | MathWorks `odemass` (author Jacek Kierzenka), uses `MATLAB:odemass:*` message IDs. |
-| `src/funfun/deval.m` | Header lists the repo author, but the body uses `MATLAB:deval:*` message IDs and it shadows the built-in `deval`. |
+| `src/funfun/deval.m` | Header lists the repo author, but the body uses `MATLAB:deval:*` message IDs and it shadows the built-in `deval`. Should be deleted in favour of MATLAB's own. |
 
-`odearguments` and `odemass` are used by `src/ode/leapfrog.m` and
-`src/ode/bdf.m`. They should be replaced by own implementations, or the two
-solvers should be dropped from the public repository.
+Copies of MathWorks' private helpers `odearguments` and `odemass` used to live in
+`src/ode/private/`. They were replaced by `ode_arguments` and `ode_mass`, own
+implementations that only do what `bdf` and `leapfrog` need.

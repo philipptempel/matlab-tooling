@@ -1,4 +1,4 @@
-function res = leapfrog_acceleration(odefun, tn, xn, vn, ane, h, mass, varargin)
+function res = leapfrog_acceleration(odefun, tn, xn, vn, ane, h, massfcn)
 % LEAPFROG_ACCELERATION solves the non-linear ODE for the current acceleration
 %
 %   Inputs:
@@ -14,7 +14,8 @@ function res = leapfrog_acceleration(odefun, tn, xn, vn, ane, h, mass, varargin)
 %   ANE                 Kx1 vector of the estimate of the current time step
 %                       acceleration.
 %
-%   MASS                Structure containing information on the mass matrix.
+%   MASSFCN             Function handle MASSFCN(T, [X; V]) returning the mass
+%                       matrix.
 %
 %   Outputs:
 %
@@ -37,7 +38,7 @@ function res = leapfrog_acceleration(odefun, tn, xn, vn, ane, h, mass, varargin)
 
 
 % Calculate residual value
-res = mass.Function(tn, [xn; vn])*ane - odefun(tn, [xn; vn]);
+res = massfcn(tn, [xn; vn])*ane - odefun(tn, [xn; vn]);
 
 
 end
