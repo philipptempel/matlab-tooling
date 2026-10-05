@@ -160,6 +160,9 @@ stOptsFsolve = optimoptions( ...
 % Keep track of if we're done or not
 done = false;
 
+% Keep track of if the output function requested to stop
+stop = false;
+
 % Initialize the output function.
 if haveOutputFcn
   feval(outputFcn, [dTime_0, dTime_T], y0, 'init', outputArgs{:});
@@ -212,6 +215,11 @@ while ~done
     
     % Call output function and await return
     stop = feval(outputFcn, tnew, ynew, '', outputArgs{:});
+    
+    % Stop requested from output function?
+    if stop
+      done = true;
+    end
   end
   
 end
@@ -224,7 +232,8 @@ end
 idxBdfSpan = -(nBDF-1):0;
 
 % Keep track of if we're done or not
-done = false;
+% If a stop was requested during the initialization, skip these steps
+done = stop;
 
 % Do not stop while we are not done (d'uh)
 while ~done
