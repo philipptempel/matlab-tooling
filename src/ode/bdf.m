@@ -308,10 +308,9 @@ if nargout < 2
       'x', tout ...
     , 'y', yout ...
   );
-end
 
 % [T, Y] = BDF(...)
-if nargout < 3
+else
   varargout{1} = transpose(tout);
   varargout{2} = transpose(yout);
 end

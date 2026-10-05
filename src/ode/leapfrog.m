@@ -310,16 +310,14 @@ if nargout < 2
     , 'y', xout ...
     , 'z', vout ...
   );
-end
 
 % [T, [X, V]] = LEAPFROG(...)
-if nargout < 3
+elseif nargout == 2
   varargout{1} = transpose(tFull);
   varargout{2} = [transpose(xout), transpose(vout)];
-end
 
 % [T, X, V] = LEAPFROG(...)
-if nargout < 4
+else
   varargout{1} = transpose(tFull);
   varargout{2} = transpose(xout);
   varargout{3} = transpose(vout);
