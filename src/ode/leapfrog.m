@@ -25,6 +25,10 @@ function varargout = leapfrog(odefun, tsp, x0, v0, options, varargin)%#codegen
 %   OPTIONS             Structure array of options to be passed to the ODE
 %                       integrator obtained from ODESET.
 %
+%   VARARGIN            Additional parameters, passed on to ODEFUN as
+%                       ODEFUN(T, [X; V], VARARGIN{:}), to the mass matrix
+%                       function, and to the output function.
+%
 % Outputs:
 %
 %   T                   Kx1 vector of time stamps at which the ODE was
@@ -83,6 +87,11 @@ chSolverName = 'leapfrog';
 
 % Number of function evaluations
 nFuncEval = 0;
+
+% Pass additional parameters on to the ODE function
+if isa(odefun, 'function_handle') && ~isempty(varargin)
+  odefun = @(t, y) odefun(t, y, varargin{:});
+end
 
 % Check the ODE arguments
 [nEquations, nTime, dTime_0, dTime_T, y0, htspan, dataType] = ...

@@ -18,6 +18,10 @@ function varargout = bdf(odefun, tspan, y0, options, varargin)%#codegen
 %                       desired value of the BDF algorithm. MAXORDER must be
 %                       between 1 and 6.
 %
+%   VARARGIN            Additional parameters, passed on to ODEFUN as
+%                       ODEFUN(T, Y, VARARGIN{:}), to the mass matrix function,
+%                       and to the output function.
+%
 %   Outputs:
 %
 %   T                   Nx1 vector of time steps at which the ODE was solved.
@@ -80,6 +84,11 @@ chSolverName = sprintf('bdf%g', nBDF);
 
 % Number of function evaluations
 nFuncEval = 0;
+
+% Pass additional parameters on to the ODE function
+if isa(odefun, 'function_handle') && ~isempty(varargin)
+  odefun = @(t, y) odefun(t, y, varargin{:});
+end
 
 % Check the ODE arguments
 [nEquations, nTime, dTime_0, dTime_T, y0, htspan, dataType] = ...
