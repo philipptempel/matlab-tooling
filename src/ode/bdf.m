@@ -18,6 +18,10 @@ function varargout = bdf(odefun, tspan, y0, options, varargin)%#codegen
 %                       desired value of the BDF algorithm. MAXORDER must be
 %                       between 1 and 6.
 %
+%   VARARGIN            Additional parameters, passed on to ODEFUN as
+%                       ODEFUN(T, Y, VARARGIN{:}), to the mass matrix function,
+%                       and to the output function.
+%
 %   Outputs:
 %
 %   T                   Nx1 vector of time steps at which the ODE was solved.
@@ -44,7 +48,7 @@ function varargout = bdf(odefun, tspan, y0, options, varargin)%#codegen
 %   2018-08-31
 %       * Make sure BDF order is in 1..6
 %   2018-08-30
-%       * Use the step size calculated in ODEARGUMENTS if the actual step size
+%       * Use the step size calculated in ODE_ARGUMENTS if the actual step size
 %       is not given in OPTIONS
 %   2018-08-20
 %       * Initial release
@@ -78,62 +82,36 @@ nBDF = stOptions.MaxOrder;
 % Set solver name
 chSolverName = sprintf('bdf%g', nBDF);
 
-% Check if ODEFUN is a function handle or points to a file
-loFHUsed = isa(odefun, 'function_handle');
-
 % Number of function evaluations
 nFuncEval = 0;
 
-% Parse the ODE arguments using MATLAB's built-in ODEARGUMENTS function
-[nEquations, vTspan, nTime, next, dTime_0, dTime_T, dTime_Dirn, y0, f0, odeArgs, odefun, ...
- stOptions, threshold, rtol, normcontrol, normy, hmax, htry, htspan, dataType] = ...
-    odearguments(loFHUsed, chSolverName, odefun, tspan, y0, stOptions, varargin);
+% Pass additional parameters on to the ODE function
+if isa(odefun, 'function_handle') && ~isempty(varargin)
+  odefun = @(t, y) odefun(t, y, varargin{:});
+end
 
-% ODE function was once evaluated inside ODEARGUMENTS
+% Check the ODE arguments
+[nEquations, nTime, dTime_0, dTime_T, y0, htspan, dataType] = ...
+    ode_arguments(chSolverName, odefun, tspan, y0);
+
+% ODE function was once evaluated inside ODE_ARGUMENTS
 nFuncEval = nFuncEval + 1;
 
 % Get step size from options
 dStepsize = odeget(stOptions, 'MaxStep', -1, 'fast');
 % No step size given in options, so infer it from vTspan
 if dStepsize == -1
-  % Set the step size from the step size inferred in ODEARGUMENTS
+  % Set the step size from the step size inferred in ODE_ARGUMENTS
   dStepsize = htspan;
 end
+% The step size is signed so that we step in the direction of integration
+dStepsize = sign(dTime_T - dTime_0)*abs(dStepsize);
 
 
 
 %% Handle mass matrix
-% nMass_Type == 0: no mass matrix
-% nMass_Type == 1: M
-% nMass_Type == 2: M(t)
-% nMass_Type == 3: M(t, y)
-[nMass_Type, aMass_0, fhMass, ceMass_arg, stMass_Options] = odemass(loFHUsed, odefun, dTime_0, y0, stOptions, varargin);
-% Stucture containing information on the mass matrix
-stMass = struct( ...
-    'Type', nMass_Type ...
-  , 'Value', aMass_0 ...
-  , 'Function', fhMass ...
-  , 'Arguments', {{}} ...
-  , 'Options', [] ...
-);
-if ~isempty(ceMass_arg)
-  stMass.Arguments = ceMass_arg;
-end
-if isa(stMass_Options, 'struct')
-  stMass.Options = stMass_Options;
-end
-
-% Determine function callback of mass matrix
-switch stMass.Type
-  case 0 % []
-    stMass.Function = @(t, y) stMass.Value;
-  case 1 % M
-    stMass.Function = @(t, y) stMass.Value;
-  case 2 % M(t)
-    stMass.Function = @(t, y) stMass.Function(t);
-  case 3 % M(t, y)
-    % Nothing to be done here, everything's as it's supposed to be
-end
+% Function handle MASSFCN(t, y) returning the mass matrix
+fhMass = ode_mass(stOptions, nEquations, varargin);
 
 
 
@@ -180,8 +158,8 @@ stOptsFsolve = optimoptions( ...
     'fsolve' ...
     , 'Algorithm', 'levenberg-marquardt' ...
     , 'Display', 'off' ...
-    , 'FunctionTolerance', dStepsize^5 ...
-    , 'StepTolerance', dStepsize^4 ...
+    , 'FunctionTolerance', abs(dStepsize)^5 ...
+    , 'StepTolerance', abs(dStepsize)^4 ...
 );
 
 
@@ -193,9 +171,12 @@ stOptsFsolve = optimoptions( ...
 % Keep track of if we're done or not
 done = false;
 
+% Keep track of if the output function requested to stop
+stop = false;
+
 % Initialize the output function.
 if haveOutputFcn
-  feval(outputFcn, [dTime_0, dTime_T], [xFull(:,nout); vFull(:,nout)], 'init', outputArgs{:});
+  feval(outputFcn, [dTime_0, dTime_T], y0, 'init', outputArgs{:});
 end
 
 % Do not stop while we are not done (d'uh)
@@ -215,7 +196,7 @@ while ~done
 
   % Solve the implicit equation for y_n+1
   [ynew, ~, ~, output] = fsolve( ...
-      @(ynew) bdf_acceleration(odefun, nout, yprevs, tnew, ynew, dStepsize, stMass) ...
+      @(ynew) bdf_acceleration(odefun, nout, yprevs, tnew, ynew, dStepsize, fhMass) ...
       , ynew_guess ...
       , stOptsFsolve ...
   );
@@ -237,14 +218,20 @@ while ~done
   tout(nout) = tnew;
   yout(:,nout) = ynew;
 
-  % Stop loopp if we are at the last iteration of the BDF initalization
-  done = nout > nBDF;
+  % Stop loop if we are at the last iteration of the BDF initalization or if we
+  % have reached the last time stamp already
+  done = nout > nBDF || nout >= nTime;
   
   % Call output function?
   if haveOutputFcn
     
     % Call output function and await return
     stop = feval(outputFcn, tnew, ynew, '', outputArgs{:});
+    
+    % Stop requested from output function?
+    if stop
+      done = true;
+    end
   end
   
 end
@@ -257,7 +244,9 @@ end
 idxBdfSpan = -(nBDF-1):0;
 
 % Keep track of if we're done or not
-done = false;
+% If a stop was requested during the initialization or all time stamps are
+% done already, skip these steps
+done = stop || nout >= nTime;
 
 % Do not stop while we are not done (d'uh)
 while ~done
@@ -276,7 +265,7 @@ while ~done
 
   % Solve the implicit equation for y_n+1
   [ynew, ~ , ~, output] = fsolve( ...
-      @(ynew) bdf_acceleration(odefun, nBDF, yprevs, tnew, ynew, dStepsize, stMass) ...
+      @(ynew) bdf_acceleration(odefun, nBDF, yprevs, tnew, ynew, dStepsize, fhMass) ...
       , ynew_guess ...
       , stOptsFsolve ...
   );
@@ -327,7 +316,7 @@ yout = yout(:,1:nout);
 
 % Call output function on done?
 if haveOutputFcn
-  feval(outfun, [], [], 'done', outputArgs{:});
+  feval(outputFcn, [], [], 'done', outputArgs{:});
 end
 
 
@@ -341,10 +330,9 @@ if nargout < 2
       'x', tout ...
     , 'y', yout ...
   );
-end
 
 % [T, Y] = BDF(...)
-if nargout < 3
+else
   varargout{1} = transpose(tout);
   varargout{2} = transpose(yout);
 end

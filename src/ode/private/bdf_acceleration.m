@@ -1,4 +1,4 @@
-function res = bdf_acceleration(odefun, ordr, yp, tn, yn, h, mass, varargin)
+function res = bdf_acceleration(odefun, ordr, yp, tn, yn, h, massfcn)
 % BDF_ACCELERATION implements the FSOLVE callback for BDF Euler
 %
 %   Inputs:
@@ -15,7 +15,7 @@ function res = bdf_acceleration(odefun, ordr, yp, tn, yn, h, mass, varargin)
 %
 %   H                   Step size.
 %
-%   MASS                Structure containing information on the mass matrix.
+%   MASSFCN             Function handle MASSFCN(T, Y) returning the mass matrix.
 %
 %   Outputs:
 %
@@ -72,7 +72,7 @@ end
 
 
 % Calculate residual value
-res = mass.Function(tn, yn)*(yn + yp*transpose(aButcher(ordr,end-(ordr-1):end))) - vStepsizeWeights(ordr)*h*feval(odefun, tn, yn);
+res = massfcn(tn, yn)*(yn + yp*transpose(aButcher(ordr,end-(ordr-1):end))) - vStepsizeWeights(ordr)*h*feval(odefun, tn, yn);
 
 
 end

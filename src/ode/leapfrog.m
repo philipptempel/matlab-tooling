@@ -25,6 +25,10 @@ function varargout = leapfrog(odefun, tsp, x0, v0, options, varargin)%#codegen
 %   OPTIONS             Structure array of options to be passed to the ODE
 %                       integrator obtained from ODESET.
 %
+%   VARARGIN            Additional parameters, passed on to ODEFUN as
+%                       ODEFUN(T, [X; V], VARARGIN{:}), to the mass matrix
+%                       function, and to the output function.
+%
 % Outputs:
 %
 %   T                   Kx1 vector of time stamps at which the ODE was
@@ -81,18 +85,24 @@ stOptions = odeset(stDefaultOptions, options);
 % Set solver name
 chSolverName = 'leapfrog';
 
-% Check if ODEFUN is a function handle or points to a file
-loFHUsed = isa(odefun, 'function_handle');
-
 % Number of function evaluations
 nFuncEval = 0;
 
-% Parse the ODE arguments using MATLAB's built-in ODEARGUMENTS function
-[nEquations, vTspan, nTime, next, dTime_0, dTime_T, dTime_Dirn, y0, f0, odeArgs, odefun, ...
- stOptions, threshold, rtol, normcontrol, normy, hmax, htry, htspan, dataType] = ...
-    odearguments(loFHUsed, chSolverName, odefun, tsp, [x0(:); v0(:)], stOptions, varargin);
+% Pass additional parameters on to the ODE function
+if isa(odefun, 'function_handle') && ~isempty(varargin)
+  odefun = @(t, y) odefun(t, y, varargin{:});
+end
 
-% ODE function was once evaluated inside ODEARGUMENTS
+% Check the ODE arguments
+[nEquations, nTime, dTime_0, dTime_T, y0, htspan, dataType] = ...
+    ode_arguments(chSolverName, odefun, tsp, [x0(:); v0(:)]);
+
+% Use initial positions and velocities as column vectors, no matter how they were
+% given
+x0 = y0(1:nEquations);
+v0 = y0(nEquations+1:end);
+
+% ODE function was once evaluated inside ODE_ARGUMENTS
 nFuncEval = nFuncEval + 1;
 
 % Get step size from options
@@ -100,7 +110,7 @@ dStepsize = odeget(stOptions, 'MaxStep', -1, 'fast');
 
 % No step size given in options, so infer it from vTspan
 if dStepsize == -1
-  % Get the default step size from the call to `ODEARGUMENTS`
+  % Get the default step size from the call to `ODE_ARGUMENTS`
   dStepsize = htspan;
 end
 % Pre-calculate half of the step size
@@ -111,42 +121,8 @@ dStepsizeDouble = 2*dStepsize;
 
 
 %% Handle mass matrix
-% nMass_Type == 0: no mass matrix
-% nMass_Type == 1: M
-% nMass_Type == 2: M(t)
-% nMass_Type == 3: M(t, y)
-[nMass_Type, aMass_0, fhMass, ceMass_arg, stMass_Options] = odemass(loFHUsed, odefun, dTime_0, [x0(:); v0(:)], stOptions, varargin);
-% Stucture containing information on the mass matrix
-stMass = struct( ...
-    'Type', nMass_Type ...
-  , 'Value', aMass_0 ...
-  , 'Function', fhMass ...
-  , 'Arguments', {{}} ...
-  , 'Options', [] ...
-);
-if ~isempty(ceMass_arg)
-  stMass.Arguments = ceMass_arg;
-end
-if isa(stMass_Options, 'struct')
-  stMass.Options = stMass_Options;
-end
-% Adjust for ODEMASS returning a mass matrix of size 2Nx2N when there isn't any
-% mass matrix given in OPTIONS
-if size(stMass.Value, 1) == 2*nEquations
-  stMass.Value = stMass.Value(end-(nEquations-1):end,end-(nEquations-1):end);
-end
-
-% Determine function callback of mass matrix
-switch stMass.Type
-  case 0 % []
-    stMass.Function = @(t, y) stMass.Value;
-  case 1 % M
-    stMass.Function = @(t, y) stMass.Value;
-  case 2 % M(t)
-    stMass.Function = @(t, y) stMass.Function(tn);
-  case {3, 4} % M(t, [x; v])
-    % Nothing to be done here, everything's as it's supposed to be
-end
+% Function handle MASSFCN(t, [x; v]) returning the mass matrix
+fhMass = ode_mass(stOptions, nEquations, varargin);
 
 
 
@@ -204,7 +180,7 @@ vFull(:,nout) = v0;
 % Calculate initial acceleration to determine the velocity at half a time step
 % in the past
 [aFull(:,nout), ~, ~, output] = fsolve( ...
-  @(aTest) leapfrog_acceleration(odefun, dTime_0, x0, v0, aTest, dStepsize, stMass) ...
+  @(aTest) leapfrog_acceleration(odefun, dTime_0, x0, v0, aTest, dStepsize, fhMass) ...
   , v0 ...
   , stOptsFsolve ...
 );
@@ -247,7 +223,7 @@ while ~done
   % Predict an acceleration for the current time step based on solving the ODE
   % M*a = f for the current position but the previous velocity
   [aNPred, ~, ~, output] = fsolve( ...
-      @(atest) leapfrog_acceleration(odefun, tN, xN, vNm12, atest, dStepsize, stMass) ...
+      @(atest) leapfrog_acceleration(odefun, tN, xN, vNm12, atest, dStepsize, fhMass) ...
     , aN ...
     , stOptsFsolve ...
   );
@@ -265,10 +241,17 @@ while ~done
   % state
   vN = (xNp1Pred - xNm1)/dStepsizeDouble;
 
+  % There is no previous position at the first time step, so the central
+  % difference would only yield half the velocity. The initial velocity is given
+  % anyway.
+  if nout == 1
+    vN = vFull(:,nout);
+  end
+
   % And determine a corrected acceleration a_n knowing the corrected current
   % acceleration and the corrected current velocity
   [aN, ~, ~, output] = fsolve( ...
-      @(atest) leapfrog_acceleration(odefun, tN, xN, vN, atest, dStepsize, stMass) ...
+      @(atest) leapfrog_acceleration(odefun, tN, xN, vN, atest, dStepsize, fhMass) ...
       , aNPred ...
       , stOptsFsolve ...
     );
@@ -326,6 +309,33 @@ while ~done
   
 end
 
+%% Velocity and acceleration of the last time stamp
+% The loop above computes velocity and acceleration of the previous time stamp
+% from the next position, so the last time stamp has neither yet. Compute them
+% from the velocity at half a time step in the past.
+
+% Predict the acceleration of the last time stamp based on the previous velocity
+% v_(n - 1/2)
+[aNPred, ~, ~, output] = fsolve( ...
+    @(atest) leapfrog_acceleration(odefun, tFull(nout), xFull(:,nout), vHalf(:,nout), atest, dStepsize, fhMass) ...
+  , aFull(:,nout - 1) ...
+  , stOptsFsolve ...
+);
+nFuncEval = nFuncEval + output.funcCount;
+
+% Advance the velocity by half a time step to obtain v_n
+vFull(:,nout) = vHalf(:,nout) + dStepsizeHalf*aNPred;
+
+% And determine the acceleration a_n knowing the velocity v_n
+[aFull(:,nout), ~, ~, output] = fsolve( ...
+    @(atest) leapfrog_acceleration(odefun, tFull(nout), xFull(:,nout), vFull(:,nout), atest, dStepsize, fhMass) ...
+  , aNPred ...
+  , stOptsFsolve ...
+);
+nFuncEval = nFuncEval + output.funcCount;
+
+
+
 % Finalize data
 tFull = tFull(1:nout);
 xout = xFull(:,1:nout);
@@ -333,7 +343,7 @@ vout = vFull(:,1:nout);
 
 % Call output function on done?
 if haveOutputFcn
-  feval(outfun, [], [], 'done', outputArgs{:});
+  feval(outputFcn, [], [], 'done', outputArgs{:});
 end
 
 
@@ -348,16 +358,14 @@ if nargout < 2
     , 'y', xout ...
     , 'z', vout ...
   );
-end
 
 % [T, [X, V]] = LEAPFROG(...)
-if nargout < 3
+elseif nargout == 2
   varargout{1} = transpose(tFull);
   varargout{2} = [transpose(xout), transpose(vout)];
-end
 
 % [T, X, V] = LEAPFROG(...)
-if nargout < 4
+else
   varargout{1} = transpose(tFull);
   varargout{2} = transpose(xout);
   varargout{3} = transpose(vout);
