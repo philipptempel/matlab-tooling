@@ -543,21 +543,40 @@ classdef bdfScenarios < matlab.unittest.TestCase
   
   
   
-  %% TESTS: KNOWN ISSUES
+  %% TESTS: DIRECTION OF INTEGRATION
   methods ( Test )
     
-    function integratesBackwardInTime(this)
+    function integratesBackwardInTime(this, ordr)
       %% INTEGRATESBACKWARDINTIME solves with decreasing time stamps
       
       
-      this.assumeFail('Known issue: BDF always steps forward in time, so decreasing time stamps are not integrated backward.');
-      
       tspBack = 1:-1e-2:0;
       
-      [t, y] = bdf(@(t, y) -y, tspBack, exp(-1));
+      [t, y] = bdf(@mltests.ode.bdfScenarios.decay, tspBack, exp(-1), odeset('MaxOrder', ordr));
+      
+      % The first order is only first-order accurate
+      tol = 3e-3;
+      if ordr == 1
+        tol = 1e-2;
+      end
       
       this.verifyEqual(t, tspBack(:), 'AbsTol', 1000*eps);
-      this.verifyEqual(y, exp(-t), 'AbsTol', 3e-4);
+      this.verifyEqual(y, exp(-t), 'AbsTol', tol);
+      
+    end
+    
+    
+    function stopRequestEndsBackwardIntegration(this)
+      %% STOPREQUESTENDSBACKWARDINTEGRATION stops with the call that requested it
+      
+      
+      tspBack = 1:-1e-2:0;
+      rec = mltests.ode.OutputRecorder();
+      rec.StopAtCall = 10;
+      
+      t = bdf(@mltests.ode.bdfScenarios.decay, tspBack, exp(-1), odeset('OutputFcn', @rec.call));
+      
+      this.verifyEqual(t.x, tspBack(1:10), 'AbsTol', 1000*eps);
       
     end
     
