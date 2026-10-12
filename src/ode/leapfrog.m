@@ -304,6 +304,33 @@ while ~done
   
 end
 
+%% Velocity and acceleration of the last time stamp
+% The loop above computes velocity and acceleration of the previous time stamp
+% from the next position, so the last time stamp has neither yet. Compute them
+% from the velocity at half a time step in the past.
+
+% Predict the acceleration of the last time stamp based on the previous velocity
+% v_(n - 1/2)
+[aNPred, ~, ~, output] = fsolve( ...
+    @(atest) leapfrog_acceleration(odefun, tFull(nout), xFull(:,nout), vHalf(:,nout), atest, dStepsize, fhMass) ...
+  , aFull(:,nout - 1) ...
+  , stOptsFsolve ...
+);
+nFuncEval = nFuncEval + output.funcCount;
+
+% Advance the velocity by half a time step to obtain v_n
+vFull(:,nout) = vHalf(:,nout) + dStepsizeHalf*aNPred;
+
+% And determine the acceleration a_n knowing the velocity v_n
+[aFull(:,nout), ~, ~, output] = fsolve( ...
+    @(atest) leapfrog_acceleration(odefun, tFull(nout), xFull(:,nout), vFull(:,nout), atest, dStepsize, fhMass) ...
+  , aNPred ...
+  , stOptsFsolve ...
+);
+nFuncEval = nFuncEval + output.funcCount;
+
+
+
 % Finalize data
 tFull = tFull(1:nout);
 xout = xFull(:,1:nout);
