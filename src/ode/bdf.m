@@ -216,8 +216,9 @@ while ~done
   tout(nout) = tnew;
   yout(:,nout) = ynew;
 
-  % Stop loopp if we are at the last iteration of the BDF initalization
-  done = nout > nBDF;
+  % Stop loop if we are at the last iteration of the BDF initalization or if we
+  % have reached the last time stamp already
+  done = nout > nBDF || nout >= nTime;
   
   % Call output function?
   if haveOutputFcn
@@ -241,8 +242,9 @@ end
 idxBdfSpan = -(nBDF-1):0;
 
 % Keep track of if we're done or not
-% If a stop was requested during the initialization, skip these steps
-done = stop;
+% If a stop was requested during the initialization or all time stamps are
+% done already, skip these steps
+done = stop || nout >= nTime;
 
 % Do not stop while we are not done (d'uh)
 while ~done
