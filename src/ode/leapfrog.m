@@ -97,6 +97,11 @@ end
 [nEquations, nTime, dTime_0, dTime_T, y0, htspan, dataType] = ...
     ode_arguments(chSolverName, odefun, tsp, [x0(:); v0(:)]);
 
+% Use initial positions and velocities as column vectors, no matter how they were
+% given
+x0 = y0(1:nEquations);
+v0 = y0(nEquations+1:end);
+
 % ODE function was once evaluated inside ODE_ARGUMENTS
 nFuncEval = nFuncEval + 1;
 
