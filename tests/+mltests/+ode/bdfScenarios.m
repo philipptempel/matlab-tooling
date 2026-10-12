@@ -112,6 +112,25 @@ classdef bdfScenarios < matlab.unittest.TestCase
     end
     
     
+    function shortTspanEndsAtLastTimeStamp(this, ordr)
+      %% SHORTTSPANENDSATLASTTIMESTAMP stops after the last time stamp
+      %
+      %   This includes time vectors that are not longer than the order of the
+      %   method, i.e., those that end during the start-up phase.
+      
+      
+      for nTime = 2:ordr+2
+        tspShort = this.tsp(1:nTime);
+        
+        [t, y] = bdf(@mltests.ode.bdfScenarios.decay, tspShort, 1, odeset('MaxOrder', ordr));
+        
+        this.verifyEqual(t, tspShort(:), 'AbsTol', 1000*eps);
+        this.verifyEqual(y, exp(-t), 'AbsTol', 3e-3);
+      end
+      
+    end
+    
+    
     function firstStateIsInitialState(this)
       %% FIRSTSTATEISINITIALSTATE starts at Y0
       
@@ -539,20 +558,6 @@ classdef bdfScenarios < matlab.unittest.TestCase
       
       this.verifyEqual(t, tspBack(:), 'AbsTol', 1000*eps);
       this.verifyEqual(y, exp(-t), 'AbsTol', 3e-4);
-      
-    end
-    
-    
-    function integratesFewerTimeStampsThanOrder(this)
-      %% INTEGRATESFEWERTIMESTAMPSTHANORDER solves with two time stamps
-      
-      
-      this.assumeFail('Known issue: BDF never terminates if TSPAN has no more elements than the order of the method, e.g., a 2-element TSPAN with the default order.');
-      
-      [t, y] = bdf(@(t, y) -y, [0, 0.5], 1);
-      
-      this.verifyEqual(t, [0; 0.5]);
-      this.verifySize(y, [2, 1]);
       
     end
     
