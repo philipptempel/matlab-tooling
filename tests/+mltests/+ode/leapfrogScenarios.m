@@ -137,6 +137,18 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
     end
     
     
+    function acceptsRowInitialStates(this)
+      %% ACCEPTSROWINITIALSTATES treats row and column initial states the same
+      
+      
+      [~, xr, ~] = leapfrog(@mltests.ode.leapfrogScenarios.oscillators, this.tsp, [1, 1], [0, 0]);
+      [~, xc, ~] = leapfrog(@mltests.ode.leapfrogScenarios.oscillators, this.tsp, [1; 1], [0; 0]);
+      
+      this.verifyEqual(xr, xc);
+      
+    end
+    
+    
     function acceptsTwoTimeStamps(this)
       %% ACCEPTSTWOTIMESTAMPS integrates a single step
       
@@ -472,7 +484,7 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
   
   
   
-  %% TESTS: KNOWN ISSUES
+  %% TESTS: VELOCITY AT FIRST AND LAST TIME STAMP
   methods ( Test )
     
     function firstVelocityIsInitialVelocity(this)
@@ -482,20 +494,6 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
       [~, ~, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillator, this.tsp, 0, 1);
       
       this.verifyEqual(v(1), 1, 'AbsTol', 1e-12);
-      
-    end
-    
-    
-    function acceptsRowInitialStates(this)
-      %% ACCEPTSROWINITIALSTATES treats row and column initial states the same
-      
-      
-      this.assumeFail('Known issue: X0 and V0 are used as given in the solver loop, so row vectors fail with a size mismatch.');
-      
-      [~, xr, ~] = leapfrog(@mltests.ode.leapfrogScenarios.oscillators, this.tsp, [1, 1], [0, 0]);
-      [~, xc, ~] = leapfrog(@mltests.ode.leapfrogScenarios.oscillators, this.tsp, [1; 1], [0; 0]);
-      
-      this.verifyEqual(xr, xc);
       
     end
     
