@@ -81,13 +81,12 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
     
     
     function velocityHasSmallError(this)
-      %% VELOCITYHASSMALLERROR solves x'' = -x at all but the first and last sample
+      %% VELOCITYHASSMALLERROR solves x'' = -x
       
       
       [t, ~, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillator, this.tsp, 1, 0);
       
-      idx = 2:numel(t)-1;
-      this.verifyEqual(v(idx), -sin(t(idx)), 'AbsTol', 1e-3);
+      this.verifyEqual(v, -sin(t), 'AbsTol', 1e-3);
       
     end
     
@@ -98,9 +97,8 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
       
       [t, x, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillator, this.tsp, 0, 1);
       
-      idx = 2:numel(t)-1;
       this.verifyEqual(x, sin(t), 'AbsTol', 1e-4);
-      this.verifyEqual(v(idx), cos(t(idx)), 'AbsTol', 1e-3);
+      this.verifyEqual(v, cos(t), 'AbsTol', 1e-3);
       
     end
     
@@ -111,9 +109,8 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
       
       [t, x, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillators, this.tsp, [1; 1], [0; 0]);
       
-      idx = 2:numel(t)-1;
       this.verifyEqual(x, [cos(t), cos(2*t)], 'AbsTol', 1e-3);
-      this.verifyEqual(v(idx,:), [-sin(t(idx)), -2*sin(2*t(idx))], 'AbsTol', 5e-3);
+      this.verifyEqual(v, [-sin(t), -2*sin(2*t)], 'AbsTol', 1e-3);
       
     end
     
@@ -507,11 +504,23 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
       %% LASTVELOCITYISCOMPUTED returns the velocity at the final time
       
       
-      this.assumeFail('Known issue: the velocity (and acceleration) of the last time stamp is never filled and stays 0.');
-      
       [t, ~, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillator, this.tsp, 1, 0);
       
-      this.verifyEqual(v(end), -sin(t(end)), 'AbsTol', 1e-2);
+      this.verifyEqual(v(end), -sin(t(end)), 'AbsTol', 1e-3);
+      
+    end
+    
+    
+    function lastVelocityIsComputedAfterStopRequest(this)
+      %% LASTVELOCITYISCOMPUTEDAFTERSTOPREQUEST returns the velocity at the stop
+      
+      
+      rec = mltests.ode.OutputRecorder();
+      rec.StopAtCall = 50;
+      
+      [t, ~, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillator, this.tsp, 1, 0, odeset('OutputFcn', @rec.call));
+      
+      this.verifyEqual(v, -sin(t), 'AbsTol', 1e-3);
       
     end
     
