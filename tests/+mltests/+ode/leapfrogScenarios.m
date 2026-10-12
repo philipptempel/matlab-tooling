@@ -482,11 +482,9 @@ classdef leapfrogScenarios < matlab.unittest.TestCase
       %% FIRSTVELOCITYISINITIALVELOCITY starts at V0
       
       
-      this.assumeFail('Known issue: the first velocity sample is computed as central difference without a previous position, so it is only half of V0.');
-      
       [~, ~, v] = leapfrog(@mltests.ode.leapfrogScenarios.oscillator, this.tsp, 0, 1);
       
-      this.verifyEqual(v(1), 1, 'AbsTol', 1e-3);
+      this.verifyEqual(v(1), 1, 'AbsTol', 1e-12);
       
     end
     
