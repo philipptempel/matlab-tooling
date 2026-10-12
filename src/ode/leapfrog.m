@@ -236,6 +236,13 @@ while ~done
   % state
   vN = (xNp1Pred - xNm1)/dStepsizeDouble;
 
+  % There is no previous position at the first time step, so the central
+  % difference would only yield half the velocity. The initial velocity is given
+  % anyway.
+  if nout == 1
+    vN = vFull(:,nout);
+  end
+
   % And determine a corrected acceleration a_n knowing the corrected current
   % acceleration and the corrected current velocity
   [aN, ~, ~, output] = fsolve( ...
